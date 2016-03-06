@@ -1,0 +1,1 @@
+mode X { A => QUEX_TKN_A; B => QUEX_TKN_B; C => QUEX_TKN_C; }

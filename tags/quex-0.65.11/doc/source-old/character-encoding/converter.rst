@@ -1,0 +1,61 @@
+.. _sec-converters:
+
+Conversion
+==========
+
+TODO: Mention: input stream MUST be in 'binary mode', i.e. stream position = 
+number of bytes!
+
+Quex provides support for character encodings by means of converters which are
+plugged into buffer fillers. The converters currently provided directly by quex
+are IBM's ICU library and the GNU IConv library. The latter is present by
+default on most Unix Machines, the former on Windows Systems and the like. The lexical
+analyzer engine is not aware of the conversion. It commands the buffer filler to 
+filler to fill the buffer memory and then iterates over the content. It does not
+know what processes happen in the background. The buffer filler, however,
+is internally adapted to the library on which it relies. If you want to use
+character set conversion, for example to parse a file encoded in ISO-8859-3,
+then you need to have one of the supported libraries installed.
+
+Quex can setup the buffer filler for the converter of your choice by command line
+arguments. Those are
+
+.. data:: --icu
+
+   If you want to use IBM's ICU library by-default for conversion.
+
+.. data:: --iconv
+
+   If you want to use GNU IConv by-default for conversion.
+
+The decision which one to choose needs to be made should not have to do anything
+with the judgment about the clarity of the API of those libraries. The user
+is completely isolated from the details of that. Questions of concern might be
+
+#. Make sure that the converter supports the encoding that you want to
+   parse. Especially compressed formats might not be supported by every
+   converter.
+
+#. Computational speed: Compare both converters on some larger file and 
+   note down the differences in timing.
+
+#. Memory Consumption: Compare the memory footprint of the binary for both
+   converters.
+
+In order to use the converter you need to pass the name of the encoding to
+the constructor of the lexical analyzer as shown below. For details consider
+the class definition of the generated lexical analyzer class.
+
+.. code-block:: cpp
+
+   quex::tiny_lexer  qlex("example.txt", "UTF-8");
+
+Further, each conversion library has some specific behavior. Under some
+circumstances, they might sometimes require or even produce the byte ordering
+mark (BOM). Quex's converter interfaces tries to handle as much as possible any
+predictable eventualities. In case that problems arise, the user might have to
+manually look into the implementation of 'Converter_ICU.i' and
+'Converter_IConv.i'.  In the rare case, that problems arise setting the right
+byte ordering scheme (little or big endian), or specifying appropriate coding
+names might bring the solution.
+

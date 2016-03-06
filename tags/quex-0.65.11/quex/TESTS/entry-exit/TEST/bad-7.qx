@@ -1,0 +1,8 @@
+start = A;
+
+mode A :   <entry:>     <exit: X> { a  => 'a'; }
+mode B : A <entry:>     <exit: Y> { b  => 'b'; }
+
+mode X :   <entry: A>   <exit:>   { y  => 'y'; }
+mode Y :   <entry: A>   <exit:>   { z  => 'z'; }
+

@@ -1,0 +1,4 @@
+# Number of states in state machine:
+#   Unicode:       257
+#   mac_greek:            169
+<terminated: 256 transitions ok>

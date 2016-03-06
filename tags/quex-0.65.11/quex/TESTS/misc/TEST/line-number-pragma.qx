@@ -1,0 +1,101 @@
+header {
+    static void header_print_file_name_and_line_number(void)
+    { printf("((A)) 1"); }
+}
+
+body {
+    void body_file_name_and_line_number(void)
+    { printf("((A)) 2"); }
+}
+
+init           { printf("((A)) 3"); }
+reset          { printf("((A)) 4"); }
+memento        { printf("((A)) 5"); }
+memento_pack   { printf("((A)) 6"); }
+memento_unpack { printf("((A)) 7"); }
+
+token_type {
+   standard {
+        id            : uint32_t;
+        line_number   : size_t;
+        column_number : size_t;
+   }
+    constructor    { printf("((A)) 8"); }
+    destructor     { printf("((A)) 9"); }
+    copy           { printf("((A)) 10"); }
+    take_text      { printf("((A)) 11"); }
+    repetition_set { printf("((A)) 12"); }
+    repetition_get { printf("((A)) 13"); }
+    body { 
+        static void token_body_file_name_and_line_number(void)
+        { printf("((A)) 14"); }
+    }
+    header { 
+        static void token_header_file_name_and_line_number(void)
+        { printf("((A)) 15"); }
+    }
+    footer { 
+        static void token_footer_file_name_and_line_number(void)
+        { printf("((A)) 16"); }
+    }
+}
+
+mode BASE 
+: <skip_range:"/*" "*/">{
+    on_entry             { printf("((A)) 17"); }
+    on_exit              { printf("((A)) 18"); }
+    on_indent            { printf("((A)) 19"); }
+    on_nodent            { printf("((A)) 20"); }
+    on_n_dedent          { printf("((A)) 21"); }
+    on_indentation_error { printf("((A)) 22"); }
+    on_indentation_bad   { printf("((A)) 23"); }
+    on_match             { printf("((A)) 24"); }
+    on_after_match       { printf("((A)) 25"); }
+    on_failure           { printf("((A)) 26"); }
+    on_skip_range_open   { printf("((A)) 27"); }
+    on_end_of_stream     { printf("((A)) 28"); }
+
+    [ABC] {
+        self_send(TKN_ABC);
+        printf("((A)) 29");
+        self_goto(DERIVED);
+    }
+    A/B/C {
+        self_send(TKN_B);
+        printf("((A)) 30");
+    }
+}
+
+token {
+  DEDENT;
+  INDENT;
+  NODENT;
+  TERMINATION;
+  UNINITIALIZED;
+  ABC;
+  B;
+}
+
+start = BASE;
+
+mode DERIVED : BASE {
+    /*
+    on_entry             { printf("((A)) 31"); }
+    on_exit              { printf("((A)) 32"); }
+    on_indent            { printf("((A)) 33"); }
+    on_nodent            { printf("((A)) 34"); }
+    on_indentation_error { printf("((A)) 35"); }
+    on_indentation_bad   { printf("((A)) 36"); }
+    on_match             { printf("((A)) 37"); }
+    on_after_match       { printf("((A)) 38"); }
+    on_failure           { printf("((A)) 39"); }
+    on_skip_range_open   { printf("((A)) 40"); }
+    on_end_of_stream     { printf("((A)) 41"); }
+    */
+
+    ":" {
+        self_send(TKN_ABC);
+        printf("((A)) 42");
+        self_goto(BASE);
+    }
+}

@@ -1,0 +1,40 @@
+Border:              9
+NumberSet:           [[10], [20]]
+cut_lesser           --> [[10], [20]]
+cut_greater_or_equal --> []
+______________________________________
+Border:              10
+NumberSet:           [[10], [20]]
+cut_lesser           --> [[10], [20]]
+cut_greater_or_equal --> []
+______________________________________
+Border:              11
+NumberSet:           [[10], [20]]
+cut_lesser           --> [[20]]
+cut_greater_or_equal --> [[10]]
+______________________________________
+Border:              12
+NumberSet:           [[10], [20]]
+cut_lesser           --> [[20]]
+cut_greater_or_equal --> [[10]]
+______________________________________
+Border:              19
+NumberSet:           [[10], [20]]
+cut_lesser           --> [[20]]
+cut_greater_or_equal --> [[10]]
+______________________________________
+Border:              20
+NumberSet:           [[10], [20]]
+cut_lesser           --> [[20]]
+cut_greater_or_equal --> [[10]]
+______________________________________
+Border:              21
+NumberSet:           [[10], [20]]
+cut_lesser           --> []
+cut_greater_or_equal --> [[10], [20]]
+______________________________________
+Border:              22
+NumberSet:           [[10], [20]]
+cut_lesser           --> []
+cut_greater_or_equal --> [[10], [20]]
+______________________________________

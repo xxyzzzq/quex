@@ -1,0 +1,27 @@
+1, generate code (you should have a lexer sub-folder)
+
+quex -i cpp.qx --engine tiny_lexer --buffer-based --token-policy single --token-memory-management-by-user --token-id-offset 2 --token-id-prefix TKN_  --source-package   lexer >> result.txt
+
+2, compile the cpp file:
+
+g++ -Wall -Werror -fexceptions -DQUEX_SETTING_BUFFER_SIZE=0 -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 -DQUEX_TYPE_LEXATOM=char -DQUEX_OPTION_TERMINATION_ZERO_DISABLED  -g -DQUEX_OPTION_ASSERTS_DISABLED    -Ilexer  -c lexer\tiny_lexer.cpp -o tiny_lexer.o
+
+3, the error message:
+E:\code\quex\test_code\test1>g++ -Wall -Werror -fexceptions -DQUEX_SETTING_BUFFER_SIZE=0
+ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 -DQUEX_TYPE_LEXATOM=char -DQUEX_OPTION
+_TERMINATION_ZERO_DISABLED  -g -DQUEX_OPTION_ASSERTS_DISABLED    -Ilexer  -c lex
+er\tiny_lexer.cpp -o tiny_lexer.o
+In file included from lexer/quex/code_base/buffer/Buffer.i:630:0,
+                 from lexer/quex/code_base/analyzer/member/constructor.i:7,
+                 from lexer/quex/code_base/analyzer/headers.i:21,
+                 from lexer\tiny_lexer:503,
+                 from lexer\tiny_lexer.cpp:1:
+lexer/quex/code_base/MemoryManager.i:86:1: error: conflicting declaration 'char
+quex::tiny_lexer_LexemeNullObject'
+tiny_lexer-token:213:1: error: 'quex::tiny_lexer_LexemeNullObject' has a previou
+s declaration as 'uint8_t quex::tiny_lexer_LexemeNullObject'
+lexer\tiny_lexer.cpp:66:1: error: conflicting declaration 'char quex::tiny_lexer
+_LexemeNullObject'
+tiny_lexer-token:213:1: error: 'quex::tiny_lexer_LexemeNullObject' has a previou
+s declaration as 'uint8_t quex::tiny_lexer_LexemeNullObject'
+

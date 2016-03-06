@@ -1,0 +1,19 @@
+< COMPILER = g++  -ggdb 
+---
+> COMPILER = gcc -ggdb 
+< EasyLexer.o: EasyLexer.cpp 
+---
+> EasyLexer.o: EasyLexer.c 
+< example.o: ../example.cpp  EasyLexer.cpp
+---
+> example.o: ../example.c  EasyLexer.c
+< %.E: %.cpp    
+---
+> %.E: %.c    
+< EasyLexer.cpp: simple.qx 
+---
+> EasyLexer.c: simple.qx 
+< 		 --comment-state-machine --comment-mode-patterns 
+---
+> 		 --comment-state-machine --comment-mode-patterns \
+> 		 --language         C

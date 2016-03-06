@@ -1,0 +1,211 @@
+--(Path Definitions)----------------------------------------------------
+
+    const QUEX_TYPE_LEXATOM      path_walker_23_base[23]        = {
+    111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'o''t''t''o' */
+    103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'g''r''u''n''i''b''a''l''d''i' */
+    102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'f''r''i''t''z' */
+
+    };
+    const QUEX_TYPE_LEXATOM*     path_6                         = path_walker_23_base + 5;
+    const QUEX_TYPE_GOTO_LABEL     (path_walker_23_state[22])     = {QUEX_LABEL(1), QUEX_LABEL(2), QUEX_LABEL(3), QUEX_LABEL(4), QUEX_LABEL(5), QUEX_LABEL(6), QUEX_LABEL(7), QUEX_LABEL(8), QUEX_LABEL(9), QUEX_LABEL(10), QUEX_LABEL(11), QUEX_LABEL(12), QUEX_LABEL(13), QUEX_LABEL(14), QUEX_LABEL(15), QUEX_LABEL(16), QUEX_LABEL(17), QUEX_LABEL(18), QUEX_LABEL(19), QUEX_LABEL(20), QUEX_LABEL(21), QUEX_LABEL(22), };
+    const QUEX_TYPE_LEXATOM*     path_17                        = path_walker_23_base + 16;
+    const QUEX_TYPE_LEXATOM*     path_1                         = path_walker_23_base + 0;
+
+
+--(Pathwalker Code)-----------------------------------------------------
+
+
+    __quex_assert_no_passage();
+_1:
+
+    __quex_debug_state(1);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_1 + 0;
+goto _23;
+
+    __quex_assert_no_passage();
+_2:
+
+    __quex_debug_state(2);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_1 + 1;
+goto _23;
+
+    __quex_assert_no_passage();
+_3:
+
+    __quex_debug_state(3);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_1 + 2;
+goto _23;
+
+    __quex_assert_no_passage();
+_4:
+
+    __quex_debug_state(4);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_1 + 3;
+goto _23;
+
+    __quex_assert_no_passage();
+_6:
+
+    __quex_debug_state(6);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_6 + 0;
+goto _23;
+
+    __quex_assert_no_passage();
+_7:
+
+    __quex_debug_state(7);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_6 + 1;
+goto _23;
+
+    __quex_assert_no_passage();
+_8:
+
+    __quex_debug_state(8);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_6 + 2;
+goto _23;
+
+    __quex_assert_no_passage();
+_9:
+
+    __quex_debug_state(9);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+        path_iterator                  = path_6 + 3;
+goto _23;
+
+    __quex_assert_no_passage();
+_10:
+
+    __quex_debug_state(10);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_6 + 4;
+goto _23;
+
+    __quex_assert_no_passage();
+_11:
+
+    __quex_debug_state(11);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+        path_iterator                  = path_6 + 5;
+goto _23;
+
+    __quex_assert_no_passage();
+_12:
+
+    __quex_debug_state(12);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_6 + 6;
+goto _23;
+
+    __quex_assert_no_passage();
+_13:
+
+    __quex_debug_state(13);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+        path_iterator                  = path_6 + 7;
+goto _23;
+
+    __quex_assert_no_passage();
+_14:
+
+    __quex_debug_state(14);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_6 + 8;
+goto _23;
+
+    __quex_assert_no_passage();
+_15:
+
+    __quex_debug_state(15);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+        path_iterator                  = path_6 + 9;
+goto _23;
+
+    __quex_assert_no_passage();
+_17:
+
+    __quex_debug_state(17);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_17 + 0;
+goto _23;
+
+    __quex_assert_no_passage();
+_18:
+
+    __quex_debug_state(18);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_17 + 1;
+goto _23;
+
+    __quex_assert_no_passage();
+_19:
+
+    __quex_debug_state(19);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_17 + 2;
+goto _23;
+
+    __quex_assert_no_passage();
+_20:
+
+    __quex_debug_state(20);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_17 + 3;
+goto _23;
+
+    __quex_assert_no_passage();
+_21:
+
+    __quex_debug_state(21);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    path_iterator                  = path_17 + 4;
+goto _23;
+
+    __quex_assert_no_passage();
+_23:
+    __quex_debug("path walker 23");
+    if( input == *path_iterator ) {
+        ++path_iterator;
+        QUEX_GOTO_STATE(path_walker_23_state[path_iterator - path_walker_23_base]);
+    } else if( *path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
+        QUEX_GOTO_STATE(path_walker_23_state[path_iterator - path_walker_23_base]);
+    }
+
+    switch( input ) {
+        case 0x0:     QUEX_GOTO_RELOAD(__RELOAD_FORWARD, path_walker_23_state[path_iterator - path_walker_23_base], QUEX_LABEL(24));
+        case 0xA:     goto _1;
+        case 0x14:    goto _2;
+        case 0x40:    goto _1;
+    }
+_24:
+goto __TERMINAL_ROUTER; 
+
+--(Involved State Indices)----------------------------------------------
+
+set([1L, 2L, 3L, 4L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 17L, 18L, 19L, 20L, 21L])
+

@@ -1,0 +1,60 @@
+_____________________________________________________________________
+ARGUMENT_LIST: --bet u8 --icu
+
+#   define QUEX_TYPE_LEXATOM          u8
+#   define QUEX_TYPE_LEXATOM_BACKUP   u8
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet u16 --icu
+
+#   define QUEX_TYPE_LEXATOM          u16
+#   define QUEX_TYPE_LEXATOM_BACKUP   u16
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet u32 --icu
+
+#   define QUEX_TYPE_LEXATOM          u32
+#   define QUEX_TYPE_LEXATOM_BACKUP   u32
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet uint8_t --icu
+
+#   define QUEX_TYPE_LEXATOM          uint8_t
+#   define QUEX_TYPE_LEXATOM_BACKUP   uint8_t
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet uint16_t --icu
+
+#   define QUEX_TYPE_LEXATOM          uint16_t
+#   define QUEX_TYPE_LEXATOM_BACKUP   uint16_t
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet uint32_t --icu
+
+#   define QUEX_TYPE_LEXATOM          uint32_t
+#   define QUEX_TYPE_LEXATOM_BACKUP   uint32_t
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet wchar_t --icu
+
+#   define QUEX_TYPE_LEXATOM          wchar_t
+#   define QUEX_TYPE_LEXATOM_BACKUP   wchar_t
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet UChar --icu
+
+command line: A character code converter has been specified. It is supposed to convert
+command line: incoming data into an internal buffer of unicode characters. The size of
+command line: each character is determined by 'UChar' which is a user defined type.
+command line: 
+command line: Quex cannot determine automatically the name that the converter requires
+command line: to produce unicode characters for type 'UChar'. It must be specified by the
+command line: command line option '--converter-ucs-coding-name' or '--cucn'.
+File EasyLexer-configuration does not exits.
+
+_____________________________________________________________________
+ARGUMENT_LIST: --bet UChar --icu --converter-ucs-coding-name ASCII
+
+#   define QUEX_TYPE_LEXATOM          UChar
+#   define QUEX_TYPE_LEXATOM_BACKUP   UChar
+

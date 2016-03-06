@@ -1,0 +1,5 @@
+start = A1;
+
+mode A  : <inheritable: only>       { a => 'a'; }
+mode A1 : A  <entry: Z>  <exit: Z>  { b => 'b'; }
+mode Z  :    <entry: A1> <exit: A1> { c => 'c'; }

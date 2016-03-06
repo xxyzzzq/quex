@@ -1,0 +1,19 @@
+
+expression = "[: intersection(\P{White_Space}, \P{Block=Basic Latin}) :]"
+result     = ['\t', '\r'], ' '
+
+expression = "[: difference(\P{Script=Greek}, \G{Nd}) :]"
+result     = ['Ͱ', 'ͳ'], ['͵', 'ͷ'], ['ͺ', 'ͽ'], 'Ϳ', '΄', 'Ά', ['Έ', 'Ί'], 'Ό', ['Ύ', 'Ρ'], ['Σ', 'ϡ'], ['ϰ', 'Ͽ'], ['ᴦ', 'ᴪ'], ['ᵝ', 'ᵡ'], ['ᵦ', 'ᵪ'], 'ᶿ', ['ἀ', 'ἕ'], ['Ἐ', 'Ἕ'], ['ἠ', 'ὅ'], ['Ὀ', 'Ὅ'], ['ὐ', 'ὗ'], 'Ὑ', 'Ὓ', 'Ὕ', ['Ὗ', 'ώ'], ['ᾀ', 'ᾴ'], ['ᾶ', 'ῄ'], ['ῆ', 'ΐ'], ['ῖ', 'Ί'], ['῝', '`'], ['ῲ', 'ῴ'], ['ῶ', '῾'], 'Ω', 'ꭥ', ['𐅀', '𐆌'], '𐆠', ['𝈀', '𝉅']
+
+expression = "[: intersection(\P{Script=Gujarati}, \G{Nd}) :]"
+result     = ['૦', '૯']
+
+expression = "[: intersection(\P{Script=Hebrew}, \G{Nd}) :]"
+command line:1:warning: Regular Expression: Character set expression results in empty set.
+result     = 
+
+expression = "[: intersection(\P{Script=Arabic}, \G{Nd}) :]"
+result     = ['٠', '٩'], ['۰', '۹']
+
+expression = "[: intersection(\G{Lu}, intersection(\P{Hex_Digit}, \P{Block=Basic Latin})) :]"
+result     = ['A', 'F']

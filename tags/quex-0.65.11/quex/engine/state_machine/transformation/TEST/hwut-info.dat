@@ -1,0 +1,5 @@
+State Machine Transformations
+-----------------------------
+python *.py
+--not __init__.py helper.py
+-----------------------------

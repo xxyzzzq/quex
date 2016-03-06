@@ -1,0 +1,30 @@
+
+struct tree_node_branch {
+    QUEX_TYPE_LEXATOM  char;
+    ptrdiff_t            target;
+};
+
+struct node {
+    tree_node_branch branches[] {
+        { 'p', 0, },
+        { 'r', 1, },
+        { 'o', 2, }, 
+    }
+    tree_node_branch* end_p;
+};
+
+
+tree_node array[] = { node_0, node_1, node_2 }
+
+    --> store large keyword based languages!
+
+for(iterator = node.branches; iterator != end_p; ++iterator)
+    if( input == iterator->character ) 
+        next_node = iterator->target;
+        goto NEXT_INPUT;
+
+/* Transition Map */
+/* No node matched */
+goto node.drop_out
+
+

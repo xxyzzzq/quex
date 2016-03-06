@@ -1,0 +1,34 @@
+____________________________________________________________________
+Extracted (path_walker, state_index, template, etc.)
+This only proves that there were MegaStates involved.
+
+| [END] number of token = 27
+Simple.c:LineNumber:	path_iterator = (Pathwalker: 380, Path: 0, Offset: 0)
+Simple.c:LineNumber:	path_iterator = (Pathwalker: 380, Path: 0, Offset: 1)
+Simple.c:LineNumber:	path_iterator = (Pathwalker: 381, Path: 0, Offset: 0)
+Simple.c:LineNumber:	path_iterator = (Pathwalker: 381, Path: 0, Offset: 1)
+Simple.c:LineNumber:	path_iterator = (Pathwalker: 382, Path: 0, Offset: 0)
+Simple.c:LineNumber:	path_iterator = (Pathwalker: 382, Path: 0, Offset: 1)
+Simple.c:LineNumber:	(path walker: 380, path: 0, offset: 0)
+Simple.c:LineNumber:	(path walker: 380, path: 0, offset: 1)
+Simple.c:LineNumber:	(path walker: 380, path: 0, offset: 2)
+Simple.c:LineNumber:	(path walker: 380, path: 0, offset: 3)
+Simple.c:LineNumber:	(path walker: 380, path: 0, offset: 4)
+Simple.c:LineNumber:	(path walker: 380, path: 0, offset: 5)
+Simple.c:LineNumber:	(path walker: 381, path: 0, offset: 0)
+Simple.c:LineNumber:	(path walker: 381, path: 0, offset: 1)
+Simple.c:LineNumber:	(path walker: 381, path: 0, offset: 2)
+Simple.c:LineNumber:	(path walker: 381, path: 0, offset: 3)
+Simple.c:LineNumber:	(path walker: 382, path: 0, offset: 0)
+Simple.c:LineNumber:	(path walker: 382, path: 0, offset: 1)
+Simple.c:LineNumber:	state_key = 0
+Simple.c:LineNumber:	state_key = 1
+Simple.c:LineNumber:	state_key = 2
+Simple.c:LineNumber:	state_key = 3
+Simple.c:LineNumber:	state_key = 4
+Simple.c:LineNumber:	(template: 386, state key=0)
+Simple.c:LineNumber:	(template: 386, state key=1)
+Simple.c:LineNumber:	(template: 386, state key=2)
+Simple.c:LineNumber:	(template: 386, state key=3)
+Simple.c:LineNumber:	(template: 386, state key=4)
+Simple.c:LineNumber:	(template: 414, state key=1)

@@ -1,0 +1,17 @@
+# Best To be Displayed by:
+#
+#  > ./test-plug-interval-sequence.py 1.2 | dot -Tsvg -o tmp.svg
+#
+# -------------------------
+# Byte Sequences:     
+# (0)      [0000, 007F]
+#    L    = 1
+#    DIdx = 0
+digraph state_machine_0 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 
+node [shape = circle];
+((0)) -> ((1)) [label ="[0000, 007F] "];
+}
+

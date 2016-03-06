@@ -1,0 +1,8 @@
+start = B;
+
+token { LETTER; }
+
+mode A : <entry: B> <exit: B> { a => GOTO(B, QUEX_TKN_LETTER); }
+
+mode B : <entry: A> <exit: A> { a => GOTO(A, QUEX_TKN_LETTER); }
+

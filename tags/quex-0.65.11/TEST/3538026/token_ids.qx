@@ -1,0 +1,300 @@
+token_type {
+   header {
+#       include <iostream>
+#       include <string>
+
+$INCLUDE_CONVERTER_DECLARATION
+   }
+   standard {
+        id            : uint32_t;
+        line_number   : size_t;
+        column_number : size_t;
+   }
+   distinct {
+       text   :  std::basic_string<QUEX_TYPE_LEXATOM>;
+       number :  size_t;
+       end_line_number   : size_t;
+       end_column_number : size_t;
+   }
+
+   inheritable;
+
+   copy {
+        self._id    = Other._id;
+        self.text   = Other.text;
+        self.number = Other.number;
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+        __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
+        __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
+    #   endif
+    #   endif
+   }
+
+   body {
+        typedef std::basic_string<QUEX_TYPE_LEXATOM> __string;
+
+        operator 
+        const std::string() const
+        { return get_string(); }
+
+        const std::string
+        get_string() const 
+        {
+            std::string             tmp;
+
+            tmp = map_id_to_name(self._id);
+
+            tmp += " '" + pretty_char_text() + "' ";
+
+            return tmp;
+        }
+    
+        const std::string 
+        pretty_char_text() const
+        {
+            std::string             tmp = $CONVERTER_STRING(self.text);
+            std::string::size_type  pos = 0;
+
+            while( (pos = tmp.find("\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\n");
+            while( (pos = tmp.find("\t") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\t");
+            while( (pos = tmp.find("\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, "\\r");
+
+            return tmp;
+        }
+
+#       if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+        const std::wstring 
+        pretty_wchar_text() const
+        {
+            std::wstring             tmp = $CONVERTER_WSTRING(self.text);
+            std::wstring::size_type  pos = 0;
+
+            while( (pos = tmp.find(L"\n") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\n");
+            while( (pos = tmp.find(L"\t") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\t");
+            while( (pos = tmp.find(L"\r") ) != __string::npos ) tmp.replace(pos, (size_t)1, L"\\r");
+
+            return tmp;
+        }
+#       endif
+   }
+
+   take_text {
+#       if 0
+        {
+            /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
+            QUEX_TYPE_LEXATOM* it = 0x0;
+            printf("%lX ", (long)__this);
+            printf("previous:  '");
+            for(it = (QUEX_TYPE_LEXATOM*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
+            printf("'\n");
+            printf("take_text: '");
+            for(it = (QUEX_TYPE_LEXATOM*)Begin; it != End; ++it) printf("%04X.", (int)*it);
+            printf("'\n");
+        }
+#       endif
+
+        /* It cannot be assumed that the lexeme is zero terminated. */
+        self.text.assign(Begin, End-Begin);
+
+#       if 0
+        {
+            /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
+            QUEX_TYPE_LEXATOM* it = 0x0;
+            printf("after:     '");
+            for(it = (QUEX_TYPE_LEXATOM*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
+            printf("'\n");
+        }
+#       endif
+
+        /* This token copied the text from the chunk into the string, 
+         * so we do not claim owneship over it.                       */
+        return false;      
+   }
+
+   repetition_set {
+       self.number = N;
+   }
+
+   repetition_get {
+       return self.number;
+   }
+
+   footer {
+        $NAMESPACE_OPEN
+        inline std::ostream&
+        operator<<(std::ostream& ostr, const $TOKEN_CLASS& Tok)
+        { ostr << std::string(Tok); return ostr; }
+        $NAMESPACE_CLOSE
+
+$INCLUDE_CONVERTER_IMPLEMENTATION
+   }
+}
+
+
+// BEGIN GENERATED TOKEN IDS
+
+token {
+    TERMINATION;
+    UNINITIALIZED;
+    INDENT;
+    DEDENT;
+    NODENT;
+    P_Amper;
+    P_AmperAmper;
+    P_AmperEq;
+    P_At;
+    P_Backslash;
+    P_BracLeft;
+    P_BracRight;
+    P_BrakLeft;
+    P_BrakRight;
+    P_Caret;
+    P_CaretEq;
+    P_Colon;
+    P_ColonColon;
+    P_Comma;
+    P_Dot;
+    P_DotDotDot;
+    P_DotStar;
+    P_Eq;
+    P_EqEq;
+    P_Gt;
+    P_GtEq;
+    P_GtGt;
+    P_GtGtEq;
+    P_Lt;
+    P_LtEq;
+    P_LtLt;
+    P_LtLtEq;
+    P_Minus;
+    P_MinusEq;
+    P_MinusGt;
+    P_MinusGtStar;
+    P_MinusMinus;
+    P_Not;
+    P_NotEq;
+    P_ParLeft;
+    P_ParRight;
+    P_Percent;
+    P_PercentEq;
+    P_Pipe;
+    P_PipeEq;
+    P_PipePipe;
+    P_Plus;
+    P_PlusEq;
+    P_PlusPlus;
+    P_Ques;
+    P_Semicolon;
+    P_Slash;
+    P_SlashEq;
+    P_Star;
+    P_StarEq;
+    P_Tilde;
+    And_Eq;
+    Asm;
+    Auto;
+    Bitand;
+    Bitor;
+    Bool;
+    Break;
+    Case;
+    Catch;
+    Char;
+    Character_Literal;
+    Class;
+    Compl;
+    Const;
+    Const_Cast;
+    Continue;
+    Decimal_Literal;
+    Default;
+    Delete;
+    Do;
+    Double;
+    Dynamic_Cast;
+    Else;
+    Enum;
+    EoF;
+    Explicit;
+    Export;
+    Extern;
+    Failure;
+    False;
+    Float;
+    Float_Literal;
+    For;
+    Friend;
+    Goto;
+    Hex_Literal;
+    Identifier;
+    If;
+    Inline;
+    Int;
+    Integer_Literal;
+    Long;
+    Mutable;
+    Namespace;
+    New;
+    Not;
+    Not_Eq;
+    Octal_Literal;
+    Operator;
+    Or;
+    Or_Eq;
+    PP_Define;
+    PP_Defined;
+    PP_Elif;
+    PP_Else;
+    PP_Endif;
+    PP_Endregion;
+    PP_Error;
+    PP_Finish;
+    PP_Ident;
+    PP_If;
+    PP_Ifdef;
+    PP_Ifndef;
+    PP_Include;
+    PP_Include_Next;
+    PP_Line;
+    PP_Pragma;
+    PP_Region;
+    PP_Sharp;
+    PP_Sharp_Sharp;
+    PP_Undef;
+    PP_Warning;
+    Private;
+    Protected;
+    Public;
+    Register;
+    Reinterpret_Cast;
+    Restrict;
+    Return;
+    Short;
+    Signed;
+    Sizeof;
+    Static;
+    Static_Cast;
+    String_Literal;
+    Struct;
+    Switch;
+    Template;
+    This;
+    Throw;
+    True;
+    Try;
+    Typedef;
+    Typeid;
+    Typename;
+    Unexpected_Token;
+    Union;
+    Unsigned;
+    Using;
+    Virtual;
+    Void;
+    Volatile;
+    Wchar_T;
+    While;
+    Xor;
+    Xor_Eq;
+}

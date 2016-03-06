@@ -1,0 +1,211 @@
+    /* Information about what pattern 'comes' from what mode in the inheritance tree.
+     * 
+     * [1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index
+     * 
+     * (PROGRAM)
+     *  {P_NUMBER}+ PROGRAM  0 00025
+     *  {P_NUMBER}+\".\"{P_NUMBER}* PROGRAM  0 00039
+     *  \"if\"|\"then\"|\"begin\"|\"end\"|\"procedure\"|\"function\" PROGRAM  0 00083
+     *  {P_IDENTIFIER} PROGRAM  0 00084
+     *  \"+\"|\"-\"|\"*\"|\"/\" PROGRAM  0 00112
+     *  \"{\"[\^{}}\n]*\"}\" PROGRAM  0 00126
+     *  [ \t\n]+ PROGRAM  0 00132
+     *  . PROGRAM  0 00134
+     * 
+     * 
+     * 
+     */
+#include "tiny_lexer"
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+namespace quex {
+#endif
+#define QUEX_LEXER_CLASS tiny_lexer
+
+#include <quex/code_base/template/Analyser>
+#include <quex/code_base/buffer/Buffer>
+
+#ifdef CONTINUE
+#   undef CONTINUE
+#endif
+#define CONTINUE  goto __REENTRY_PREPARATION;
+#include <quex/code_base/temporary_macros_on>
+
+__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+tiny_lexer_PROGRAM_analyser_function(QuexAnalyzerEngine* me) 
+{
+    /* NOTE: Different modes correspond to different analyser functions. The analyser*/
+    /*       functions are all located inside the main class as static functions. That*/
+    /*       means, they are something like 'globals'. They receive a pointer to the */
+    /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
+#   if defined (__QUEX_OPTION_PLAIN_C)
+#      define self (*me)
+#   else
+       using namespace quex;
+       QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
+#   endif
+    /* me = pointer to state of the lexical analyser */
+    quex::QuexMode&              PROGRAM = QUEX_LEXER_CLASS::PROGRAM;
+    QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    QUEX_TYPE_LEXATOM_POSITION last_acceptance_read_position = (QUEX_TYPE_LEXATOM*)(0x00);
+    QUEX_TYPE_LEXATOM_POSITION* post_context_start_position = 0x0;
+    QUEX_TYPE_LEXATOM          input = (QUEX_TYPE_LEXATOM)(0x00);
+
+    /* Post context positions do not have to be reset or initialized. If a state
+     * is reached which is associated with 'end of post context' it is clear what
+     * post context is meant. This results from the ways the state machine is 
+     * constructed. A post context positions live time looks like the following:
+     *
+     * (1)   unitialized (don't care)
+     * (1.b) on buffer reload it may, or may not be adapted (don't care)
+     * (2)   when a post context begin state is passed, the it is **SET** (now: take care)
+     * (2.b) on buffer reload it **is adapted**.
+     * (3)   when a terminal state of the post context is reached (which can only be reached
+     *       for that particular post context, then the post context position is used
+     *       to reset the input position.                                              */
+#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+    || defined(QUEX_OPTION_ASSERTS)
+    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;
+#endif
+__REENTRY:
+    __quex_debug(&me->buffer, "LABEL: __REENTRY");
+    QuexBuffer_mark_lexeme_start(&me->buffer);
+    QuexBuffer_undo_terminating_zero_for_lexeme(&me->buffer);
+    /* state machine */
+STATE_787:
+    __quex_debug(&me->buffer, "LABEL: STATE_787");
+
+    input = QuexBuffer_input_get(&me->buffer);
+    if( input < 95) {
+        if( input < 44) {
+            if( input < 11) {
+                if( input < 1) {
+                        goto STATE_787_DROP_OUT;    /* [-oo, \0] */
+                } else {
+                    if( input < 9) {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* [\1, \8] */
+                    } else {
+                        goto STATE_786;    /* ['\t', '\n'] */
+                    }
+                }
+            } else {
+                if( input < 33) {
+                    if( input != 32) {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* [\11, \31] */
+                    } else {
+                        goto STATE_786;    /* ' ' */
+                    }
+                } else {
+                    if( input < 42) {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* ['!', ')'] */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_112_DIRECT;    /* ['*', '+'] */
+                    }
+                }
+            }
+        } else {
+            if( input < 48) {
+                if( input < 46) {
+                    if( input == 44) {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* ',' */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_112_DIRECT;    /* '-' */
+                    }
+                } else {
+                    if( input == 46) {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* '.' */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_112_DIRECT;    /* '/' */
+                    }
+                }
+            } else {
+                if( input < 65) {
+                    if( input < 58) {
+                        goto STATE_781;    /* ['0', '9'] */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* [':', '@'] */
+                    }
+                } else {
+                    if( input < 91) {
+                        goto STATE_779;    /* ['A', 'Z'] */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* ['[', '^'] */
+                    }
+                }
+            }
+        }
+    } else {
+        if( input < 105) {
+            if( input < 99) {
+                if( input < 97) {
+                    if( input == 95) {
+                        goto STATE_779;    /* '_' */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* '`' */
+                    }
+                } else {
+                    if( input == 97) {
+                        goto STATE_779;    /* 'a' */
+                    } else {
+                        goto STATE_805;    /* 'b' */
+                    }
+                }
+            } else {
+                if( input < 102) {
+                    if( input != 101) {
+                        goto STATE_779;    /* ['c', 'd'] */
+                    } else {
+                        goto STATE_796;    /* 'e' */
+                    }
+                } else {
+                    if( input == 102) {
+                        goto STATE_792;    /* 'f' */
+                    } else {
+                        goto STATE_779;    /* ['g', 'h'] */
+                    }
+                }
+            }
+        } else {
+            if( input < 116) {
+                if( input < 112) {
+                    if( input == 105) {
+                        goto STATE_794;    /* 'i' */
+                    } else {
+                        goto STATE_779;    /* ['j', 'o'] */
+                    }
+                } else {
+                    if( input == 112) {
+                        goto STATE_798;    /* 'p' */
+                    } else {
+                        goto STATE_779;    /* ['q', 's'] */
+                    }
+                }
+            } else {
+                if( input < 123) {
+                    if( input == 116) {
+                        goto STATE_790;    /* 't' */
+                    } else {
+                        goto STATE_779;    /* ['u', 'z'] */
+                    }
+                } else {
+                    if( input == 123) {
+                        goto STATE_780;    /* '{' */
+                    } else {
+                        QuexBuffer_read_p_increment(&me->buffer);
+                        goto TERMINAL_134_DIRECT;    /* ['|', oo] */
+                    }
+                }
+            }
+        }
+    }
+

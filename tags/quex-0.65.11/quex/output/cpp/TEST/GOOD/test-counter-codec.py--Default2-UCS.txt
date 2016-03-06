@@ -1,0 +1,228 @@
+#spec 
+       [\x0A\x0b\x0c\x85\X2028\X2029]      => newline 1;
+       [\x0d]                                   => newline 0;
+       [\t]                                     => grid    4;
+       [\X0600-\X06FF]                         => space   3;
+       [\U010000-\U10FFFF]                     => space   2;
+    
+<string>:7:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+<string>:7:warning: ('--suppress 12' to avoid this message)
+###ifdef __QUEX_OPTION_COUNTER
+##void
+##QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_LEXATOM* LexemeBegin, QUEX_TYPE_LEXATOM* LexemeEnd)
+##{
+###   define self (*me)
+##    QUEX_TYPE_LEXATOM            input                          = (QUEX_TYPE_LEXATOM)(0x00);
+##    (void)me;
+##    __QUEX_IF_COUNT_SHIFT_VALUES();
+##    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)
+##     * => Caller does not need to check
+##     * BUT, if so quit immediately after 'shift values'. */
+##    __quex_assert(LexemeBegin <= LexemeEnd);
+##    if(LexemeBegin == LexemeEnd) return;
+##    me->buffer._read_p = LexemeBegin;
+## /* (22 from NONE) */
+##    input = *(me->buffer._read_p);
+##
+##_11:
+##
+##    __quex_debug("Init State\n");
+##    __quex_debug_state(22);
+##    if( input < 0x86 ) {
+##        if( input < 0xD ) {
+##            switch( input ) {
+##                case 0x0: 
+##                case 0x1: 
+##                case 0x2: 
+##                case 0x3: 
+##                case 0x4: 
+##                case 0x5: 
+##                case 0x6: 
+##                case 0x7: 
+##                case 0x8: goto _8;
+##                case 0x9: goto _5;
+##                case 0xA: 
+##                case 0xB: 
+##                case 0xC: goto _3;
+##
+##            }
+##        } else {
+##            if( input == 0xD ) {
+##                goto _4;
+##            
+##} else if( input < 0x85 ) {
+##                goto _8;
+##            } else {
+##                goto _3;
+##            
+##}
+##        
+##}
+##    } else {
+##        if( input < 0x2028 ) {
+##            if( input < 0x600 ) {
+##                goto _8;
+##            
+##} else if( input < 0x700 ) {
+##                goto _6;
+##            } else {
+##                goto _8;
+##            
+##}
+##        } else {
+##            if( input < 0x202A ) {
+##                goto _3;
+##            
+##} else if( input < 0x10000 ) {
+##                goto _8;
+##            
+##} else if( input < 0x110000 ) {
+##                goto _7;
+##            } else {
+##                goto _8;
+##            
+##}
+##        
+##}
+##    
+##}
+##
+##    __quex_debug_drop_out(22);
+##goto _1;
+##
+##
+##    __quex_assert_no_passage();
+##_10: /* (22 from 30) */
+##    goto _11;
+##
+##
+##
+##    __quex_assert_no_passage();
+##_3: /* (23 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _14;
+##
+##_14:
+##
+##    __quex_debug_state(23);
+##    __quex_debug_drop_out(23);
+##goto _16;
+##
+##    __quex_assert_no_passage();
+##_4: /* (24 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _17;
+##
+##_17:
+##
+##    __quex_debug_state(24);
+##    __quex_debug_drop_out(24);
+##goto _19;
+##
+##    __quex_assert_no_passage();
+##_5: /* (25 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _20;
+##
+##_20:
+##
+##    __quex_debug_state(25);
+##    __quex_debug_drop_out(25);
+##goto _22;
+##
+##    __quex_assert_no_passage();
+##_6: /* (26 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _23;
+##
+##_23:
+##
+##    __quex_debug_state(26);
+##    __quex_debug_drop_out(26);
+##goto _25;
+##
+##    __quex_assert_no_passage();
+##_7: /* (27 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _26;
+##
+##_26:
+##
+##    __quex_debug_state(27);
+##    __quex_debug_drop_out(27);
+##goto _28;
+##
+##    __quex_assert_no_passage();
+##_8: /* (28 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _29;
+##
+##_29:
+##
+##    __quex_debug_state(28);
+##    __quex_debug_drop_out(28);
+##goto _31;
+##
+##    __quex_assert_no_passage();
+## /* (29 from 22) */
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
+##    goto _32;
+##
+##_32:
+##
+##    __quex_debug_state(29);
+##    __quex_debug_drop_out(29);
+##goto _34;
+##    /* (*) Terminal states _______________________________________________________
+##     *
+##     * States that implement actions of the 'winner patterns.                     */
+##_16: __quex_debug("* TERMINAL \n");
+##__QUEX_IF_COUNT_LINES_ADD((size_t)1);
+##__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+##if( me->buffer._read_p != LexemeEnd ) goto _10;;
+##goto _1;
+##_19: __quex_debug("* TERMINAL \n");
+##__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+##if( me->buffer._read_p != LexemeEnd ) goto _10;;
+##goto _1;
+##_22: __quex_debug("* TERMINAL \n");
+##__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (4)));
+##__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+##if( me->buffer._read_p != LexemeEnd ) goto _10;;
+##goto _1;
+##_25: __quex_debug("* TERMINAL \n");
+##__QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
+##if( me->buffer._read_p != LexemeEnd ) goto _10;;
+##goto _1;
+##_28: __quex_debug("* TERMINAL \n");
+##__QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
+##if( me->buffer._read_p != LexemeEnd ) goto _10;;
+##goto _1;
+##_31: __quex_debug("* TERMINAL \n");
+##__QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+##if( me->buffer._read_p != LexemeEnd ) goto _10;;
+##goto _1;
+##_34: __quex_debug("* TERMINAL <BEYOND>\n");
+##    --(me->buffer._read_p);
+##goto _1;
+##_1:
+##    __quex_assert(me->buffer._read_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+##   return;
+###  undef self
+##}
+###endif /* __QUEX_OPTION_COUNTER */
+##
+_____________________________________________________________________________
+file:     './data/example.utf32le';
+char_size: 4;
+byte_n:    549;
+column_n:  1298;
+line_n:    6;
+## gcc -Wall -Werror -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"./data/example.utf32le"'  -DDEF_CHARACTER_TYPE=uint32_t  -o test

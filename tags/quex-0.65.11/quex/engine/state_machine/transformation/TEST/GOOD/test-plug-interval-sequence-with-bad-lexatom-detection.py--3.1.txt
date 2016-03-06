@@ -1,0 +1,21 @@
+# Best To be Displayed by:
+#
+#  > ./test-plug-interval-sequence-with-bad-lexatom-detection.py 3.1 | dot -Tsvg -o tmp.svg
+#
+# -------------------------
+# Byte Sequences:     
+# (0)      [0000, 007F]     [0080, 00BF]     [0080, 00BF]
+#    L    = 3
+#    DIdx = 0
+digraph state_machine_0 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 
+node [shape = circle];
+((0)) -> ((8)) [label ="[0000, 007F] "];
+((0)) -> ((9)) [label ="[0080, 00BF] [00FE, 00FF] "];
+((8)) -> ((9)) [label ="[0000, 007F] [00C0, 00FF] "];
+((8)) -> ((10)) [label ="[0080, 00BF] "];
+((10)) -> ((9)) [label ="[0000, 007F] [00C0, 00FF] "];
+((10)) -> ((1)) [label ="[0080, 00BF] "];
+}

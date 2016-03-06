@@ -1,0 +1,48 @@
+Setup:
+   mode:  file;
+   spec:  "example-feed.txt";
+   chunk: 5 [byte];
+   freq:  1 [chunks/millisec];
+
+flush: 5: [A mes]
+flush: 5: [sage ]
+flush: 5: [of a ]
+flush: 5: [kilo ]
+flush: 5: [byte ]
+flush: 5: [begin]
+flush: 5: [s wit]
+flush: 5: [h a s]
+flush: 5: [ingle]
+flush: 5: [ bit.]
+flush: 1: [
+]
+flush: 0: []
+<done>
+Setup:
+   mode:  string;
+   spec:  "bye";
+   chunk: 1 [byte];
+   freq:  10 [chunks/millisec];
+
+flush: 1: [b]
+flush: 1: [y]
+flush: 1: [e]
+flush: 1: []
+<done>
+   Token: ARTICLE 'A'
+   Token: SUBJECT 'message'
+   Token: PREPOSITION 'of'
+   Token: ARTICLE 'a'
+   Token: SUBJECT 'kilo'
+   Token: STORAGE_UNIT 'byte'
+   Token: VERB 'begins'
+   Token: PREPOSITION 'with'
+   Token: ARTICLE 'a'
+   Token: ATTRIBUTE 'single'
+   Token: STORAGE_UNIT 'bit'
+   Token: FAIL '.'
+   Token: <TERMINATION> ''
+<terminated>
+   Token: BYE 'bye'
+<terminated>
+VALGRIND:   All heap blocks were freed -- no leaks are possible

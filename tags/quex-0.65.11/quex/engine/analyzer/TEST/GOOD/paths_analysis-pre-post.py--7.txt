@@ -1,0 +1,157 @@
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+     == 'b' ==> 00005
+    
+00001 A(1,pre=1), S3
+     == 'a' ==> 00001
+     == 'd' ==> 00002
+    
+00002 S4
+     == 'd' ==> 00002
+     == 'e' ==> 00003
+    
+00003 S5
+     == 'f' ==> 00004
+    
+00004 A(3,pre=3,R3), A(4,pre=4,R4), A(5,pre=5,R5)
+    
+00005 A(2,pre=2)
+     == 'c' ==> 00006
+    
+00006 S3
+     == 'c' ==> 00006
+     == 'd' ==> 00002
+    
+
+State 0:
+  .entry:
+    .from BEFORE_ENTRY: last_acceptance = Failure
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 1:
+  .entry:
+    .from 0: if PreContext_1:  last_acceptance = Pattern1
+    .from 1: if PreContext_1:  last_acceptance = Pattern1
+
+.drop_out:
+if PreContext_1: goto Pattern1;
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 2:
+  .entry:
+    .from 1:
+        if 'PreContext_1': position[PostContext_1]  = input_p;
+        if 'PreContext_3': position[PostContext_3]  = input_p;
+    .from 2: 
+    .from 6: if 'PreContext_3': position[PostContext_3]  = input_p;
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_1] ; goto Pattern1;
+case 2: pos = position[PostContext_2] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .from 2: 
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_1] ; goto Pattern1;
+case 2: pos = position[PostContext_2] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 4:
+  .entry:
+    .from 3:
+        if PreContext_3:  last_acceptance = Pattern3
+        else if PreContext_4:  last_acceptance = Pattern4
+        else if PreContext_5:  last_acceptance = Pattern5
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_1] ; goto Pattern1;
+case 2: pos = position[PostContext_2] ; goto Pattern2;
+case 3: pos = position[PostContext_3] ; goto Pattern3;
+case 4: pos -= 2;  goto Pattern4;
+case 5: pos -= 1;  goto Pattern5;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 5:
+  .entry:
+    .from 0: if PreContext_2:  last_acceptance = Pattern2
+
+.drop_out:
+if PreContext_2: goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 6:
+  .entry:
+    .from 5: if 'PreContext_2': position[PostContext_2]  = input_p;
+    .from 6: 
+
+.drop_out:
+if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1:
+        if 'PreContext_1': position[PostContext_0]  = input_p;
+        if 'PreContext_3': position[PostContext_2]  = input_p;
+    .from 2: 
+    .from 6: if 'PreContext_3': position[PostContext_2]  = input_p;
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos = position[PostContext_1] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .from 2: 
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos = position[PostContext_1] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 4:
+  .entry:
+    .from 3:
+        if PreContext_3:  last_acceptance = Pattern3
+        else if PreContext_4:  last_acceptance = Pattern4
+        else if PreContext_5:  last_acceptance = Pattern5
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos = position[PostContext_1] ; goto Pattern2;
+case 3: pos = position[PostContext_2] ; goto Pattern3;
+case 4: pos -= 2;  goto Pattern4;
+case 5: pos -= 1;  goto Pattern5;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 6:
+  .entry:
+    .from 5: if 'PreContext_2': position[PostContext_1]  = input_p;
+    .from 6: 
+
+.drop_out:
+if PreContext_2: pos = position[PostContext_1] ; goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
+

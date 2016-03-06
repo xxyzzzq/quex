@@ -1,0 +1,23 @@
+# Best To be Displayed by:
+#
+#  > ./test-plug-interval-sequence.py 3.3 | dot -Tsvg -o tmp.svg
+#
+# -------------------------
+# Byte Sequences:     
+# (0)      [0000, 006F]     [0080, 00BF]     [0080, 00BF]
+# (1)      [0071]     [0080, 00BF]     [0080, 00BF]
+# (2)      [0072]     [0080]     [0080, 00BE]
+#    L    = 3
+#    DIdx = 0
+digraph state_machine_0 {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 
+node [shape = circle];
+((0)) -> ((11)) [label ="[0000, 006F] [0071] "];
+((0)) -> ((10)) [label ="[0072] "];
+((10)) -> ((16)) [label ="[0080] "];
+((11)) -> ((3)) [label ="[0080, 00BF] "];
+((3)) -> ((1)) [label ="[0080, 00BF] "];
+((16)) -> ((1)) [label ="[0080, 00BE] "];
+}

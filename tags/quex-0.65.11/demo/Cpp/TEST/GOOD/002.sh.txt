@@ -1,0 +1,75 @@
+## make lexer DEBUG   
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+,-----------------------------------------------------------------
+| [START]
+(1, 1)  	STRUCT 'struct' 
+(1, 8)  	IDENTIFIER 'example' 
+(1, 15)  	COLON ':' 
+(1, 16)  	<INDENT>
+(2, 3)  	IDENTIFIER 'int' 
+(2, 10)  	IDENTIFIER 'x' 
+(2, 11)  	<NODENT>
+(3, 3)  	IDENTIFIER 'double' 
+(3, 10)  	IDENTIFIER 'y' 
+(7, 1)  	<DEDENT>
+(8, 1)  	FUNCTION_DEF 'def' 
+(8, 5)  	IDENTIFIER 'function' 
+(8, 13)  	BRACKET_O '(' 
+(8, 14)  	IDENTIFIER 'Name' 
+(8, 18)  	BRACKET_C ')' 
+(8, 19)  	<INDENT>
+(9, 4)  	IF 'if' 
+(9, 7)  	IDENTIFIER 'Name' 
+(9, 12)  	OP_EQUAL '==' 
+(9, 15)  	EVENT_MODE_CHANGE '' 
+(9, 21)  	STRING 'Josef' 
+(9, 21)  	EVENT_MODE_CHANGE '' 
+(9, 22)  	COLON ':' 
+(9, 23)  	<INDENT>
+(10, 7)  	PRINT 'print' 
+(10, 13)  	EVENT_MODE_CHANGE '' 
+(10, 23)  	STRING 'hello Joe' 
+(10, 23)  	EVENT_MODE_CHANGE '' 
+(10, 25)  	<DEDENT>
+(11, 4)  	ELSE 'else:' 
+(11, 9)  	<INDENT>
+(12, 7)  	PRINT 'print' 
+(12, 13)  	EVENT_MODE_CHANGE '' 
+(12, 20)  	STRING 'hello ' 
+(12, 20)  	EVENT_MODE_CHANGE '' 
+(12, 22)  	IDENTIFIER 'Name' 
+(14, 1)  	<DEDENT>
+(15, 4)  	PRINT 'print' 
+(15, 10)  	EVENT_MODE_CHANGE '' 
+(15, 32)  	STRING 'welcome to my program' 
+(15, 32)  	EVENT_MODE_CHANGE '' 
+(17, 1)  	<NODENT>
+(18, 4)  	FOR 'for' 
+(18, 8)  	IDENTIFIER 'letter' 
+(18, 15)  	IN 'in' 
+(18, 18)  	IDENTIFIER 'Name' 
+(18, 22)  	COLON ':' 
+(18, 23)  	<INDENT>
+(19, 7)  	PRINT 'print' 
+(19, 13)  	IDENTIFIER 'letter' 
+(19, 20)  	EVENT_MODE_CHANGE '' 
+(19, 22)  	STRING '!' 
+(19, 22)  	EVENT_MODE_CHANGE '' 
+(24, 1)  	<DEDENT>
+(24, 1)  	<DEDENT>
+(24, 1)  	<TERMINATION>
+| [END] number of token = 56
+`-----------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible

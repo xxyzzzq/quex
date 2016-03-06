@@ -1,0 +1,1296 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{mathtools}  
+\usepackage{graphicx}   % need for figures
+\usepackage{verbatim}   % useful for program listings
+\usepackage{color}      % use if color is used in text
+\usepackage{subfigure}  % use for side-by-side figures
+\usepackage{hyperref}   % use for hypertext links, including those to external documents and R_{uni}Ls
+
+% don't need the following. simply use defaults
+\setlength{\baselineskip}{16.0pt}    % 16 pt usual spacing between lines
+
+\setlength{\parskip}{3pt plus 2pt}
+\setlength{\parindent}{20pt}
+\setlength{\oddsidemargin}{0.5cm}
+\setlength{\evensidemargin}{0.5cm}
+\setlength{\marginparsep}{0.75cm}
+\setlength{\marginparwidth}{2.5cm}
+\setlength{\marginparpush}{1.0cm}
+\setlength{\textwidth}{150mm}
+
+\newtheorem{definition}{Definition}
+\newtheorem{statement}{Statement}
+\newtheorem{condition}{Condition}
+
+\begin{comment}
+\pagestyle{empty} % use if page numbers not wanted
+\end{comment}
+
+% above is the preamble
+
+\begin{document}
+
+\begin{center}
+{\large State Machine Optimization by Recipes} \\ 
+\copyright 2015 by Frank-Rene Schaefer         \\
+January, 2015
+\end{center}
+
+
+%==============================================================================
+%
+%==============================================================================
+\section{Abstract}
+
+This document describes a procedure to transform a state machine with the goal
+of minimizing the number of operations along transitions.  From an outside
+view, i.e. at entry and exit, the original and the resulting state machine
+behave identically.  The analysis exploits deterministic behavior along state
+transitions to remove redundant operations.  With the fewer operations in the
+internal structure the resulting state machine is more time and memory efficient
+than the original one.  
+
+Figure \ref{fig:two-state-machines} shows a state machine consisting of four
+states.  The dotted lines indicate the transition upon an event that causes the
+state machine to exit.  In the original state machine, as shown in figure
+\ref{fig:two-state-machines}.a, the content of $v$ is incremented at each
+transition. When the state machine is left in state 3, for example, three such
+increments must have taken place. In figure \ref{fig:two-state-machines}.b an
+optimized representation of the state machine is shown.  There, value of $v$ is
+only determined upon exit.  No increments happen during transitions. Only upon
+exit $v$ is assigned the predetermined value. The balance of computational
+effort is obvious.
+
+\begin{figure}[htbp] \leavevmode \label{fig:two-state-machines}
+a)
+\begin{verbatim}
+                     v:=v+1        v:=v+1        v:=v+1
+              ( a )------->( b )------->( c )------->( d )
+                : exit       : exit       : exit       : exit
+                :            :            :            :
+\end{verbatim}
+    
+b)
+\begin{verbatim}
+              ( a )------->( b )------->( c )------->( d )
+                : exit       : exit       : exit       : exit
+                :            :            :            :
+              v:=0         v:=1         v:=2         v:=3
+    
+\end{verbatim}
+\caption{Original and optimized state machine.}
+\end{figure}
+                 
+%==============================================================================
+%
+%==============================================================================
+\section{Basic Terminology}
+
+For the present discussion the actual events that trigger state transitions are
+of no concern. Moreover, the focus lies on the operations as consequence of
+state transitions.  From a variety of operations, not all of them may relate to
+the same subject.  Some operations determine the last accepted pattern, the
+input position to be restored upon acceptance, the line and column numbers, the
+checksum value of a lexeme, or the sum of character grapheme widths of the
+lexeme's characters, and so on. Let $V_c$ name the specification of the set of
+variables which are subject to such operations. $V_c$ may be any type of formal
+description such as 'all variables related to input position storage' where the
+number of variables remains arbitrary.  For brevity, let $V_c$ denote two
+concepts according to the context of its usage: The description of concerned
+values and the set of concerned variables. Let $op(i)$ name the operations
+applied to $V_c$ upon entry into a state, independent from where the state is
+entered. Let $op_E(i,k)$ name operations applied upon entry, depending on the
+state from which it is  entered. Let a raised letter at operation, such as $v$
+in $X^v$ denote the component of $X$ which develops variable $v$. For example,
+$op^v(i)$ denotes the component of $op(i)$ which develops variable $v$. 
+
+The original state machine must be composed of \textit{single-entry states}.
+That is, upon entry into a state $i$ the same operations $op(i)$ are applied on
+$V_c$ independently from which state it is entered.  A single-entry state is
+shown in figure \ref{fig:se-vs-me}.a. The optimization transforms the
+single-entry state machine into a \textit{multi-entry state machine}.  That is,
+the operations $op_E(i,k)$ depends on the transition from which the state is
+entered. A multi-entry state in shown in figure \ref{fig:se-vs-me}.b.
+
+\begin{figure}[htbp] \leavevmode \label{fig:se-vs-me}
+a)
+
+\begin{verbatim}
+                  .---.  
+           ...   ( k_0 )------.
+                  '---'        \                  .-.
+           ...   ( k_1 )--------+---[ op(i) ]----( i )----->   
+                  '---'        /                  '-'
+           ...   ( k_3 )------'       
+                  '---'
+\end{verbatim}
+     
+b)
+     
+\begin{verbatim}
+                  .---.
+           ...   ( k_0 )------[ op_E(1, k_0) ]----.
+                  '---'                            \         .-.
+           ...   ( k_1 )------[ op_E(1, k_1) ]------+-------( i )----->  
+                  '---'                            /         '-'
+           ...   ( k_3 )------[ op_E(1, k_2) ]----'       
+                  '---'
+\end{verbatim}
+\caption{Two types of state modelling: a) Single entry state. 
+b) Multi-entry state.}
+\end{figure}
+
+Let \textit{initial state} denote the state where the state machine is entered.
+Let the \textit{initial recipe} $R(init)$ be the recipe to be applied before
+the state machine starts.  Let $Pred(i)$ and $Succ(i)$ indicate the set of
+immediate predecessor and successor states of state $i$. Let $Pred^*(i)$
+indicate all states that lie on a path from the initial state to state $i$.
+Let $Succ^*(i)$ indicate all states which are reachable from state $i$. Not all
+variables of $V_c$ may be required in all states. Let the set of required
+variables be defined as follows.
+
+\begin{definition}
+$V(i)$ -- Set of Required Variables
+
+$V(i)$ defines the variables which are potentially required in state $i$.  The
+variables in $V(i)$ must be sufficient
+
+\begin{itemize}
+\item to implement the nominal behavior upon exit and
+\item to develop the sets of required variables $V(k)\,\forall\,k\,\in\,Succ^*(i)$. 
+\end{itemize}
+
+For brevity, let $V(i)$ denote two concepts depending on the context where it
+is used: the set of required variables as well as their settings.
+
+\end{definition}
+
+In contrast to $V_c$, the set of variables in $V(i)$ must be concrete.  Instead
+of the loose statement such as 'all variables related to input position
+storage', the specific variables with name and/or index must be specified.  As
+said in the definition, $V(i)$ consists of the set of potentially required
+variables. That is, it is sufficient for $V(i)$ be a superset of the actually
+used variables. That actually used variables may depend on external conditions,
+or even on the path taken along the state machine. This has an important
+implication. 
+
+\begin{statement} \label{stm:relevance-condition}
+    The conditions for using a variable $v$ must be exactly the same as the
+    conditions for $v$ receiving a valid setting. 
+\end{statement}
+
+If this was not the case, the procedure relying on $v$ would produce
+indeterministic results. Consequently, a procedure may have a component for a
+required variable $v$, which according to some conditions is not used.
+
+\begin{statement}
+    A procedure's component $X^v$ with respect to a variable $v$ may be irrelevant
+    depending on the previous path, or external conditions. Let the expression
+    \begin{equation}
+        X^v \,=\,\iota
+    \end{equation}
+    signify, that the component that computes $v$ in $X$ is irrelevant.
+\end{statement}
+
+The configuration of $V(i)$ can be determined by a \textit{back-propagation} of
+needs. A state which requires a specific variable tags all of its predecessor
+states with this requirement. That is, for a variable named $v$, it holds
+
+\begin{equation}
+    v\,\in\,V(i)\,\Rightarrow\,\forall\,k\,\in\,Pred^*(i):\,v\,\in\,V(k)
+\end{equation}
+
+Assume, for example, that the lexeme length is not required in a terminal. Then
+any operation contributing to the computation of the lexeme length is
+redundant.  No state on a path to this terminal is required to perform lexeme
+length related operations, except that another successor state requires it.  In
+practical applications, it might be difficult to determine the precise set of
+required variables $V(i)$. In such cases, a \textit{superset} of the set of
+required variables suffices for correctness. The impact on performance of using
+a superset instead of the precise set is discussed at the very end of this
+document.  The aforementioned concepts allow to specify the frame of an
+investigated behavior.  
+
+\begin{definition} Investigated Behavior 
+
+The investigated behavior determines the scope of analysis. It is
+specified by a description of concerned variables $V_c$, the required
+variables $V(i)$ for each state $i$, the related operations $op(i)$ and
+their nominal behavior.
+\end{definition}
+    
+A nominal behavior defines what needs to happen during the state machine
+transitions.  For example, the nominal behavior for line number counting is
+that the line number count should be increased upon each newline character
+and remain the same upon the occurrence of any other character. 
+
+%==============================================================================
+%
+%==============================================================================
+\section{Linear States and Mouth States}
+
+Two central concepts are required for the further discussion: 'linear states'
+and 'mouth states'.  They are defined in the paragraphs to follow. 
+
+\begin{definition}
+Linear State
+
+A state $i$ is a linear state, if the number of the immediate predecessor states is
+1, i.e. 
+
+\begin{equation}
+                           size(Pred(i))\,=\,1
+\end{equation}
+
+The number of the immediate successor states is arbitrary, i.e.
+$size(Succ(i))\,\ge\,0$.
+
+\end{definition}
+
+The concept of a linear state is shown in figure \eqref{fig:linear-state}. The
+operation $op(i)$ takes the settings $V(k)$ of the previous state $k$
+and derives $V(i)$, i.e.  the setting of variables in the current state. This
+can be expressed as 
+
+\begin{equation} \label{eq:accumulation}
+            V(i) = op(i)(V(k))                                         
+\end{equation}
+
+with $k$ as the one and only predecessor state. If $V(k)$ is determined, then
+$V(i)$ is determined purely from the consideration of the state machine. Such a
+deterministic mapping is not possible for so called 'mouth states'.
+
+\begin{figure}[htbp] \leavevmode \label{fig:linear-state}
+\begin{verbatim}
+                                                      .---> 
+                                                     /
+                                                   .-.
+                      --------[ op(i) ]---------->( i )---> 
+                         V(k)              V(i)    '-'
+
+\end{verbatim}
+\caption{The concept of a linear state in a single-entry state machine.}
+\end{figure}
+
+\begin{definition}
+Mouth State
+
+A mouth state is a state that is entered from more than one predecessor 
+state, i.e.
+\begin{equation}
+                           size(Pred(i))\,>\,1
+\end{equation}
+The number of immediate successor states is arbitrary, i.e.
+$size(Succ(i))\,\ge\,0$.
+
+\end{definition}
+    
+\begin{figure}[htbp] \leavevmode \label{fig:mouth-state}
+\begin{verbatim}
+                  ------>--.  
+                 V(a)       \ 
+                             \                       .-.
+                  ------>-----+---[ op(i) ]---------( i )---> 
+                 V(b)        /                 V(i)  '-'
+                            /
+                  ------>--'
+                 V(c)
+
+\end{verbatim}
+\caption{The concept of a mouth state in a single-entry state machine.}
+\end{figure}
+
+Figure \ref{fig:mouth-state} displays the concept of a mouth state and the
+development of the $V(i)$ based on the $V(a),\,V(b)$ and $V(c)$, of the
+predecessor states. In a mouth state $V(i)$ depends on the path taken at
+run-time of the state machine.  $V(i)$ is determined as follows.
+
+\begin{equation} \label{eq:interference}
+    V(i) = \begin{dcases*}
+            op(i)(V(k_0)) & if entry from state $k_0$ \\
+            op(i)(V(k_1)) & if entry from state $k_1$ \\
+            \ldots \\
+            op(i)(V(k_n)) & if entry from state $k_n$ \\
+            \end{dcases*}
+\end{equation}
+
+
+%==============================================================================
+%
+%==============================================================================
+\section{Recipes}
+
+The goal of all analysis is to exploit deterministic characteristics to omit some
+redundant operations along transitions.  Only when exiting the state
+machine, or at mouth states, operations shall be implemented. The key concept
+for the underlying analysis is the 'recipe'. The definition of a recipe,
+however, requires the term 'auxiliary variables' to be specified.
+
+\begin{definition} $A$, $A(v)$ -- Auxiliary Variables
+
+The term auxiliary variable $A(v)$ specifies a variable that may store the
+'snapshot' of a variable $v$-s content upon entry into a mouth state. For each
+variable $v\,\in\,V_c$ there is exactly one auxiliary variable $A(v)$.
+   
+Let $A$ name the set of all auxiliary variables.
+\end{definition}
+
+So called 'hidden variables' are variables inside the state machine other than
+the current state.  For example, a lexical analyzer state machine has as hidden
+variables the lexeme start position, the buffer limits, and the character
+stream input position.
+
+\begin{definition} $R_E(i,k),\,R(i)$ -- Recipe 
+
+For a given state $i$, let $R(i)$ signify a procedure that is able to compute
+$V(i)$ solely from the state machine's hidden variables $h$ and the auxiliary
+variables $A$.  It performs the mapping
+
+\begin{equation} \label{eq:recipe-procedure}
+    (h, A) \rightarrow V(i)                                             
+\end{equation}
+
+Let $R_E(i,k)$ name the recipe upon entry into a state $i$ from a predecessor
+state $k$. It corresponds to the \textit{function composition} of state $k$'s
+output recipe $R(k)$ and state $i$'s operation $op(i)$, that is
+
+\begin{equation} \label{eq:entry-recipe-concatenated}
+    R_E(i,k) \,=\, op(i)\, \circ \, R(k)
+\end{equation}
+
+Let $R^v(i,k)$ and $R^v(i)$ signify the components of $R(i,k)$ and $R(i)$ which
+produce $v\,\in\,V(i)$.  
+
+\end{definition}
+
+The fundamental difference between $R(i)$ and $V(i)$ is that the former
+describes a procedure and the latter represents the values which are produced.
+Operations $op(i)$ and $op_E(i,k)$ are functions that produce a setting of
+variables \textit{based} on a previous setting of $V_c$.  Recipes are functions
+that produce a setting of variables \textit{independent} of $V_c$, but may be
+dependent on $h$ and $A$.
+
+At this point, the overall goal can be formulated. The optimization transforms
+the given single-entry state machine based on transition operations $op(i)$
+into a multi-entry state machine based on entry operations $op_E(i,k)$ and exit
+operations derived from recipes. Observing only the entry and exit, the changes
+to $V_c$ must comply to the nominal behavior. 
+
+%==============================================================================
+%
+%==============================================================================
+\section{Accumulation and Interference}
+
+Linear states change variables in a deterministic way. There is only one entry
+into such a state $i$. If the predecessor state $k$'s recipe $R(k)$ is
+determined, then the state's recipe $R(i)$ by equation \eqref{eq:entry-recipe-concatenated} 
+is determined straight-forward.
+\begin{equation} \label{eq:linear-state-recipe}
+    R(i) \,=\,R_E(i,k) \,=\, op(i)\,\circ\,R(k)
+\end{equation}
+The above equation shows that recipes can be developed along linear states by
+the plain concatenation of operations.  For a mouth state, the development of the
+state's recipe is not so deterministic.  Instead, it depends on the path by
+which the state is entered.  From equation \eqref{eq:entry-recipe-concatenated}
+and \eqref{eq:interference}, it follows directly
+\begin{equation} \label{eq:mouth-state-recipe}
+    R(i) = \begin{dcases*}
+             R_E(i,k_0) & if entry from state $k_0$ \\
+             R_E(i,k_1) & if entry from state $k_1$ \\
+             \ldots \\
+             R_E(i,k_n) & if entry from state $k_n$ \\
+            \end{dcases*}
+\end{equation}
+For the general case, this shows that recipes may not be developed across
+mouth states, except if auxiliary variables are computed. That is if there
+are entry operations in place which assign a value to an auxiliary variable $A(v)$
+\begin{equation}
+    A(v) \coloneqq   \begin{dcases*}
+             R^v_E(i,k_0) & if entry from state $k_0$ \\
+             R^v_E(i,k_1) & if entry from state $k_1$ \\
+             \ldots \\
+             R^v_E(i,k_n) & if entry from state $k_n$ \\
+            \end{dcases*}
+            \,\forall\,v\,\in\,V(i)
+\end{equation}
+Then, the output recipe $R(i)$ is determined by
+\begin{equation}
+    R^v(i) \,=\, \{ v \coloneqq A(v) \}\,\,\forall\,v\,\in\,V(i)
+\end{equation}
+and can be used for further development of recipes. If all recipes $R^v_E(i,k)$
+with $k\,\in\,Pred(i)$ are the same, then the recipe can be overtaken into
+$R^v(i)$. That is,
+\begin{equation}
+    R^v(i) \,=\, R^v_E(i,k)\,\,\mbox{if $v$ is homogeneous}.
+\end{equation}
+Let the expression '$v$ is homogeneous/inhomogeneous' be precisely defined.
+
+\begin{definition} Homogeneity/Inhomogeneity
+
+    The expression '$v$ is homogeneous' at the entry into a mouth state $i$
+    means, that all entry recipes are equal, i.e.
+    \begin{equation} \label{eq:definition-homogeneity}
+        \begin{aligned}
+        \forall\,p,\,q\,\in\,Pred(i):\,R_E^v(i,p)\,=\,R_E^v(i,q) 
+        \end{aligned}
+    \end{equation}
+    The expression '$v$ is inhomogeneous' means that there are at least two
+    entry recipes that differ.
+\end{definition}
+
+At this point, a statement on irrelevant procedures must be made. A predecessor
+recipe $R^v(k)=\iota$ may not be able to produce a setting that can be assigned
+to $A(v)$. Until this point, $R(k)$ was actually \textit{indifferent} about
+$v$. In this sense, which is the sense of equation
+\eqref{eq:definition-homogeneity}, two things can be stated about irrelevant
+components in entry recipes.
+
+\begin{statement}
+
+    An irrelevant entry recipe $R^v_E(i, k_0)=\iota$ is 'equal' to any other 
+    entry recipe component $R^v_E(i, k)$ with $k \in Pred(i)$ in the sense
+    of the homogeneity condition \eqref{eq:definition-homogeneity}.
+    
+\end{statement}
+
+In case that the component is inhomogeneous at interference, an entry with an
+irrelevant recipe does not store anything in $A(v)$. In consequence, $A(v)$ may
+contain meaningless data. Therefore, the access of $A(v)$ must be protected. More
+general, any access to $v$ must be restricted to circumstance where it contains
+meaningful data. Thus, the following condition must hold.
+
+\begin{definition} Access-Lock Condition \label{cond:access-lock}
+
+   If there might be a recipe $R$ with an irrelevant component $R^v$, then the
+   access to variable $v$ must be protected by an access-lock. 
+   
+   No recipe shall access $v$ without the access-lock being open. The lock must
+   be initially locked. The place that assigns a first value to $v$ must unlock
+   it.
+    
+\end{definition}
+
+This seems, at the first glance as an unnatural constraint. However, if the
+nominal behavior does not automatically incorporate it, then the state machine
+itself is not able to behave deterministically.  Consider, for example, figure
+\ref{fig:access-lock}. In state 2, pattern 0 accepts the keyword 'if', but only
+if a pre-context 'pre0' is true. Then, the position register $r[0]$ stores the
+position where pattern 0 accepted, so that the next pattern match may continue
+right after the recognized keyword. $r[0]$ is irrelevant, if 'pre0' is not
+true. If in the states 2 and 3 a letter appears different from 'f' and 'y',
+then the state machine exits and the input position must be reset to the
+position where 'if' was accepted. But, $r[0]$ is only used, if pattern 0
+accepted, and pattern 0 only accepts, if 'pre0' is true.  In this case, the
+access lock to the potentially irrelevant $r[0]$ is provided by either 'pre0'
+or the condition 'a=0'. While the access-lock condition should not require any
+additional effort of implementation, it is necessary for the proof of
+correctness.
+
+\begin{figure}[htbp] \leavevmode \label{fig:access-lock}
+\begin{verbatim}
+
+          i               f            f            y         
+    ( 0 )------->( 1 )------->( 2 )------->( 3 )------->( 4 )
+                 ++i          ++i          ++i          ++i 
+                        pre0=>a=0                       a=1
+                           r[0]=i                    r[1]=i
+
+\end{verbatim}
+\caption{Access-lock to potentially irrelevant variable $r[0]$.}
+\end{figure}
+
+As soon as a recipe relies on a value in an auxiliary variable, it depends on
+the state where the snapshot has been taken. The terms 'snapshot map' and 'set
+of snapshot states' need to be defined for further discussions. Let
+$\varepsilon$ denote the not existing element. That is, if $\varepsilon$ is
+added to a set, it does not change the sets content. That is, for any set $B$
+it holds $B = B \cap \{ \varepsilon \}$.
+
+\begin{definition} $S^v(X)$, $S(X)$ -- Snapshots.
+
+    A \textit{snapshot map} $S^v(X)$ tells at what state the value of $v$ has
+    been stored in $A(v)$ which is used in $X$. 
+    \begin{equation}
+        S^v(X) = \begin{dcases*}
+                   \varepsilon & if $X$ does not rely on $A(v)$ \\
+                   i           & else
+                 \end{dcases*}
+    \end{equation}
+    Then $i$ indicates the state where $A(v)$ has been assigned to the value of $v$.
+    The \textit{set of snapshot states} $S(X)$ is the set of all states mentioned in
+    $S^v(X)$, i.e.
+    \begin{equation}
+        \label{eq:snapshot-map-1}
+        S(X) = \{ S^v(X) \,\,\forall\,v\in\,V_c\}
+    \end{equation}
+
+\end{definition}
+The state in which an auxiliary variable $A(v)$ takes a 'snapshot' is crucial when
+comparing two recipes. Two recipes may contain the same procedure, but if they rely on
+stored values from different state, then they cannot be equal in general. That is, 
+%%
+\begin{equation} \label{eq:snapshot-map-difference}
+   \exists\,v\,\,\mbox{with}\,\,S^v(R(i)) \neq S^v(R(k)) \Rightarrow R(i) \neq R(k)
+\end{equation}
+%%
+Also, if the sets of snapshot states of two recipes differ, then there must be 
+at least one snapshot map that is different, i.e.
+%%
+\begin{equation} \label{eq:snapshot-map-difference-2b}
+   S(R(i)) \neq S(R(k)) \,\Rightarrow\,\exists\,v\,\,\mbox{with}\,\,S^v(R(i)) \neq S^v(R(k)) 
+\end{equation}
+From the last two equations it follows the following statement.
+%%
+\begin{statement}
+   If the snapshot maps of two recipes differ, then the recipes are unequal. 
+   \begin{equation} \label{eq:snapshot-map-difference3}
+       S(R(i)) \neq S(R(k)) \Rightarrow R(i) \neq R(k)
+   \end{equation}
+\end{statement}
+%%
+Another important concept is that of a \textit{history-dependence}.
+%%
+\begin{definition} Historyless/History-Dependent Procedure
+
+    A procedure is history-independent with respect to a variable $v\in V_c$,
+    if it computes $v$ independently of a previous setting of $V_c$. The
+    term 'history-independent' in general defines procedures which are 
+    history-independent for all variable that they produce.
+    
+    A procedure that is not history-independent is history-dependent.
+
+\end{definition}
+%%
+The operation '$v\coloneqq x+3$', with some variable $x\notin V(i)$, is
+history-independent.  However, the operation '$v\coloneqq v+1$' is history-dependent
+because the assignment depends on the previous setting of '$v$. In that sense,
+the \textit{no operation} on variable $v$ is history-dependent. Its
+implementation is $v\coloneqq v$ which clearly depends on $v$. In other words,
+if for a given $v\in V(i)$ there is no operation specified in state $i$, then
+$op^v(i)$ needs to be considered as history-dependent. A specific history-independent
+procedure is the recipe from 'before entry' $R(init)$. It is history-independent with
+respect to all $v\in V_c$, it actually initialzes those. For example
+
+\begin{eqnarray}
+    R(init) & = & \{ line_n \coloneqq line_{n,before} \}
+\end{eqnarray}
+
+initializes the variable $line_n$ with a constant $line_{n,before}$. This
+emphasizes the understanding of 'history' as something that evolves inside the
+state machine during the current phase of state transitions. What happend
+before, such as the operations to develop initial values in an earlier phase,
+is not considered as part of history.  It is now possible to specify a
+procedure that develops recipes across mouth states. 
+
+\begin{definition} Interference
+
+The process of 'interference' develops a recipe $R(i)$ for a mouth state $i$
+based on entry recipes $R_E(i,k) = op(i)\,\circ\,R(k)\,\mbox{with}\,k \in Pred(i)$.
+The output recipe $R(i)$ depends on the homogeneity of $v$, i.e. 
+\begin{equation} \label{eq:interference-output}
+    R^v(i) = \begin{dcases*}
+              R_E^v(i,k) & if $v$ is homogeneous.\\
+              A(v)       & else
+             \end{dcases*}
+\end{equation}
+for an arbitrary $k\,\in\,Pred(k)$. If $v$ is inhomogeneous, an entry
+operation $op_E(i,k)$ must be implemented in the resulting state machine that
+stores the computed value of $v$ in $A(v)$. The need for an entry operation
+for the entry into state $i$ from state $k$ is maintained in a homogeneity
+database $H^v(i)$ with
+%%
+\begin{equation} \label{eq:homogeneity-database}
+    H^v(i) = \begin{dcases*}
+                  true  & if $v$ is homogeneous in state $i$\\
+                  false & else
+             \end{dcases*}
+\end{equation}
+%%
+For the snapshot maps it holds
+%%
+\begin{equation} \label{eq:interference-snap-shot-maps}
+    S^v(R(i)) = \begin{dcases*}
+                  \varepsilon & if $op^v(i)$ is history-independent. \\
+                  S^v(R(k))   & if $v$ is homogeneous.\\
+                  i           & else
+                \end{dcases*}
+\end{equation}
+%%
+for an arbitrary $k\,\in\,Pred(k)$. A prerequisite for interference is that 
+all $R_E(i,k)$ with $k\,\in\,Pred(i)$ are determined.
+\end{definition}
+
+The implementation of entry operations can be post-poned to the point in time,
+when all recipes are determined. It is enough to maintain a 'homogeneity
+database', that tells for a given state whether a variable develops
+homogeneously or not. Eventually, when all recipe analysis is done, the entry
+operations in the resulting state machine may be implemented according the
+entry recipes, i.e.
+
+\begin{equation} \label{eq:entry-operation-implementation}
+    op_E^v(i,k) \,=\, \{ A(v) \,=\, R^v_E(i,k) \} \,\mbox{if $H^v(i) = true$}.
+\end{equation}
+
+Equation \eqref{eq:interference-snap-shot-maps} expresses the fact that
+homogeneous recipes pass mouth states unchanged, and so are the related
+snapshot maps unchanged. If the mouth state's operation $op^v(i)$ is 
+history-independent, then any dependency on $A$ is removed and $S^v(R(v))$ becomes
+the not existing element $\varepsilon$. In the inhomogeneous case, when a snapshot of a
+variable $v$ is taken in state $i$, then the set of snapshot states $S(R(i))$
+must contain $i$. The existence of the entry operations $op_E(i,k)$ is the
+reason why a multi-entry state machine is required to implement the result. 
+
+Applying interference to linear states ends up again with equation
+\eqref{eq:linear-state-recipe}, because there is only one entry recipe.  One
+single recipe is naturally homogeneous on all $v\,\in\,V(i)$. This guides to a
+procedure to develop recipes across linear states.
+
+\begin{definition} Accumulation
+
+Given a state $i$, its predecessor state $k$, the entry operation $op(i)$
+the predecessor's recipe $R(k)$, the recipe $R(i)$ is given by
+\begin{equation}
+       R(i)\,=\,op(i)\,\circ\,R(k)
+\end{equation}
+If auxiliary variables $A$ are involved, then the snapshot maps do not change,
+except if $op^v(i)$ is history-independent
+\begin{equation} \label{eq:accumulation-aux}
+    S^v(R(i))\,=\,\begin{dcases*}
+                  \varepsilon & if $op^v(i)$ is history-independent. \\
+                  S^v(R(k))   & if $v$ is homogeneous.\\
+                \end{dcases*}
+\end{equation}
+A prerequisite for accumulation is that $R(k)$ of the predecessor is 
+determined.
+\end{definition}
+%%
+Accumulation and interference describe how recipes are developed from
+determined recipes.  But, where does the first determined recipe come from?
+The concatenation of a predecessor recipe $R(p)$ with history-independent operation
+$op(k)$ (see definition \ref{def:history-independent-operation}) is \textit{independent}
+of $R(p)$, i.e. the recipe $R(k)$ becomes
+%%
+\begin{equation}
+    R(k)\,=\,op^v(k)\,\circ\,R(p)\,=\,op^v(k)\,\,\mbox{where $p\in Pred(k)$}
+\end{equation}
+%%
+In a state where all operations $op^v(i)$ are history-independent, a recipe can be determined
+\textit{independently} of other recipes. It is therefore suited as starting
+point for the derivation of other recipes.
+%%
+\begin{definition} Spring, Initial Spring \label{def:springs}
+
+    A spring, in general, is a state $i$ where all components $R^v(i)$
+    $\forall\,v\in\,V(i)$ are determined.
+    
+    An initial spring is a spring $i$ where the recipe $R(i)$ can be determined
+    solely from $op(i)$ and, if it is the initial state, $R(init)$. 
+
+\end{definition}
+
+A state $v$ where $op^v(i)$ is history-independent for all $v\in V(i)$ is an initial
+spring. For the initial state, it is sufficient that it has only one entry, the
+entry from 'before entry'. Then, $R(i) = op(i)\circ R(init)$ which is well
+determined.  Both, linear states and mouth states may be equally candidates for
+being a spring.
+
+\subsection{Examples}
+                 
+Figure \ref{fig:two-state-machines}.a displayed a state machine with a single
+variable, i.e. $V_c=\{'v'\}$. The operations $op(i)$ upon transition are
+$v\coloneqq v+1$ for all states. Let $A_a(v)$ hold the value of $v$ upon entry the
+state $a$.  This notation combines the recipe's procedure with its snapshot
+map.  In the above example, the recipe in state $a$ solely restores what has
+been stored.
+%%
+\begin{equation} 
+    R(a) = \{ v \coloneqq  A_a(v) \} 
+\end{equation}
+%%
+The recipe $R(b)=R_E(b,a)$ must be equivalent to the concatenated execution of $op(b)$
+and $R(a)$, i.e.
+
+\begin{eqnarray}
+    R(b)&=&\{\,v\,\coloneqq \,A_a(v);\,v\,\coloneqq \,v + 1;\} \\
+    R(b)&=&\{\,v\,\coloneqq \,A_a(v) + 1; \}                                 
+\end{eqnarray}
+This rule applied repeatedly to the states 'c' and 'd' leads to
+\begin{eqnarray}
+    R(c) &=&\{ v \coloneqq  A_a(v) + 2 \} \\
+    R(d) &=&\{ v \coloneqq  A_a(v) + 3 \}                                 
+\end{eqnarray}
+%%
+If the state machine exits at $a$, $b$, $c$, or $d$ the content of $v$ can be
+determined without relying on the intermediate operations $\{ v\coloneqq v+1 \}$. This
+was shown in figure \ref{fig:two-state-machines}.b. 
+%%
+The repeated accumulation of recipes along linear states comes to an end at
+mouth states. State $e$ in figure \ref{fig:interference-example} is such a
+mouth state. Its entry recipes $R_E(e,b)$ and $R_E(e,d)$ are an example of two
+identical entry procedures. However, both rely on stored values for $v$ and the
+place where those values where stored differ. That is $S^v(R_E(e,b))=a$ and
+$S^v(R_E(e,d)=c)$. Thus, $v$ is inhomogeneous upon entry into state $e$.  In
+the resulting state machine the computed values of $v$ must be stored in an
+auxiliary variable $A(v)$ as shown in figure \ref{fig:interference-example}.b.
+%%
+\begin{figure}[htbp] \leavevmode \label{fig:interference-example}
+a)
+\begin{verbatim}
+
+  A(v) = v                       R_E(e,b) = A(v) + 2
+  - - - ->( a )-------->( b )--------.
+            |                         \
+            | A(v) = v               ( e )--------->
+            |                         /
+  - - - ->( c )-------->( d )--------'
+   A(v) = v                      R_E(e,d) = A(v) + 2
+
+\end{verbatim}
+b)
+\begin{verbatim}
+                                 
+  - - - ->( b )---[ A_e(v) = A(v) + 2 ]-----.
+                                             \     R(e) = A(v)
+                                            ( e )---------------->
+                                             /
+  - - - ->( d )---[ A_e(v) = A(v) + 2 ]-----'
+                                 
+
+\end{verbatim}
+\caption{Recipes upon exit replace transition operations.}
+\end{figure}
+
+The next section treats the recursive accumulation of recipes starting from
+springs.  It is conceivable, however, that right from the beginning there is no
+spring.  Even the initial state, if it has an entry other than from 'outside'
+it may be an undetermined.  In that case, the analysis directly starts with a
+so called 'dead-lock analysis' which is the subject of the next section but
+one.
+
+%==============================================================================
+%
+%==============================================================================
+\section{Recursive Accumulation of Recipes}
+
+If the recipe of a state $i$'s predecessor $k$ is determined, then the entry
+recipe $R_E(i,k)$ can be determined. The same is true if the predecessor is an initial
+spring, because then $R_E(i,k) = op(i)\circ\,op(k)$. Practically, this means
+that recipes can be determined starting from a spring along linear states by
+accumulation until the entry of a mouth state is reached. Linear states may
+have multiple successor states, so this walk can be accomplished by a recursive
+'tree walk'.  The termination criteria for the recursive accumulation walk is
+defined as follows.
+
+\begin{definition}
+Termination criteria for accumulation walk.
+
+A recursive accumulation walk does not enter the state ahead, if 
+
+\begin{itemize}
+    \item there is no state ahead.
+    \item the state ahead is a mouth state.
+    \item the state ahead is a spring.
+\end{itemize}
+\end{definition}
+
+The first condition comes natural. The second condition exists, because recipes
+cannot be accumulated beyond mouth states. As a direct consequence, the walk
+can never go along loops, since a loop requires a state with more than one
+entry. The third condition tells that the walk stops where another walk begins
+or began.  
+
+\begin{figure}[htbp] \leavevmode \label{fig:algo-1}
+\begin{verbatim}
+          (*) Start.
+   
+          (1) springs = initial springs of state machine.
+
+   .----->(2) recursive 'accumulation' walk starting from springs.
+   |
+   |          .---> determine R_E(i,k) 
+   |          |     if 'i' is a linear state then R(i) = R_E(i,k)
+   |          |     next i
+   |          '---<---'
+   |
+   |      (3) interference in mouth states 
+   |          if all R_E(i,k) are determined => R(i), i becomes a spring
+   |
+   '- no -(4) springs empty?
+
+          (*) Stop.
+\end{verbatim}
+
+\caption{Determination of recipes.}
+\end{figure}
+
+The algorithm in figure \ref{fig:algo-1} implements the procedure to determine
+recipes recursively through accumulation.  When this algorithm comes to an end,
+there might be still mouth states with undetermined entries.  The following
+section discusses a solution for the remaining states where the deterministic
+recursive accumulation of recipes could not provide a solution.
+
+
+
+%==============================================================================
+%
+%==============================================================================
+\section{Dead-Lock States}
+
+Interference can only be performed, if all entry recipes of a mouth state are
+determined. Loops in the state machine graph, however, may cause
+\textit{circular dependencies} and undetermined mouth states.  Figure 8 shows
+an example, where the two states 1 and 2 mutually block each other. The recipe
+$R(1)$ for state 1 cannot be determined because it requires $R(2)$ which is
+undetermined. However, before $R(2)$ from state 2 can be determined, $R(1)$
+must be present. None of the states 1 and 2 is suitable for interference,
+because they are missing an entry recipe.  Circular dependencies as an origin
+of dead-lock states are intuitive. The precise proof is provided in the
+subsequent paragraphs. What follows describes a procedure to determine the
+behavior of those dead-lock states and their dependent states.
+
+\begin{figure}[htbp] \leavevmode
+\begin{verbatim}
+                                       R(1)
+                          R(0)     .---->----.
+                    ( 0 )------>( 1 )       ( 2 )
+                                   '----<----'
+                                       R(2)
+
+\end{verbatim}
+\caption{A dead-lock in mouth states 1 and 2.}
+\end{figure}
+
+\begin{definition} $U$ -- The Set of Dead-Lock States
+
+A dead-lock state $i\,\in\,U$ is a mouth state that, after algorithm 1 has
+ended, is still undetermined. It has at least one undetermined entry which
+prevents it from performing interference. $U$ is the set of all dead-lock
+states.
+
+\end{definition}
+
+The end of a string of linear states is only undetermined, if the begin of the
+string is undetermined. The begin of such a string must be a mouth state. Thus,
+a string of linear states is only undetermined, if at its beginning there is an
+undetermined mouth state. Consequently, the strings of linear states in between
+mouth states may be omitted from considerations on indeterminacy.
+
+An undetermined mouth state $i \in U$ must have at least one undetermined entry
+recipe. Either the state from which it is entered is an undetermined mouth state, 
+or the string of linear states backwards guides to an undetermined mouth state. 
+Let the fact that a mouth state $i_0$ is undetermined because of another
+undetermined mouth state $i_1$ be noted as $i_0 \vartriangleleft i_1$. Their might
+be more than one dependency, but considering one is enough for this proof. Each
+undetermined mouth state has at least one undetermined mouth state that feeds
+an undetermined entry. Thus, the sequence 
+
+\begin{equation}
+    i_0\,\vartriangleleft\,i_1\,\vartriangleleft\,i_2\,\vartriangleleft\,\ldots
+\end{equation}
+
+has no end. But the set of undetermined states $U$ is finite. Thus, there must
+be states appearing repeatedly in the sequence. Since the dependencies relate
+to transition paths, this proves that loops must be involved. Loops, or circular
+dependencies, are therefore a necessary condition for the existence of
+dead-lock states $\blacksquare$. 
+
+\begin{definition}
+Horizon
+
+Let the term 'horizon' $H$ indicate the subset of dead-lock states $\{
+i\,\in\,U \}$ that have at least one predecessor with a determined recipe.  
+\end{definition}
+
+The name 'horizon' is chosen because it defines the border of determination.
+Beyond that begins the realm of dead-locks.  In particular, if the initial
+state is undetermined, it becomes the one and only horizon state. The 'before
+begin state' with its recipe $R(init)$ constitutes the predecessor with the
+determined recipe.  Figure \ref{fig:horizon-state} shows a horizon state which
+contains one determined entry and another undetermined entry. 
+
+
+\begin{figure}[htbp] \leavevmode \label{fig:horizon-state}
+\begin{verbatim}
+                         R(a) -->--.
+                                    \
+                                     +---[ op(i) ]---( i )----> R(i)
+                                    /
+                     R(b) = ? -->--'
+
+\end{verbatim}
+\caption{A horizon state state with an entry from a determined state $a$ and 
+    an undetermined state $b$.}
+\end{figure}
+
+In order to understand the nature of dead-lock states better, it makes sense to
+briefly review the recursive accumulation of recipes. The initial state $i_0$
+is the first state that is entered. It has at least one entry recipe
+$R_E(i_0,outside)$, i.e. the recipe to be executed when coming from $outside$
+the state machine. If it has another entry that is undetermined and $op(i_0)$
+is history-dependent, then the initial state becomes a horizon state.  Otherwise, it
+is a spring and starting from $i_0$ determined recipes are propagated through
+accumulation.  Accumulation ends with the determination of an entry into a
+mouth state. If the reached mouth state ends up with determined entries, then a
+determined recipe is propagated until a terminal or another mouth state is
+reached. If a mouth state is reached where not all entries are determined, then
+its output recipe is undetermined. Since by reaching it at least one entry is
+determined and, thus,the state is a horizon state. The output recipe is
+undetermined and no successor state is further reached with determined recipes.
+Consequently, all successor states of that state are undetermined.  Determined
+mouth states performed interference, and therefore must have all their entries
+determined.  None of their entries can directly originate in a dead-lock mouth
+state. From this discussion, an important conclusion can be drawn.  
+
+\begin{statement} \label{stm:dead-lock-horizon}
+A dead-lock state can only be reached by a path that guides through a horizon
+state.  Paths from dead-lock states to non-dead-lock mouth states must contain
+an initial spring.  
+\end{statement}
+
+At this point a type of interference is introduced that delivers a correct
+output recipe, even though not all entry recipes are determined. For all $v$ where 
+$op^v(i)$ is history-dependent, $R^v_E(i,k)$ depends on $R(k)$. Since not all 
+$R(k)$ are determined, it is assumed that upon entry the $A(v)$ receives the
+computed value of $v$ and $R^v(i) = \{ v \coloneqq  A(v) \}$ with $S^v(R(i))=i$.
+
+\begin{definition}
+Cautious Interference
+
+The process of 'cautious interference' develops a recipe $R(i)$ for a horizon state
+$i\,\in\,H$.  From the homogeneity requirement it follows that the output
+recipe $R(i)$ is determined by 
+          
+\begin{equation} \label{eq:cautious-output-recipe}
+    R^v(i) = \begin{dcases*}
+              op^v(i) & if $op^v(i)$ is history-independent \\
+              A(v)    & else
+             \end{dcases*}
+\end{equation}
+For all variables $v$ an inhomogeneity is assumed, except for those where $op^v(i)$
+is history-independent. That is,
+\begin{equation} \label{eq:cautious-homogeneity}
+    H^v(i,k) = \begin{dcases*}
+                     false & if $op^v(i)$ is history-independent \\
+                     true  & else
+                 \end{dcases*}
+\end{equation}
+The snapshot map develops to
+\begin{equation} \label{eq:cautious-interference-snapshot}
+    S^v(i) = \begin{dcases*}
+                \varepsilon & if $op^v(i)$ is history-independent \\
+                i           & else
+             \end{dcases*}
+\end{equation}
+\end{definition}
+
+As mentioned earlier, the homogeneity database expresses the need to compute
+the entry recipes for a variable $v$ and store it in an auxiliary variable
+$A(v)$. In the case of cautious interference, it is determined before the entry
+recipe $R_E(i,k)$ has actually been determined.  For the resulting recipe
+$R(v)$ to be generally correct, it must be independent of the still
+undetermined entry recipes $R_E(i,k)$. 
+
+Let the following two predecessor recipes of a horizon state be defined:
+$k_d$ is the prototype of a determined predecessor recipe and $k_u$ is the
+prototype of an undetermined predecessor recipe. For the \textit{determined}
+entry, it holds that the path to it \textit{does not include a dead-lock state}
+except via a spring. But, an accumulation over a spring state $s$ sets
+$S(R(s))=\emptyset$. So, if there was a snapshot from a dead-lock state it must
+pass the spring and from there $S(R(i)))=\emptyset$ for all states $i$ on the
+path to the mouth's entry. It holds in general
+%%
+\begin{equation} \label{eq:before-horizon}
+        S(R^v(k_d))\,\cap\,U\,=\,\emptyset
+\end{equation}
+%%
+From equation \eqref{eq:cautious-interference-snapshot} it follows that no
+snapshot before a horizon state remains in the output recipe.
+%%
+\begin{equation}
+        S(R(i))\,\subseteq\,\{\,i\,\}
+\end{equation}
+%%
+Undetermined entry recipes develop from the outputs of cautious interference 
+recipes. Thus, their snapshots can only root back to horizons or their successor
+states, i.e.
+%%
+\begin{equation} \label{eq:after-horizon}
+        S(R^v(k_u))\,\subseteq\,\,U
+\end{equation}
+%%
+For recipes to pass a mouth state they need to be the equal for all entries. Also
+their snapshot maps must be equal. However, equations
+\eqref{eq:before-horizon} and \eqref{eq:after-horizon} can only be true, if
+%%
+\begin{equation} \label{eq:homogeneity-condition}
+    S(R^v(k_u))\,=\,S(R^v(k_d))\,=\,\emptyset 
+\end{equation}
+
+This in turn, is only true if $R^v(k_u)$ and $R^v(k_d)$ do not rely on stored
+values at all, i.e. they are history-independent. This result is very important. When
+$R^v(k_u)$ becomes determined, through subsequent accumulation, it is not
+possible that it produces a new component $R^v(i)$ through interference except
+that $S^v(R(i))=\varepsilon$.  For both cases, $op^v(i)$ being history-independent and
+history-dependent, the combination of entry operations $op^v_E(i,k) = \{ A(v)
+\coloneqq R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq A(v) \}$
+remains a correct solution $\blacksquare$.  
+
+The output recipe $R(i)$, the homogeneity database $H^v(i)$, and the snapshot
+maps $S^v(i)$ can be aquired based on existing procedures of accumulation and
+interference. The key for that is a special definition for the undetermined
+predecessor recipes. With such a 'cautious recipe' in place of undetermined
+entry recipes ordinary interference may be applied to produce the exact same
+result as defined in equation \eqref{eq:cautious-output-recipe}.  Let the
+undetermined predecessor recipes be defined as
+
+\begin{equation} \label{eq:undetermined-recipe}
+    R^v(k_u) = \{ v \coloneqq A(v) \} \,\,\mbox{and}\,\, S^v(R(k_u)) = \sigma\,\,\forall\,v\,\in V(i)
+\end{equation}
+
+where $\sigma$ is a 'singular element'. Each $\sigma$ exists solely once. For
+any two sets $B$ and $C$ it holds that if a $\sigma \in B$ it follows that
+$\sigma \notin C$.  If $S^v(R_x)$ holds $\sigma$ no other snapshot map can hold
+the same sigma.  With such a definition, the components of a \textit{cautious
+entry recipe} $R_E(i,k_u)$ are determined by
+
+\begin{eqnarray}
+    R^v_E(i,k_u) & = & op^v(i) \circ R(k_u) \\
+                 & = & \begin{dcases*}
+                       op^v(i)         & if $op^v(i)$ is history-independent \\
+                       x \coloneq A(v) & else
+                       \end{dcases*}
+\end{eqnarray}
+
+Wherever $op^v(i)$ is history-independent, $R_E(i,k_u)$ is independent of $R(k_u)$ and is
+therefore the same for all predecessors. It follows
+
+\begin{equation} \label{eq:cautious-recipe-homogeneity}
+    op^v(i) \,\mbox{is history-independent}\,\Rightarrow\,H^v(i, k_u) = true
+\end{equation}
+
+The snapshot maps develop to
+\begin{eqnarray} \label{eq:cautious-repl-1}
+    S^v(R_E(i,k_u)) & = & S^v(op(i) \circ R(k_u)) \\ 
+                    & = & \begin{dcases*}
+                          \varepsilon          & if $op^v(i)$ is history-independent \\
+                          S^v(R(k_u)) = \sigma & else
+                          \end{dcases*}
+\end{eqnarray}
+
+Since $\sigma$ appears in the expressions for history-independent components
+$op^v(i)$, $S^v(R_E(i,k_u))$ can never be the same for all predecessors.
+Ordinary interference, from definition \ref{def:interference}, imposes in that
+case inhomogeneity. Thus,
+
+\begin{equation} \label{eq:cautious-recipe-inhomogeneity}
+    op^v(i) \,\mbox{is history-dependent}\,\Rightarrow\,H^v(i, k_u) = false
+\end{equation}
+
+Thus, the entry recipes are homogeneous if, and only if $op^v(i)$ is history-independent.
+According to \eqref{eq:interference-output} applied interference delivers
+
+\begin{equation} \label{eq:interference-output-2}
+    R^v(i) = \begin{dcases*}
+              R_E^v(i,k) & if $op^v(i)$ is history-independent.\\
+              A(v)       & else
+             \end{dcases*}
+\end{equation}
+
+which directly corresponds first equation \eqref{eq:cautious-output-recipe}
+from the definition of cautious interference. The second equation
+\eqref{eq:cautious-homogeneity} on homogeneity is fulfilled by equations
+\eqref{eq:cautious-recipe-homogeneity} and
+\eqref{eq:cautious-recipe-inhomogeneity} . The last equation on snapshot maps
+\eqref{eq:cautious-interference-snapshot} is maintained by
+\eqref{eq:cautious-repl-1}.  Cautious interference can, therefore, be
+implemented by the use of a special 'undetermined predecessor recipe' from
+equation \eqref{eq:undetermined-recipe}.  When accumulated with the state's
+$op(i)$ and passed through ordinary interference, exact the same expressions
+result as they are required for cautious interference $\blacksquare$.
+
+The output recipes $R(i)$ can be used for recursive accumulation of recipes so
+that other dead-lock states receive determined entries and become part of the
+horizon.  The horizon moves, the set of dead-lock states shrinks and a new
+cycle begins.  This continues until no dead-lock state is left.  Eventually,
+all entry recipes are determined. Then, it is possible that those entries which
+are flagged with $H^v(i,k)=true$ implement the entry operation
+$op_E^v(i)=R_E^v(i,k)$.  Before, however, another opportunity to optimize is
+explored. 
+
+%==============================================================================
+%
+%==============================================================================
+\section{Fine Adjustment}
+
+As mentioned in the previous section, the condition of homogeneity in the entry
+recipes can be maintained, if they are history-independent--see equation
+\ref{eq:homogeneity-condition}.  During cautious interference, $op^v(i)$ is
+overtaken to the output recipe $R^v(i)$ if it is history-independent.  With equation
+\ref{eq:homogeneity-condition} and determined entries $R_E(i,k)$ it is
+sufficient to require 
+
+\begin{equation} \label{eq:homogeneity-condition-2}
+    op^v(i)\,\circ\,R(k)\,=\,C\,\,\mbox{for a constant $C$ and } \forall\,k\in\,Pred(i)
+\end{equation}
+
+That means, that all entry recipes produce the same constant value. Consider
+the following example.
+
+\begin{equation}
+    op^v(i) = \{ v \coloneqq  v + 1 \}
+\end{equation}
+
+The operation is clearly dependent on the previous value of $v$--thus 
+history-dependent. However, if the predecessors recipe $R(k)$ assigns a constant $5$ to
+$v$, then the concatenation becomes
+
+\begin{equation}
+    op(i)\,\circ\,R(k)) = \{ v \coloneqq  6 \}
+\end{equation}
+
+which does not depend on any auxiliary variable. If all entry recipes of a
+mouth state result in the same constant assignment, then the entry recipes for
+$v$ are homogeneous.  The same constant may appear in the output recipe. Since
+no storing and restoring is now required for $v$, the 'entry operation
+implementation flag' can be turned of, that is
+
+\begin{equation}
+    H^v(i,k)\,=\,false\,\,\mbox{if}\,op^v(i)\,\circ\,R(k)\,=\,\mbox{const.}\,\forall\,k\,\in\,Pred(i)
+\end{equation}
+
+A recipe $R(i)$ that replaces some components by constants can now again be
+propagated through accumulation. An entry is only constant if it is totally
+independent of its predecessor states. The output of a successor mouth state
+will only become constant, if all of its inputs are constant. Thus, constant
+components are only propagated beyond mouth states if all entries are constant.
+If all entries are constants they are all independent of their predecessors.
+Thus, also the mouth's output recipe remains constant. It follows that through
+constant propagation, recipes become constant but never change their value
+further.  In particular, it is impossible that they become non-constant.
+The repeated propagation of recipes may be applied with the difference of the
+following termination criteria.
+
+\begin{condition}
+Condition for interference during dead-lock fine-tuning.
+
+The result of interference is only to be taken into account, if the size of the
+new recipe's set of snapshot states is smaller than the size of the old
+recipe's set of snapshot states, i.e.
+
+\begin{equation} 
+    size(S(R_{new}(i)))\,<\,size(S(R_{old}(i)))
+\end{equation}
+
+\end{condition}
+
+With the mentioned requirement a mouth state $i$ can be passed at maximum a
+restricted $N$ number of times, where $N$ is the number of variables in $V(i)$.
+Since, number of states is restricted, in general, the total number of
+iterations is restricted. When no new interference is accomplished, no new
+constant entry recipes can be determined and the process comes to an end.
+Eventually, remaining entry operations $op_E^v(i)$ for which $H^v(i,k)=true$
+must be implemented according to $A(v) \coloneqq  R_E^v(i,k)$.
+
+\section{Superset of Required Variables}
+
+In some cases, the precise set of required variables $V(i)$ cannot be
+determined without an excessive path-analysis. Such path analysis is difficult
+to tame with respect to computational effort and its correctness may be
+difficult to proof.  A superset of $V(i)$ is often much easier to determine.
+This implies that there might be variables in $V(i)$ which are actually not
+necessary. This section investigates the impact of using a superset instead
+of using the precise set with respect to correctness and performance. 
+
+\begin{figure}[htbp] \leavevmode \label{fig:fork-states}
+\begin{verbatim}
+         
+        ,---( 1 )---. .---( 4 )---.       
+     ( 0 )         ( 3 )         ( 6 )  ...
+        '---( 2 )---' '---( 5 )---'
+
+\end{verbatim}
+\caption{Sequence of forking states.}
+\end{figure}
+
+Consider a simple sequence of forking states as shown in figure
+\ref{fig:fork-states}.  The first state where paths meet is state 3. For this
+state there are two paths to consider: $0 \rightarrow 1 \rightarrow 3$ and $0
+\rightarrow 2 \rightarrow 3$.  The second state where paths meet is state 6. To
+reach this state four paths need to be considered: $0 \rightarrow 1 \rightarrow
+3 \rightarrow 4 \rightarrow 6$, $0 \rightarrow 1 \rightarrow 3 \rightarrow 5
+\rightarrow 6$, $0 \rightarrow 2 \rightarrow 3 \rightarrow 4 \rightarrow 6$,
+and $0 \rightarrow 2 \rightarrow 3 \rightarrow 5 \rightarrow 6$. A sequence of
+N meeting states with M forking paths in between each, requires to analyze
+$M^N$ different paths.  It is therefore easy to find configurations that cannot
+be analyzed even by the fastest machines.  Further, the influence of loops on
+$V(i)$ may introduce complications which are difficult to overview.  Briefly
+said, due restrictions of practical implementations it is impossible to
+determine the precise set of $V(i)$ in the general case. 
+
+What consequences arise if $V(i)$ contains unnecessary variables?  An operation
+$op(i)$ that does not contain a component $op^v(i)$ must implement it by the
+no-operation $v\coloneqq v$. With respect to the development of $v$ such
+operations are indifferent. The set of required variables $V(i)$ influences the
+optimization at the following stages:
+
+\begin{description}
+\item [Accumulation]
+
+    The resulting recipe $R(i) = op(i)\circ R(k)$ may contain components
+    $R^v(i)$ which are unnecessary, because of unnecessarily added components
+    $op^v(i)$. $R^v(i)$ only plays a role in the theoretical investigations.
+
+\item [Interference]
+
+    If $op(i)$ or $R(k)$ contain a component for $v$, then the concatenation
+    produces possibly inhomogeneous entry recipes $R^v_E(i,k)$.  In this case,
+    redundant entry operations $op_E^v(i,k)$ are added to the resulting state
+    machine. Consequently, the resulting recipe $R(i)$ contains a redundant
+    operation $v\coloneqq A(v)$ and the set of snapshot states $S(R(i))$ uust
+    contain $i$.
+
+    If neither $op(i)$ nor $R(k)$ contain a component for $v$, the $op^v(i)$ is
+    assumed to be the no-operation. Thus $R_E^v(i,k)$ becomes the no-operation
+    for all predecessors, and $v$ is homogeneous. No additional entry
+    operations are added and the component $R^v(i)$ of the output recipe
+    becomes the no-operation.
+
+\item [Initial Springs]
+
+    Since the no-operation is not constant, if added redundantly as a component
+    to $op(i)$ a state may fail to be considered an initial spring--despite, of
+    the constancy of its real components (see definition \ref{def:springs}).
+    That means, that the propagation of recipes may start with fewer starting
+    points. It is even conceivable, that there is no initial spring at all.
+    Then, however, the optimization is done entirely in the frame of dead-lock
+    analysis.
+
+\item [Springs]
+
+    A state $i$ is a spring if $R(i)$ is determined. Undetermined recipes,
+    however, originate in missing entry recipes at mouth states. Redundant
+    components $op^v(i)$ do not influence this behavior.
+
+\item [Cautious Interference]
+
+    Redundant non-constant entry operations cause redundant entry operations
+    and no-operations in the output recipe. Some of them, might be removed
+    during fine adjustment after dead-lock analysis.
+
+\end{description}
+
+In conclusion, if the optimization is applied on a superset of $V(i)$ instead
+of $V(i)$ then redundant entry operations at mouth states may occur. It is
+assumed that from the composition of the recipe, the exit operations can filter
+out settings which are unnecessarily mentioned in $V(i)$. The consideration of
+a superset is appropriate. In order to judge the impact of this simplification,
+it is necessary to provide a \textit{overhead analysis} for the particular
+investigated behavior. That is, it must be clear under what circumstances what
+redundant operations are redundantly added to the resulting state machine.
+Based on that, decisions may be made about the effort to be put into a
+fine-tuning of the superset selection.
+
+\end{document}
+

@@ -1,0 +1,201 @@
+/* -*- C++ -*-   vim: set syntax=cpp: 
+ * (C) 2004-2009 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY
+ */
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MEINTOKEN
+#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MEINTOKEN
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/asserts>
+#include <quex/code_base/compatibility/stdint.h>
+#include <quex/code_base/MemoryManager>
+
+/* LexemeNull object may be used for 'take_text'. */
+QUEX_NAMESPACE_LEXEME_NULL_OPEN
+extern QUEX_TYPE_LEXATOM   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
+QUEX_NAMESPACE_LEXEME_NULL_CLOSE
+
+
+
+ 
+namespace europa {
+    namespace deutschland {
+        namespace baden_wuertemberg {
+            namespace ispringen {
+
+
+class MeinToken;
+
+/* NOTE: The following function might have to be defined by the user if one
+ *       does not rely on quex's function generation.                        */
+extern const char*  QUEX_NAME_TOKEN(map_id_to_name)(const QUEX_TYPE_TOKEN_ID);
+
+inline void    QUEX_NAME_TOKEN(construct)(MeinToken* __this);
+inline void    QUEX_NAME_TOKEN(destruct)(MeinToken* __this);
+inline void    QUEX_NAME_TOKEN(copy)(MeinToken* me, const MeinToken* That);
+inline bool    QUEX_NAME_TOKEN(take_text)(MeinToken*            __this, 
+                                          QUEX_TYPE_ANALYZER*         analyzer, 
+                                          const QUEX_TYPE_LEXATOM*  Begin, 
+                                          const QUEX_TYPE_LEXATOM*  End);
+
+#ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+inline size_t  QUEX_NAME_TOKEN(repetition_n_get)(MeinToken* __this);
+inline void    QUEX_NAME_TOKEN(repetition_n_set)(MeinToken* __this, size_t N);
+#endif 
+
+class MeinToken {
+public:
+    MeinToken();
+    MeinToken(const MeinToken& That);
+    /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
+     *                BETTER USE __copy(That)                                */
+    MeinToken& operator=(const MeinToken& That) 
+    { QUEX_NAME_TOKEN(copy)(this, &That); return *this; }
+    virtual ~MeinToken();
+
+
+#   line 5 "a string"
+    std::string      my_name;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+#   line 6 "a string"
+    std::vector<int> numbers;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+    union {
+
+#   line 17 "a string"
+        uint32_t         stream_position;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+        struct {
+
+#   line 15 "a string"
+            int16_t          y;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+#   line 14 "a string"
+            int16_t          x;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+        } data_1;
+        struct {
+
+#   line 11 "a string"
+            short            index;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+#   line 10 "a string"
+            float            number;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+        } data_0;
+
+#   line 18 "a string"
+        uint16_t         who_is_that;
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+    } content;
+
+public:
+
+#   line 11 "a string"
+    short            get_index() const                           { return content.data_0.index; }
+#   line 11 "a string"
+    void             set_index(short Value)                      { content.data_0.index = Value; }
+#   line 5 "a string"
+    std::string      get_my_name() const                         { return my_name; }
+#   line 5 "a string"
+    void             set_my_name(std::string& Value)             { my_name = Value; }
+#   line 10 "a string"
+    float            get_number() const                          { return content.data_0.number; }
+#   line 10 "a string"
+    void             set_number(float Value)                     { content.data_0.number = Value; }
+#   line 6 "a string"
+    std::vector<int> get_numbers() const                         { return numbers; }
+#   line 6 "a string"
+    void             set_numbers(std::vector<int>& Value)        { numbers = Value; }
+#   line 18 "a string"
+    uint16_t         get_who_is_that() const                     { return content.who_is_that; }
+#   line 18 "a string"
+    void             set_who_is_that(uint16_t Value)             { content.who_is_that = Value; }
+#   line 14 "a string"
+    int16_t          get_x() const                               { return content.data_1.x; }
+#   line 14 "a string"
+    void             set_x(int16_t Value)                        { content.data_1.x = Value; }
+#   line 15 "a string"
+    int16_t          get_y() const                               { return content.data_1.y; }
+#   line 15 "a string"
+    void             set_y(int16_t Value)                        { content.data_1.y = Value; }
+#   line 17 "a string"
+    uint32_t         get_stream_position() const                 { return content.stream_position; }
+#   line 17 "a string"
+    void             set_stream_position(uint32_t Value)         { content.stream_position = Value; }
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
+
+    void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0)
+    { _id = ID; my_name = Value0; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
+    { _id = ID; numbers = Value0; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0, const std::vector<int>& Value1)
+    { _id = ID; my_name = Value0; numbers = Value1; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const uint32_t& Value0)
+    { _id = ID; content.stream_position = Value0; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
+    { _id = ID; content.data_1.x = Value0; content.data_1.y = Value1; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const float& Value0, const short& Value1)
+    { _id = ID; content.data_0.number = Value0; content.data_0.index = Value1; }
+    void set(const QUEX_TYPE_TOKEN_ID ID, const uint16_t& Value0)
+    { _id = ID; content.who_is_that = Value0; }
+
+
+    public:
+        /* _line_n, _column_n, and _id are public, so that the token policy 
+         * can access it. making it private would imply complications for 
+         * user customized token classes. The token policies should be the
+         * same for C and Cpp.                                               */
+        QUEX_TYPE_TOKEN_ID    _id;
+        QUEX_TYPE_TOKEN_ID    type_id() const                             { return _id; }
+        const char*           map_id_to_name(QUEX_TYPE_TOKEN_ID ID) const { return QUEX_NAME_TOKEN(map_id_to_name)(ID); }
+        const std::string     type_id_name() const                        { return map_id_to_name(_id); }
+
+#   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    public:
+        QUEX_TYPE_TOKEN_LINE_N    _line_n;
+        QUEX_TYPE_TOKEN_LINE_N    line_number() const                                 { return _line_n; }
+        void                      set_line_number(const QUEX_TYPE_TOKEN_LINE_N Value) { _line_n = Value; }
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    public:
+        QUEX_TYPE_TOKEN_COLUMN_N  _column_n;
+        QUEX_TYPE_TOKEN_COLUMN_N  column_number() const                                   { return _column_n; }
+        void                      set_column_number(const QUEX_TYPE_TOKEN_COLUMN_N Value) { _column_n = Value; }
+#       endif
+#   endif
+    public:
+#   define self (*this)
+
+#   undef  self
+
+    private:
+        friend void QUEX_NAME_TOKEN(copy)(MeinToken* me, const MeinToken* That);
+        friend bool QUEX_NAME_TOKEN(take_text)(MeinToken*               __this, 
+                                               QUEX_TYPE_ANALYZER*         analyzer, 
+                                               const QUEX_TYPE_LEXATOM*  Begin, 
+                                               const QUEX_TYPE_LEXATOM*  End);
+};
+
+} /* Closing Namespace 'europa' */
+} /* Closing Namespace 'deutschland' */
+} /* Closing Namespace 'baden_wuertemberg' */
+} /* Closing Namespace 'ispringen' */
+
+
+
+
+
+
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED____EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MEINTOKEN */
+

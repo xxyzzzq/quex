@@ -1,0 +1,20 @@
+quex -i error-2.qx -o Simple
+error-2.qx:5:warning: Detected implicit token identifier definitions. Proposal:
+error-2.qx:5:warning:    token {
+error-2.qx:5:warning:      QUOTE_S_PRE_COND;
+error-2.qx:6:warning:      WORD;
+error-2.qx:7:warning:      OTHER;
+error-2.qx:8:warning:      NEWLINE;
+error-2.qx:8:warning:    }
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+----------------------------------
+'silly'
+----------------------------------
+OTHER ''' 
+WORD 'silly' 
+OTHER ''' 
+NEWLINE '' 
+<TERMINATION> '' 
+| [END] number of token = 5
+`------------------------------------------------------------------------------------

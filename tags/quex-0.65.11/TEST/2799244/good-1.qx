@@ -1,0 +1,17 @@
+
+token_type {
+name = Token;
+distinct {
+fred : const QUEX_TYPE_LEXATOM*;
+}
+take_text {
+    return true;
+}
+}
+token {
+A;
+}
+start = START;
+mode START {
+"A" => QUEX_TKN_A;
+}
