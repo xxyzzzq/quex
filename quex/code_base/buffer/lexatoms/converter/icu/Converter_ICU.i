@@ -20,7 +20,7 @@ QUEX_INLINE bool
 QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* me, 
                               const char*           FromCoding, 
                               const char*           ToCoding);
-QUEX_INLINE bool
+QUEX_INLINE E_ConversionResult
 QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       me, 
                                  uint8_t**                   source, 
                                  const uint8_t*              SourceEnd, 
@@ -132,7 +132,7 @@ QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego,
     return true;
 }
 
-QUEX_INLINE bool
+QUEX_INLINE E_ConversionResult
 QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego, 
                                  uint8_t**                   source, 
                                  const uint8_t*              SourceEnd, 
@@ -172,7 +172,8 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
     me->status = U_ZERO_ERROR;
     __quex_assert(*source >= SourceBegin);
 
-    return *drain == DrainEnd ? true : false;
+    return *drain == DrainEnd ? E_ConversionResult_FILL_COMPLETE 
+                              : E_ConversionResult_NO_MORE_DATA;
 }
 
 QUEX_INLINE ptrdiff_t 

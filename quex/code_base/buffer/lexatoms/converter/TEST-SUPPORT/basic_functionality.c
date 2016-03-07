@@ -302,10 +302,10 @@ verify_call_to_convert(QUEX_NAME(Converter)* converter,
                        QUEX_TYPE_LEXATOM** drain_pp,  const QUEX_TYPE_LEXATOM* DrainEndP,
                        bool                  DrainFilledF)
 {
-    uint8_t*             s_p_before = *source_pp;
+    uint8_t*           s_p_before = *source_pp;
     QUEX_TYPE_LEXATOM* d_p_before = *drain_pp;
     QUEX_TYPE_LEXATOM* p;
-    bool                 filled_f;
+    E_ConversionResult filled_f;
 
     filled_f = converter->convert(converter, source_pp, SourceEndP, 
                                   drain_pp, DrainEndP); 

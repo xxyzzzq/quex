@@ -113,14 +113,14 @@ QUEX_NAME(Buffer_init_content)(QUEX_NAME(Buffer)* me, QUEX_TYPE_LEXATOM* EndOfFi
  *              input.character_index_end_of_stream                         
  *              input.end_p                                                  */
 {
-    QUEX_TYPE_LEXATOM*      BeginP           = &me->_memory._front[1];
-    QUEX_TYPE_LEXATOM*      EndP             = me->_memory._back;
+    QUEX_TYPE_LEXATOM*        BeginP           = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*        EndP             = me->_memory._back;
     const ptrdiff_t           ContentSize      = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
     ptrdiff_t                 loaded_n;
     bool                      end_of_stream_f  = false;
     QUEX_TYPE_STREAM_POSITION ci_begin         = (QUEX_TYPE_STREAM_POSITION)0;
     QUEX_TYPE_STREAM_POSITION ci_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
-    QUEX_TYPE_LEXATOM*      end_p            = (QUEX_TYPE_LEXATOM*)0;
+    QUEX_TYPE_LEXATOM*        end_p            = (QUEX_TYPE_LEXATOM*)0;
     (void)EndP;
 
     if( ! me->_memory._front ) {
@@ -132,7 +132,7 @@ QUEX_NAME(Buffer_init_content)(QUEX_NAME(Buffer)* me, QUEX_TYPE_LEXATOM* EndOfFi
         __quex_assert(! EndOfFileP);
 
         loaded_n         = QUEX_NAME(LexatomLoader_load)(me->filler, BeginP, ContentSize,
-                                                        0, &end_of_stream_f);
+                                                         0, &end_of_stream_f);
         ci_end_of_stream = ((! loaded_n) || end_of_stream_f) ? loaded_n 
                                                              : (QUEX_TYPE_STREAM_POSITION)-1;
         end_p            = &BeginP[loaded_n];
@@ -385,9 +385,9 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
 
     /* (2) Move away content, so that previous content can be reloaded.      */
     loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, BeginP, load_request_n,
-                                            NewCharacterIndexBegin,
-                                            &end_of_stream_f);
-
+                                             NewCharacterIndexBegin,
+                                             &end_of_stream_f);
+                           
     /* (3) In case of error, the stream must have been corrupted. Previously
      *     present content is not longer available. Continuation impossible. */
     if( loaded_n != load_request_n ) {
@@ -550,8 +550,8 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
     ci_load_begin  = me->input.character_index_begin + (me->input.end_p - BeginP);
     load_request_n = ContentSize                     - (me->input.end_p - BeginP);
     loaded_n       = QUEX_NAME(LexatomLoader_load)(me->filler, 
-                                                  me->input.end_p, load_request_n,
-                                                  ci_load_begin, &end_of_stream_f);
+                                                   me->input.end_p, load_request_n,
+                                                   ci_load_begin, &end_of_stream_f);
     QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[loaded_n], -1);
 
     if( ! loaded_n ) {
@@ -687,10 +687,10 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
     }
 
     /* Load new content.                                                     */
-    loaded_n      = QUEX_NAME(LexatomLoader_load)(me->filler, 
-                                                 BeginP, move_distance,
-                                                 me->input.character_index_begin, 
-                                                 &end_of_stream_f);
+    loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, 
+                                             BeginP, move_distance,
+                                             me->input.character_index_begin, 
+                                             &end_of_stream_f);
 
     if( loaded_n  != move_distance ) {
         /* Serious: previously loaded content could not be loaded again!     
@@ -814,8 +814,8 @@ QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
     __quex_assert(&BeginP[load_request_n] <= EndP);
     (void)EndP;
     loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, BeginP, load_request_n,
-                                            me->input.character_index_begin,
-                                            &end_of_stream_f);
+                                             me->input.character_index_begin,
+                                             &end_of_stream_f);
 
     if( loaded_n != load_request_n ) {
         QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");

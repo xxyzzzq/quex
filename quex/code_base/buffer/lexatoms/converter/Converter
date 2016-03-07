@@ -6,12 +6,23 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/MemoryManager>
 
+#ifndef QUEX_TYPE_DEFINITIONS_CONVERTER_RETURN_VALUE
+#define QUEX_TYPE_DEFINITIONS_CONVERTER_RETURN_VALUE
+typedef enum {
+    E_ConversionResult_FILL_COMPLETE  = 1,   /* 'true' in 'if( ... )'  */
+    E_ConversionResult_NO_MORE_DATA   = 0,   /* 'false' in 'if( ... )' */
+    E_ConversionResult_ENCODING_ERROR = 0x4711
+} E_ConversionResult;
+#endif
+
 QUEX_NAMESPACE_MAIN_OPEN
+
 
 typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_tag) {
     E_Ownership   ownership;
 
-    bool    (*convert)(struct QUEX_NAME(Converter_tag)*, 
+    E_ConversionResult    
+            (*convert)(struct QUEX_NAME(Converter_tag)*, 
                        uint8_t**             source, const uint8_t*             SourceEnd, 
                        QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd);
     /* Tries to convert all characters given in 'source' with the coding specified
@@ -81,7 +92,8 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
                     const char* FromCodec, const char* ToCodec,
                     bool        (*open)(QUEX_NAME(Converter)*, 
                                         const char* FromCodingName, const char* ToCodingName),  
-                    bool        (*convert)(QUEX_NAME(Converter)*, 
+                    E_ConversionResult        
+                                (*convert)(QUEX_NAME(Converter)*, 
                                            uint8_t**             source, const uint8_t*             SourceEnd, 
                                            QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd),
                     void        (*delete_self)(QUEX_NAME(Converter)*),

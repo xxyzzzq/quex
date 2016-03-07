@@ -108,17 +108,17 @@ QUEX_NAME(LexatomLoader_Plain_destruct_self)(QUEX_NAME(LexatomLoader)* alter_ego
 
 QUEX_INLINE size_t   
 QUEX_NAME(LexatomLoader_Plain_load_characters)(QUEX_NAME(LexatomLoader)*  alter_ego,
-                                                   QUEX_TYPE_LEXATOM* RegionBeginP, 
-                                                   const size_t         N,
-                                                   bool*                end_of_stream_f)  
+                                               QUEX_TYPE_LEXATOM*         RegionBeginP, 
+                                               const size_t               N,
+                                               bool*                      end_of_stream_f)  
 /* Loads content into a region of memory. Does NOT effect any of the buffer's
  * variables. 
  *
  * RETURNS: Number of loaded characters into the given region.               */
 { 
     QUEX_NAME(LexatomLoader_Plain)* me = (QUEX_NAME(LexatomLoader_Plain)*)alter_ego;
-    size_t                         loaded_byte_n = (size_t)-1;
-    size_t                         loaded_n;
+    size_t                          loaded_byte_n = (size_t)-1;
+    size_t                          loaded_n;
 
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
