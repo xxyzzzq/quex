@@ -189,9 +189,9 @@ QUEX_NAME(LexatomLoader_Converter_destruct_self)(QUEX_NAME(LexatomLoader)* alter
 
 QUEX_INLINE size_t 
 QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  alter_ego,
-                                                  QUEX_TYPE_LEXATOM*      RegionBeginP, 
-                                                  const size_t              N,
-                                                  bool*                     end_of_stream_f)
+                                                   QUEX_TYPE_LEXATOM*      RegionBeginP, 
+                                                   const size_t              N,
+                                                   bool*                     end_of_stream_f)
 /* Loads content into the raw buffer, convert it and write it to the engine's
  * buffer. The region where to write into the engine's buffer expands from
  * 'RegionBeginP' to 'N' characters after it.                                
@@ -199,13 +199,13 @@ QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  al
  * RETURNS: Number of loaded characters into the given region.               */
 {
     QUEX_NAME(LexatomLoader_Converter)* me = (QUEX_NAME(LexatomLoader_Converter)*)alter_ego;
-    QUEX_NAME(RawBuffer)*              raw = &me->raw_buffer;
-    QUEX_TYPE_LEXATOM*               buffer_insertion_p = RegionBeginP;
-    const QUEX_TYPE_LEXATOM*         BufferRegionEnd    = &RegionBeginP[N];
-    ptrdiff_t                          converted_character_n;
-    bool                               drain_filled_f;
-    bool                               load_complete_f;
-    bool                               raw_end_of_stream_f;
+    QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
+    QUEX_TYPE_LEXATOM*                  buffer_insertion_p = RegionBeginP;
+    const QUEX_TYPE_LEXATOM*            BufferRegionEnd    = &RegionBeginP[N];
+    ptrdiff_t                           converted_character_n;
+    E_ConversionResult                  drain_filled_f;
+    bool                                load_complete_f;
+    bool                                raw_end_of_stream_f;
 #   if 0
     int                                i;
     QUEX_TYPE_LEXATOM*               buffer_insertion_begin_p;
@@ -234,7 +234,8 @@ QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  al
      *       cases, the analyser may continue, before the next try.          */
     raw_end_of_stream_f = false;
     load_complete_f     = true;
-    while( (! drain_filled_f) && load_complete_f ) {
+    while(    drain_filled_f == E_ConversionResult_NO_MORE_DATA
+           && load_complete_f ) {
         __quex_assert(buffer_insertion_p < BufferRegionEnd);  /* '==' break  */
 
         if( ! raw_end_of_stream_f ) {
@@ -254,7 +255,8 @@ QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  al
 
     me->converter->virginity_f = false;
 
-    if( (! drain_filled_f) && raw_end_of_stream_f ) {
+    if(    drain_filled_f == E_ConversionResult_NO_MORE_DATA
+        && raw_end_of_stream_f ) {
        if( raw->next_to_convert_p == raw->fill_end_p ) {
            *end_of_stream_f = true;
        } else {
@@ -292,9 +294,9 @@ QUEX_NAME(LexatomLoader_Converter_fill_prepare)(QUEX_NAME(LexatomLoader)*   alte
 }
 
 QUEX_INLINE ptrdiff_t 
-QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                              QUEX_TYPE_LEXATOM*       RegionBeginP,
-                                              const QUEX_TYPE_LEXATOM* RegionEndP,
+QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)* alter_ego,
+                                              QUEX_TYPE_LEXATOM*         RegionBeginP,
+                                              const QUEX_TYPE_LEXATOM*   RegionEndP,
                                               const void*                FilledEndP_raw)
 /* Converts what has been filled into the 'raw_buffer' until 'FilledEndP
  * and stores it into the buffer.                                            */

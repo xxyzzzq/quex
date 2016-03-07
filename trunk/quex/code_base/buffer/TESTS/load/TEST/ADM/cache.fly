@@ -1,88 +1,88 @@
 {
 title: (BPC=1, FB=0);
 title_group: Buffer_load_backward;
-build_time: 0.8060188293457031;
+build_time: 0.8142039775848389;
 file_name: backward-fb0.exe;
-hwut_info_time: 1457272528L;
+hwut_info_time: 1457334280L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.004233; 0; ]
+  [ ; OK; 0.005338; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=1);
 title_group: Buffer_load_backward;
-build_time: 0.8095910549163818;
+build_time: 0.8113608360290527;
 file_name: backward-fb1.exe;
-hwut_info_time: 1457272530L;
+hwut_info_time: 1457334281L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.004188; 0; ]
+  [ ; OK; 0.004440; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=2);
 title_group: Buffer_load_backward;
-build_time: 0.8614108562469482;
+build_time: 0.8124148845672607;
 file_name: backward-fb2.exe;
-hwut_info_time: 1457272525L;
+hwut_info_time: 1457334276L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.007454; 0; ]
+  [ ; OK; 0.004753; 0; ]
 ]
 }
 {
 title: (BPC=4, FB=2);
 title_group: Buffer_load_backward;
-build_time: 0.8298718929290771;
+build_time: 0.8118879795074463;
 file_name: backward-fb2-32.exe;
-hwut_info_time: 1457272526L;
+hwut_info_time: 1457334278L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.004047; 0; ]
+  [ ; OK; 0.004365; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=0);
 title_group: Buffer_load_forward;
-build_time: 0.8526740074157715;
+build_time: 0.8308751583099365;
 file_name: forward-fb0.exe;
-hwut_info_time: 1457272526L;
+hwut_info_time: 1457334277L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.003814; 0; ]
+  [ ; OK; 0.004549; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=1);
 title_group: Buffer_load_forward;
-build_time: 1.0011951923370361;
+build_time: 0.8883450031280518;
 file_name: forward-fb1.exe;
-hwut_info_time: 1457272524L;
+hwut_info_time: 1457334275L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.004277; 0; ]
+  [ ; OK; 0.004433; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=2);
 title_group: Buffer_load_forward;
-build_time: 0.8009350299835205;
+build_time: 0.8222050666809082;
 file_name: forward-fb2.exe;
-hwut_info_time: 1457272529L;
+hwut_info_time: 1457334280L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005074; 0; ]
+  [ ; OK; 0.004433; 0; ]
 ]
 }
 {
 title: (BPC=4, FB=2);
 title_group: Buffer_load_forward;
-build_time: 0.8756670951843262;
+build_time: 0.8325819969177246;
 file_name: forward-fb2-32.exe;
-hwut_info_time: 1457272527L;
+hwut_info_time: 1457334279L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.004768; 0; ]
+  [ ; OK; 0.004420; 0; ]
 ]
 }
