@@ -79,8 +79,8 @@ print_this(quex::EasyLexer* lex, int Index, size_t Size, size_t ContentSize)
         assert(! lex->buffer.input.end_p);
         assert(lex->buffer._read_p == (QUEX_TYPE_LEXATOM*)0);
         assert(lex->buffer._lexeme_start_p == (QUEX_TYPE_LEXATOM*)0);
-        assert(lex->buffer.input.character_index_begin == -1);
-        assert(lex->buffer.input.character_index_end_of_stream == -1);
+        assert(lex->buffer.input.lexatom_index_begin == -1);
+        assert(lex->buffer.input.lexatom_index_end_of_stream == -1);
         cout << "   <empty buffer>"  << endl; 
     }
 }

@@ -22,8 +22,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)QUEX_NAME(Buffer_input_character_index_begin)(buffer));
-        __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->input_character_tell(me));
+        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)QUEX_NAME(Buffer_input_lexatom_index_begin)(buffer));
+        __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->input_lexatom_tell(me));
         if( buffer->input.end_p == 0x0 )
             __QUEX_STD_printf("_memory.input.end_p (offset)  = <0x0>\n");
         else
@@ -48,7 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             return (QUEX_TYPE_LEXATOM)'?'; 
         else if( buffer->input.end_p == C )       
             return (QUEX_TYPE_LEXATOM)']'; /* End of stream sign. */
-        else if( QUEX_NAME(Buffer_input_character_index_begin)(buffer) == 0 && buffer->_memory._front == C )     
+        else if( QUEX_NAME(Buffer_input_lexatom_index_begin)(buffer) == 0 && buffer->_memory._front == C )     
             return (QUEX_TYPE_LEXATOM)'['; /* Begin of stream sign. */
         else
             return (QUEX_TYPE_LEXATOM)'|';
@@ -278,12 +278,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_printf("   _read_p        = +0x%X;\n", (int)(me->_read_p        - Offset));
         __QUEX_STD_printf("   _lexeme_start_p = +0x%X;\n", (int)(me->_lexeme_start_p - Offset));
 
-        __QUEX_STD_printf("   _character_at_lexeme_start = %X;\n", (int)me->_character_at_lexeme_start);
+        __QUEX_STD_printf("   _character_at_lexeme_start = %X;\n", (int)me->_lexatom_at_lexeme_start);
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_character_before_lexeme_start);
+        __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_lexatom_before_lexeme_start);
 #       endif
-        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)QUEX_NAME(Buffer_input_character_index_begin)(me));
-        __QUEX_STD_printf("   input.end_character_index   = %i;\n", (int)QUEX_NAME(Buffer_input_character_index_end)(me));
+        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)QUEX_NAME(Buffer_input_lexatom_index_begin)(me));
+        __QUEX_STD_printf("   input.end_character_index   = %i;\n", (int)QUEX_NAME(Buffer_input_lexatom_index_end)(me));
         if( me->filler ) {
             __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->filler->_byte_order_reversion_active_f ? "true" : "false");
         }

@@ -7,13 +7,13 @@
  * Moving depends on:   * _read_p, 
  *                      * _lexeme_start_p
  *                      * whether the buffer contains the end of file or not.
- *                      * begin_character_index
+ *                      * begin_lexatom_index
  *                      * QUEX_TYPE_LEXATOM
  *
  * The last one is controlled by a compile-time parameter. The others are
- * varried dynamically. The begin_character_index is dealt with by setting
- * the end character index to 'content size + 3'. So there will be cases
- * where the begin character index == 0 and therefore prohibits moving.
+ * varried dynamically. The begin_lexatom_index is dealt with by setting
+ * the end lexatom index to 'content size + 3'. So there will be cases
+ * where the begin lexatom index == 0 and therefore prohibits moving.
  *
  * EXPERIMENT: Setup buffer of 5 elements.
  *
@@ -67,11 +67,11 @@ main(int argc, char** argv)
         QUEX_TYPE_LEXATOM* lexeme_start_p;     
         QUEX_TYPE_LEXATOM  lexeme_start_char;
     } before;
-    QUEX_TYPE_LEXATOM*      min_p;     
-    QUEX_TYPE_STREAM_POSITION character_index_at_begin;
+    QUEX_TYPE_LEXATOM*        min_p;     
+    QUEX_TYPE_STREAM_POSITION lexatom_index_at_begin;
     bool                      end_of_stream_in_buffer_f;
     ptrdiff_t                 move_distance;
-    QUEX_TYPE_LEXATOM       backup[MemorySize * 2];
+    QUEX_TYPE_LEXATOM         backup[MemorySize * 2];
     int                       count = 0;
 
     if( cl_has(argc, argv, "--hwut-info") ) {
@@ -81,12 +81,12 @@ main(int argc, char** argv)
         return 0;
     };
     stderr = stdout;
-    hwut_if_choice("cib=0")     { character_index_at_begin = 0; end_of_stream_in_buffer_f = false; }
-    hwut_if_choice("cib=1")     { character_index_at_begin = 1; end_of_stream_in_buffer_f = false; }
-    hwut_if_choice("cib=2")     { character_index_at_begin = 2; end_of_stream_in_buffer_f = false; }
-    hwut_if_choice("cib=0:EOS") { character_index_at_begin = 0; end_of_stream_in_buffer_f = true;  }
-    hwut_if_choice("cib=1:EOS") { character_index_at_begin = 1; end_of_stream_in_buffer_f = true;  }
-    hwut_if_choice("cib=2:EOS") { character_index_at_begin = 2; end_of_stream_in_buffer_f = true;  }
+    hwut_if_choice("cib=0")     { lexatom_index_at_begin = 0; end_of_stream_in_buffer_f = false; }
+    hwut_if_choice("cib=1")     { lexatom_index_at_begin = 1; end_of_stream_in_buffer_f = false; }
+    hwut_if_choice("cib=2")     { lexatom_index_at_begin = 2; end_of_stream_in_buffer_f = false; }
+    hwut_if_choice("cib=0:EOS") { lexatom_index_at_begin = 0; end_of_stream_in_buffer_f = true;  }
+    hwut_if_choice("cib=1:EOS") { lexatom_index_at_begin = 1; end_of_stream_in_buffer_f = true;  }
+    hwut_if_choice("cib=2:EOS") { lexatom_index_at_begin = 2; end_of_stream_in_buffer_f = true;  }
 
     G_init(&it);
     
@@ -96,7 +96,7 @@ main(int argc, char** argv)
                              end_of_stream_in_buffer_f,
                              &memory[0], MemorySize, 
                              &content[0], ContentSize);
-        buffer.input.character_index_begin = character_index_at_begin;
+        buffer.input.lexatom_index_begin = lexatom_index_at_begin;
         buffer.on_content_change = self_on_content_change;
         buffer.on_overflow       = self_on_overflow;
 

@@ -1,7 +1,7 @@
 /* PURPOSE: Testing Buffer-Seeking with LexatomLoader_Converter.
  *
- * Buffer-Seeking tries to set the 'read_p' to a specific character given by a
- * character index. For this, new content may be loaded into the buffer.  The
+ * Buffer-Seeking tries to set the 'read_p' to a specific lexatom given by a
+ * lexatom index. For this, new content may be loaded into the buffer.  The
  * tests of these files do a 'wild tell&seek' on positions in a stream.  All
  * tests are based on the file:
  *
@@ -24,7 +24,7 @@
  *                             does not have a clue about how many bytes are in
  *                             its stomach.
  *
- * The stepping is imposed by opening a file of a dynamic character length 
+ * The stepping is imposed by opening a file of a dynamic lexatom length 
  * codec, namely 'UTF8'. Then, no linear relationship can be assumed between 
  * input byte position and stream position.
  *
@@ -136,11 +136,11 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLes
     QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, 
                                 E_Ownership_EXTERNAL);
     if( LinearF ) { 
-        __quex_assert(filler->byte_n_per_character != -1);
+        __quex_assert(filler->byte_n_per_lexatom != -1);
         __quex_assert(byte_loader->binary_mode_f);
     }
     else {
-        __quex_assert(filler->byte_n_per_character == -1);
+        __quex_assert(filler->byte_n_per_lexatom == -1);
     }
 
     /* REFERENCE file and INPUT file are the SAME.                           */

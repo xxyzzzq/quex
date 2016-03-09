@@ -26,7 +26,7 @@ def do(Data, TheAnalyzer):
         ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
                   inp == c[0]       inp == c[1]       inp == c[2]
     """
-    CloserSequence = Data["closer_sequence"]
+    CloserSequence  = Data["closer_sequence"]
     CloserPattern   = Data["closer_pattern"]
     ModeName        = Data["mode_name"]
     OnSkipRangeOpen = Data["on_skip_range_open"]

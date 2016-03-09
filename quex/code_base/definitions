@@ -363,14 +363,14 @@
 #if ! defined(QUEX_OPTION_TERMINATION_ZERO_DISABLED)
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)        \
-        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_read_p); \
+        (BUFFER)->_lexatom_at_lexeme_start = *((BUFFER)->_read_p); \
         *((BUFFER)->_read_p) = '\0';
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                   \
         /* only need to reset, in case that the terminating zero was set*/        \
-        if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_LEXATOM)'\0' ) { \
-            *((BUFFER)->_read_p) = (BUFFER)->_character_at_lexeme_start;         \
-            (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_LEXATOM)'\0';     \
+        if( (BUFFER)->_lexatom_at_lexeme_start != (QUEX_TYPE_LEXATOM)'\0' ) { \
+            *((BUFFER)->_read_p) = (BUFFER)->_lexatom_at_lexeme_start;         \
+            (BUFFER)->_lexatom_at_lexeme_start = (QUEX_TYPE_LEXATOM)'\0';     \
         }
 #else
 

@@ -25,16 +25,16 @@ verify_content(QUEX_NAME(Buffer)* me)
     ptrdiff_t            count = 0;
 
     /* If end_p does not stand on buffer boarder, then it must stand according
-     * to the 'character_index_begin' at the end of the pseudo files content.*/
+     * to the 'lexatom_index_begin' at the end of the pseudo files content.*/
     if( me->input.end_p != me->_memory._back ) {
-        hwut_verify(me->input.end_p - &me->_memory._front[1] + me->input.character_index_begin
+        hwut_verify(me->input.end_p - &me->_memory._front[1] + me->input.lexatom_index_begin
                     == sizeof(PseudoFile)/sizeof(PseudoFile[0]));
     }
     /* Make sure that the content has been loaded properly. From the 
      * variable 'pseudo_file' it can be previewed what the content is 
      * supposed to be.                                                       */
     for(p=&me->_memory._front[1]; p != me->input.end_p ; ++p) {
-        expected = PseudoFile[me->input.character_index_begin + p - &me->_memory._front[1]];
+        expected = PseudoFile[me->input.lexatom_index_begin + p - &me->_memory._front[1]];
         hwut_verify(*p == expected);
         ++count;
     }

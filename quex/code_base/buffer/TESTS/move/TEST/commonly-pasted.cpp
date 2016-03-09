@@ -51,7 +51,7 @@ self_print(QUEX_NAME(Buffer)* buffer)
            (int)(buffer->_read_p - buffer->_memory._front),
            (int)(*(buffer->_read_p)),
            (int)(buffer->input.end_p ? buffer->input.end_p - buffer->_memory._front : -1),
-           (int)(buffer->input.character_index_end_of_stream));
+           (int)(buffer->input.lexatom_index_end_of_stream));
 
     QUEX_NAME(Buffer_show_content_intern)(buffer);
 }
@@ -91,11 +91,11 @@ instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
 
     QUEX_NAME(Buffer_register_content)(buffer, end_p, 0);
     if( EndOfStreamInBufferF ) {
-        buffer->input.character_index_end_of_stream =   buffer->input.character_index_begin \
+        buffer->input.lexatom_index_end_of_stream =   buffer->input.lexatom_index_begin \
                                                       + (QUEX_TYPE_STREAM_POSITION)(end_p - BeginP);
     }
     else {
-        buffer->input.character_index_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
+        buffer->input.lexatom_index_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
     }
 
     QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);

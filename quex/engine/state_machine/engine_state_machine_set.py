@@ -148,8 +148,8 @@ class CharacterSetStateMachine:
 
     def __prepare_begin_and_putback(self, OnBegin, OnEnd):
         """With codecs of dynamic character sizes (UTF8), the pointer to the 
-        first letter is stored in 'character_begin_p'. To reset the input 
-        pointer 'input_p = character_begin_p' is applied.  
+        first letter is stored in 'lexatom_begin_p'. To reset the input 
+        pointer 'input_p = lexatom_begin_p' is applied.  
         """
         if not Setup.buffer_codec.variable_character_sizes_f():
             # 1 character == 1 chunk

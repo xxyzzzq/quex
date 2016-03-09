@@ -60,7 +60,7 @@ QUEX_INLINE void
 QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
                               const void*        FilledEndP)
 /* Uses the content that has been inserted until 'FilledEndP' to fill the
- * engine's character buffer (if it is not already done). A fille of type
+ * engine's lexatom buffer (if it is not already done). A fille of type
  * 'LexatomLoader_Converter' takes the content of the raw buffer and converts
  * it into the engine's buffer from 'me->input.end_p' to 'me->_memory._back'.
  *                                                                           */
@@ -68,7 +68,7 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
     QUEX_TYPE_LEXATOM*   BeginP = &me->_memory._front[1];
 
     /* Place new content in the engine's buffer.                             */
-    ptrdiff_t inserted_character_n = me->filler->derived.fill_finish(me->filler, 
+    ptrdiff_t inserted_lexatom_n = me->filler->derived.fill_finish(me->filler, 
                                                                      me->input.end_p,
                                                                      me->_memory._back, 
                                                                      FilledEndP);
@@ -77,18 +77,18 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
      * has been filled with data.                                            */
     if( me->filler->_byte_order_reversion_active_f ) {
         QUEX_NAME(LexatomLoader_reverse_byte_order)(me->input.end_p, 
-                                                   &me->input.end_p[inserted_character_n]);
+                                                   &me->input.end_p[inserted_lexatom_n]);
     }
 
     /* -- Manual buffer filling requires the end-of-stream pointer always
      *    to be set. 
-     * -- The 'character_index_begin' has been set in 'fill_prepare()'.
+     * -- The 'lexatom_index_begin' has been set in 'fill_prepare()'.
      *    '-1' => no change.
-     * -- The 'character_index_end_of_stream' can now be set, since it is
-     *    known how many characters have been inserted.
+     * -- The 'lexatom_index_end_of_stream' can now be set, since it is
+     *    known how many lexatoms have been inserted.
      *                                                                       */
-    QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[inserted_character_n], -1);
-    QUEX_NAME(Buffer_register_eos)(me,   me->input.character_index_begin
+    QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[inserted_lexatom_n], -1);
+    QUEX_NAME(Buffer_register_eos)(me,   me->input.lexatom_index_begin
                                        + (me->input.end_p - BeginP));
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);

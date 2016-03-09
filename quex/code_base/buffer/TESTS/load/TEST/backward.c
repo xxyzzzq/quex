@@ -18,10 +18,10 @@
  *    * adapted pointers: ._read_p, ._lexeme_start_p.
  *    * buffer's content.
  *    * input.end_p, 
- *      input.character_index_begin, 
- *      input.character_index_end_of_stream
+ *      input.lexatom_index_begin, 
+ *      input.lexatom_index_end_of_stream
  *
- * The read and lexeme pointers shall point exactly to the same character as
+ * The read and lexeme pointers shall point exactly to the same lexatom as
  * before the load procedure. That is, they need.                            */
 
 /* 
@@ -107,7 +107,7 @@ load_forward_until_eos(QUEX_NAME(Buffer)* me)
 {
     int  count = 0;
 
-    while( me->input.character_index_end_of_stream == -1 ) {
+    while( me->input.lexatom_index_end_of_stream == -1 ) {
         me->_read_p         = me->input.end_p;
         me->_lexeme_start_p = me->input.end_p;
         QUEX_NAME(Buffer_load_forward)(me, NULL, 0);
@@ -116,7 +116,7 @@ load_forward_until_eos(QUEX_NAME(Buffer)* me)
         ++count;
         hwut_verify(count < 100);
     }
-    hwut_verify(me->input.character_index_end_of_stream == sizeof(PseudoFile)/sizeof(PseudoFile[0])); 
+    hwut_verify(me->input.lexatom_index_end_of_stream == sizeof(PseudoFile)/sizeof(PseudoFile[0])); 
 }
 
 static ptrdiff_t
@@ -129,7 +129,7 @@ test_load_backward(QUEX_NAME(Buffer)* buffer)
         QUEX_TYPE_LEXATOM       lexeme_start;
         QUEX_TYPE_LEXATOM*      position_register_1;
         QUEX_TYPE_LEXATOM*      position_register_3;
-        QUEX_TYPE_STREAM_POSITION character_index_begin;
+        QUEX_TYPE_STREAM_POSITION lexatom_index_begin;
     } before;
     bool                 verdict_f;
     ptrdiff_t            delta;
@@ -143,11 +143,11 @@ test_load_backward(QUEX_NAME(Buffer)* buffer)
     position_register[4]       = PoisonP; 
 #   endif
 
-    before.read_p                = buffer->_read_p;
-    before.read                  = *buffer->_read_p;
-    before.lexeme_start_p        = buffer->_lexeme_start_p;
-    before.lexeme_start          = *buffer->_lexeme_start_p;
-    before.character_index_begin = buffer->input.character_index_begin;
+    before.read_p              = buffer->_read_p;
+    before.read                = *buffer->_read_p;
+    before.lexeme_start_p      = buffer->_lexeme_start_p;
+    before.lexeme_start        = *buffer->_lexeme_start_p;
+    before.lexatom_index_begin = buffer->input.lexatom_index_begin;
 
     verdict_f = QUEX_NAME(Buffer_load_backward)(buffer); 
     /* &position_register[1], PositionRegisterN); */
@@ -164,8 +164,8 @@ test_load_backward(QUEX_NAME(Buffer)* buffer)
         hwut_verify(! verdict_f);  
     }
 
-    hwut_verify(before.character_index_begin >= buffer->input.character_index_begin);
-    hwut_verify(before.character_index_begin -  buffer->input.character_index_begin == delta);
+    hwut_verify(before.lexatom_index_begin >= buffer->input.lexatom_index_begin);
+    hwut_verify(before.lexatom_index_begin -  buffer->input.lexatom_index_begin == delta);
 
     hwut_verify(buffer->_lexeme_start_p - before.lexeme_start_p == delta);
 #   if 0

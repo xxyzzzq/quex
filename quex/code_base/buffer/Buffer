@@ -11,13 +11,13 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
     E_Ownership           ownership;
 
     /* (*) Buffer Memory Setup:
-     *      memory[0]             = lower buffer limit code character
+     *      memory[0]             = lower buffer limit code lexatom
      *      memory[1]             = first char of content
      *      ...
      *      memory[BUFFER_SIZE-2] = last char of content
-     *      memory[BUFFER_SIZE-1] = upper buffer limit code character             */
-    QUEX_TYPE_LEXATOM*  _front;         /* first character in buffer (BLC)      */
-    QUEX_TYPE_LEXATOM*  _back;          /* last character in buffer  (BLC)      */
+     *      memory[BUFFER_SIZE-1] = upper buffer limit code lexatom          */
+    QUEX_TYPE_LEXATOM*  _front;         /* first lexatom in buffer (BLC)     */
+    QUEX_TYPE_LEXATOM*  _back;          /* last lexatom in buffer  (BLC)     */
 
 } QUEX_NAME(BufferMemory);
 
@@ -29,15 +29,15 @@ QUEX_INLINE void    QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  
 QUEX_INLINE void    QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
 typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) { 
-/* Buffer of characters on which the analyzer runs. 
+/* Buffer of lexatoms on which the analyzer runs. 
  *
  * Character Stream:
  * (by LexatomLoader)     
  *     
- *    character_index_end_of_stream ----------------------.
- *    character_index_begin ---------------.              |
+ *    lexatom_index_end_of_stream ------------------------.
+ *    lexatom_index_begin -----------------.              |
  *                                         |              |
- *    character index:   0  1  2  3  4  6  6  7  8  9  10 11 12 13 14 ...
+ *    lexatom index:   0  1  2  3  4  6  6  7  8  9  10 11 12 13 14 ...
  *  
  *    stream:           [aa.bb.cc.dd.ee.ff:gg.hh.ii.jj.kk.ll:mm.nn.oo.pp.qq ...
  *                              .---------'                 |
@@ -48,7 +48,7 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
  *           input.end_p --------------------------'              |
  *           _back -----------------------------------------------'
  * 
- * 'character_index_end_of_stream == -1' => end of stream has not yet been
+ * 'lexatom_index_end_of_stream == -1' => end of stream has not yet been
  * detected.                                                                 */
                                                                              
     QUEX_NAME(BufferMemory)  _memory;                                        
@@ -58,23 +58,23 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
     QUEX_TYPE_LEXATOM*     _lexeme_start_p;                                
                                                                              
     struct {                                                                 
-        QUEX_TYPE_LEXATOM*      end_p;                                     
-        QUEX_TYPE_STREAM_POSITION character_index_begin;                     
-        /* Character index + 1 of the last character in the stream.          */
-        QUEX_TYPE_STREAM_POSITION character_index_end_of_stream; 
+        QUEX_TYPE_LEXATOM*        end_p;                                     
+        QUEX_TYPE_STREAM_POSITION lexatom_index_begin;                     
+        /* Character index + 1 of the last lexatom in the stream.          */
+        QUEX_TYPE_STREAM_POSITION lexatom_index_end_of_stream; 
     } input;
 
     /* (*) Information about previous content:
      *
-     * _character_at_lexeme_start: character that has been covered by a 
+     * _lexatom_at_lexeme_start: lexatom that has been covered by a 
      *                             terminating zero. Reset upon restart of 
      *                             analysis.
-     * _character_at_lexeme_start: Used to check whether the lexeme's 
-     *                             preceeding character was newline. 
+     * _lexatom_at_lexeme_start: Used to check whether the lexeme's 
+     *                             preceeding lexatom was newline. 
      *                             (i.e. for begin-of-line pre-context).     */
-    QUEX_TYPE_LEXATOM      _character_at_lexeme_start;      
+    QUEX_TYPE_LEXATOM      _lexatom_at_lexeme_start;      
 #   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-    QUEX_TYPE_LEXATOM      _character_before_lexeme_start;  
+    QUEX_TYPE_LEXATOM      _lexatom_before_lexeme_start;  
 #   endif
 
     struct    QUEX_NAME(LexatomLoader_tag)*  filler;
@@ -154,12 +154,12 @@ QUEX_INLINE void       QUEX_NAME(Buffer_register_content)(QUEX_NAME(Buffer)* me,
 QUEX_INLINE void       QUEX_NAME(Buffer_register_eos)(QUEX_NAME(Buffer)* me,
                                                       QUEX_TYPE_STREAM_POSITION CharacterIndexEndOfStream);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
-                       QUEX_NAME(Buffer_input_character_index_end)(QUEX_NAME(Buffer)* me);
+                       QUEX_NAME(Buffer_input_lexatom_index_end)(QUEX_NAME(Buffer)* me);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
-                       QUEX_NAME(Buffer_input_character_index_begin)(QUEX_NAME(Buffer)* me);
+                       QUEX_NAME(Buffer_input_lexatom_index_begin)(QUEX_NAME(Buffer)* me);
 QUEX_INLINE size_t                QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)*);
 
-/* Tell & seek '_read_p' to/from character index. */
+/* Tell & seek '_read_p' to/from lexatom index. */
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
                        QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)*);
 QUEX_INLINE void       QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, 
