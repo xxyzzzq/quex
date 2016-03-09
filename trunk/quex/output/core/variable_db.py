@@ -46,7 +46,7 @@ candidate_db = {
 #
 # (*) Skipper etc.
 "reference_p":                    ["QUEX_TYPE_LEXATOM*", "(QUEX_TYPE_LEXATOM*)0x0", False],
-"character_begin_p":              ["QUEX_TYPE_LEXATOM*", "(QUEX_TYPE_LEXATOM*)0x0", False],
+"lexatom_begin_p":                ["QUEX_TYPE_LEXATOM*", "(QUEX_TYPE_LEXATOM*)0x0", False],
 "text_end":                       ["QUEX_TYPE_LEXATOM*",         "(QUEX_TYPE_LEXATOM*)0x0",         False],
 #     Character Set Skipper:
 "Skipper%i":                      ["const QUEX_TYPE_LEXATOM",    None,                                False],

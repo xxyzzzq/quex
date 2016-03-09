@@ -26,10 +26,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE bool 
 QUEX_NAME(Converter_IConv_open)(QUEX_NAME(Converter)* me,
                                 const char* FromCodec, const char* ToCodec);
-QUEX_INLINE E_ConversionResult 
-QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*       me, 
-                                   uint8_t**                   source, 
-                                   const uint8_t*              SourceEnd,
+QUEX_INLINE E_LoadResult 
+QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*     me, 
+                                   uint8_t**                 source, 
+                                   const uint8_t*            SourceEnd,
                                    QUEX_TYPE_LEXATOM**       drain,  
                                    const QUEX_TYPE_LEXATOM*  DrainEnd);
 QUEX_INLINE void 
@@ -89,27 +89,27 @@ QUEX_NAME(Converter_IConv_open)(QUEX_NAME(Converter)* alter_ego,
     
     /* ByteN / Character:
      * IConv does not provide something like 'isFixedWidth()'. So, the 
-     * safe assumption "byte_n/character != const" is made, except for some
+     * safe assumption "byte_n/lexatom != const" is made, except for some
      * well-known examples.                                              */
-    me->base.byte_n_per_character = -1;
+    me->base.byte_n_per_lexatom = -1;
     if(    __QUEX_STD_strcmp(FromCodec, "UCS-4LE") == 0 
         || __QUEX_STD_strcmp(FromCodec, "UCS-4BE")  == 0) {
-        me->base.byte_n_per_character = 4;
+        me->base.byte_n_per_lexatom = 4;
     }
     else if(   __QUEX_STD_strcmp(FromCodec, "UCS-2LE") == 0 
             || __QUEX_STD_strcmp(FromCodec, "UCS-2BE")  == 0) {
-        me->base.byte_n_per_character = 2;
+        me->base.byte_n_per_lexatom = 2;
     }
 
     return true;
 }
 
-QUEX_INLINE E_ConversionResult 
+QUEX_INLINE E_LoadResult 
 QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*  alter_ego, 
                                    uint8_t**              source, const uint8_t*              SourceEnd,
                                    QUEX_TYPE_LEXATOM**  drain,  const QUEX_TYPE_LEXATOM*  DrainEnd)
 /* RETURNS:  true  --> User buffer is filled as much as possible with 
- *                     converted characters.
+ *                     converted lexatoms.
  *           false --> More raw bytes are needed to fill the user buffer.           
  *
  *  IF YOU GET A COMPILE ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
@@ -138,10 +138,10 @@ QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*  alter_ego,
                    (char**)drain,                        &drain_bytes_left_n);
 
     if( report != (size_t)-1 ) { 
-        /* No Error => Raw buffer COMPLETELY converted.                  */
+        /* No Error => Raw buffer COMPLETELY converted.                      */
         __quex_assert(! source_bytes_left_n);
-        return drain_bytes_left_n ? E_ConversionResult_NO_MORE_DATA 
-                                  : E_ConversionResult_FILL_COMPLETE;
+        return drain_bytes_left_n ? E_LoadResult_INCOMPLETE 
+                                  : E_LoadResult_COMPLETE;
     }
 
     switch( errno ) {
@@ -149,20 +149,20 @@ QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*  alter_ego,
         QUEX_ERROR_EXIT("Unexpected setting of 'errno' after call to GNU's iconv().");
 
     case EILSEQ:
-        return E_ConversionResult_ENCODING_ERROR;
+        return E_LoadResult_ENCODING_ERROR;
 
     case EINVAL:
-        /* Incomplete byte sequence for character conversion.
+        /* Incomplete byte sequence for lexatom conversion.
          * => '*source' points to the beginning of the incomplete sequence.
          * => If drain is not filled, then new source content must be 
-         *    provided.                                                  */
-        return drain_bytes_left_n ? E_ConversionResult_NO_MORE_DATA 
-                                  : E_ConversionResult_FILL_COMPLETE;
+         *    provided.                                                      */
+        return drain_bytes_left_n ? E_LoadResult_INCOMPLETE 
+                                  : E_LoadResult_COMPLETE;
 
     case E2BIG:
         /* The input buffer was not able to hold the number of converted 
-         * characters. => Drain is filled to the limit.                 */
-        return E_ConversionResult_FILL_COMPLETE;
+         * lexatoms. => Drain is filled to the limit.                        */
+        return E_LoadResult_COMPLETE;
     }
 }
 

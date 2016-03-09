@@ -121,12 +121,12 @@ verify_content(QUEX_NAME(Buffer)* me,
 /* The 'Buffer_seek()' must have positioned the 'read_p' to the character at
  * the specific position. The stretch from 'read_p' to text end must be the
  * same as in the reference buffer. Moreover, the stretch from buffer begin to
- * text and can be compared with what is stored about 'begin_character_index'.
+ * text and can be compared with what is stored about 'begin_lexatom_index'.
  */ 
 {
-    QUEX_TYPE_LEXATOM*       BeginP = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*         BeginP = &me->_memory._front[1];
     ptrdiff_t                  ContentSize = me->input.end_p - BeginP;
-    QUEX_TYPE_STREAM_POSITION  begin_character_index = QUEX_NAME(Buffer_input_character_index_begin)(me);
+    QUEX_TYPE_STREAM_POSITION  begin_lexatom_index = QUEX_NAME(Buffer_input_lexatom_index_begin)(me);
 
     if( Position < PositionLimit ) {
         if( *me->_read_p != reference[Position] ) {
@@ -146,7 +146,7 @@ verify_content(QUEX_NAME(Buffer)* me,
     }
 
     /* Make sure that the content corresponds to the reference data.     */
-    if( memcmp((void*)&reference[begin_character_index], (void*)BeginP, 
+    if( memcmp((void*)&reference[begin_lexatom_index], (void*)BeginP, 
                (size_t)ContentSize) != 0) {
         print_difference(me);
         return false;
@@ -157,7 +157,7 @@ verify_content(QUEX_NAME(Buffer)* me,
 static bool
 difference(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION CI)
 {
-    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
+    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_lexatom_index_begin)(me);
 
     return me->_memory._front[1 + CI - ci_begin] != reference[CI];
 }
@@ -168,8 +168,8 @@ difference(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION CI)
 static void
 print_difference(QUEX_NAME(Buffer)* me)
 {
-    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
-    const QUEX_TYPE_STREAM_POSITION ci_end   = QUEX_NAME(Buffer_input_character_index_end)(me);
+    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_lexatom_index_begin)(me);
+    const QUEX_TYPE_STREAM_POSITION ci_end   = QUEX_NAME(Buffer_input_lexatom_index_end)(me);
     QUEX_TYPE_STREAM_POSITION       ci;
     QUEX_TYPE_STREAM_POSITION       ci_diff;
     QUEX_TYPE_STREAM_POSITION       ci_print_begin;
@@ -280,7 +280,7 @@ seek_forward(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION PositionLimit)
     hwut_verify(QUEX_NAME(Buffer_tell)(me) == PositionLimit - 1);
 
     hwut_verify(! QUEX_NAME(Buffer_seek_forward)(me, 1));
-    hwut_verify(me->input.character_index_end_of_stream != -1);
+    hwut_verify(me->input.lexatom_index_end_of_stream != -1);
 
     hwut_verify(QUEX_NAME(Buffer_tell)(me) == PositionLimit - 1);
     return true;

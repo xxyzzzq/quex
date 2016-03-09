@@ -160,7 +160,6 @@ def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):
 
     # The parser MUST ensure that if there is a newline suppressor, there MUST
     # be a newline being defined.
-
     cl = [
         Op.LineCountAdd(1),
         Op.AssignConstant(E_R.Column, 1),

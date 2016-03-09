@@ -1,5 +1,5 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
- * (C) 2007-2008 Frank-Rene Schaefer  */
+ * (C) 2007-2016 Frank-Rene Schaefer  */
 #ifndef  __QUEX_INCLUDE_GUARD__BUFFER__LEXATOMS__CONVERTER__CONVERTER
 #define  __QUEX_INCLUDE_GUARD__BUFFER__LEXATOMS__CONVERTER__CONVERTER
 
@@ -9,10 +9,11 @@
 #ifndef QUEX_TYPE_DEFINITIONS_CONVERTER_RETURN_VALUE
 #define QUEX_TYPE_DEFINITIONS_CONVERTER_RETURN_VALUE
 typedef enum {
-    E_ConversionResult_FILL_COMPLETE  = 1,   /* 'true' in 'if( ... )'  */
-    E_ConversionResult_NO_MORE_DATA   = 0,   /* 'false' in 'if( ... )' */
-    E_ConversionResult_ENCODING_ERROR = 0x4711
-} E_ConversionResult;
+    E_LoadResult_COMPLETE       = 1,   /* 'true' in 'if( ... )'  */
+    E_LoadResult_INCOMPLETE     = 0,   /* 'false' in 'if( ... )' */
+    E_LoadResult_ENCODING_ERROR = -2,
+    E_LoadResult_END_OF_STREAM  = -1
+} E_LoadResult;
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -21,11 +22,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_tag) {
     E_Ownership   ownership;
 
-    E_ConversionResult    
-            (*convert)(struct QUEX_NAME(Converter_tag)*, 
-                       uint8_t**             source, const uint8_t*             SourceEnd, 
-                       QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd);
-    /* Tries to convert all characters given in 'source' with the coding specified
+    E_LoadResult    (*convert)(struct QUEX_NAME(Converter_tag)*, 
+                               uint8_t**           source, const uint8_t*           SourceEnd, 
+                               QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd);
+    /* Tries to convert all lexatoms given in 'source' with the coding specified
      * earlier to _open(...). 'source' and 'drain' are passed as pointers to pointers
      * so that the pointers can be changed. This way the converter can inform the
      * user about the state of conversion from source to drain buffer.
@@ -38,9 +38,9 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_ta
      *               |              |
      *          [....               ] drain buffer
      *
-     *       At the beginning, 'source' points to the first character to be
+     *       At the beginning, 'source' points to the first lexatom to be
      *       converted. 'drain' points to the place where the first converted
-     *       character is to be written to.
+     *       lexatom is to be written to.
      *  
      * AFTER:                          *source                              
      *                                 |     
@@ -51,11 +51,11 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_ta
      *          [.............      ] drain buffer
      *
      *       After conversion, 'source' points immediately behind the last 
-     *       character that was subject to conversion. 'drain' points behind the
-     *       last character that resulted from the conversion. 
+     *       lexatom that was subject to conversion. 'drain' points behind the
+     *       last lexatom that resulted from the conversion. 
      *  
      * RETURNS:  true  --> Drain buffer is filled as much as possible with converted 
-     *                     characters.
+     *                     lexatoms.
      *           false --> More source bytes are needed to fill the drain buffer.     */
 
     ptrdiff_t (*stomach_byte_n)(struct QUEX_NAME(Converter_tag)*);
@@ -64,7 +64,7 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_ta
      * 
      *  This function is called whenever a conversion discontinuity appears.
      *  Such cases appear only when the user navigates through the input
-     *  stream (seek_character_index(...)), or with long pre-conditions when
+     *  stream (seek_lexatom_index(...)), or with long pre-conditions when
      *  the buffer size is exceeded. 
      *
      *  For 'normal' converters this function can be set to '0x0'. If a converter
@@ -77,11 +77,11 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_ta
     /* Closes the conversion handle produced with open(...).      
      * Deletes the object of the derived class.                                       */
 
-    int     byte_n_per_character;
+    int     byte_n_per_lexatom;
     /* Some encodings (such as UTF-8) occupy different number of bytes for different
-     * characters. Others, such as ASCII or UCS-4 use the same number of bytes for
-     * all characters of the character set. Using the flag, the buffer filler can
-     * adapt the seek algorithm for navigation in the character stream.               */
+     * lexatoms. Others, such as ASCII or UCS-4 use the same number of bytes for
+     * all lexatoms of the lexatom set. Using the flag, the buffer filler can
+     * adapt the seek algorithm for navigation in the lexatom stream.                 */
 
     bool    virginity_f;
 
@@ -89,16 +89,15 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_ta
 
 QUEX_INLINE bool
 QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
-                    const char* FromCodec, const char* ToCodec,
-                    bool        (*open)(QUEX_NAME(Converter)*, 
-                                        const char* FromCodingName, const char* ToCodingName),  
-                    E_ConversionResult        
-                                (*convert)(QUEX_NAME(Converter)*, 
-                                           uint8_t**             source, const uint8_t*             SourceEnd, 
-                                           QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd),
-                    void        (*delete_self)(QUEX_NAME(Converter)*),
-                    ptrdiff_t   (*stomach_byte_n)(QUEX_NAME(Converter)*),
-                    void        (*stomach_clear)(QUEX_NAME(Converter)*));
+                    const char*  FromCodec, const char* ToCodec,
+                    bool         (*open)(QUEX_NAME(Converter)*, 
+                                         const char* FromCodingName, const char* ToCodingName),  
+                    E_LoadResult (*convert)(QUEX_NAME(Converter)*, 
+                                            uint8_t**             source, const uint8_t*             SourceEnd, 
+                                            QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd),
+                    void         (*delete_self)(QUEX_NAME(Converter)*),
+                    ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(Converter)*),
+                    void         (*stomach_clear)(QUEX_NAME(Converter)*));
 
 
 QUEX_NAMESPACE_MAIN_CLOSE

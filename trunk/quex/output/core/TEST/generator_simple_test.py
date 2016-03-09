@@ -205,7 +205,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     #    store_last_character_str = ""
     #    if support_begin_of_line_f:
     #        store_last_character_str  = "    %s = %s;\n" % \
-    #                                    ("me->buffer._character_before_lexeme_start", 
+    #                                    ("me->buffer._lexatom_before_lexeme_start", 
     #                                     "*(me->buffer._read_p - 1)")
     #    set_terminating_zero_str  = "    QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
     #    prefix = store_last_character_str + set_terminating_zero_str

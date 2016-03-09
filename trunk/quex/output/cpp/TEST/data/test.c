@@ -7,10 +7,10 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_LEXATOM* LexemeBe
 #   define self (*me)
 /*  'QUEX_GOTO_STATE' requires 'QUEX_LABEL_STATE_ROUTER' */
 #   define QUEX_LABEL_STATE_ROUTER _47
+    QUEX_TYPE_LEXATOM*             lexatom_begin_p                = (QUEX_TYPE_LEXATOM*)0x0;
     QUEX_TYPE_LEXATOM              input                          = (QUEX_TYPE_LEXATOM)(0x00);
     QUEX_TYPE_GOTO_LABEL           target_state_else_index        = QUEX_GOTO_LABEL_VOID;
     QUEX_TYPE_GOTO_LABEL           target_state_index             = QUEX_GOTO_LABEL_VOID;
-    QUEX_TYPE_LEXATOM*             character_begin_p              = (QUEX_TYPE_LEXATOM*)0x0;
     (void)me;
     __QUEX_IF_COUNT_SHIFT_VALUES();
     /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)
@@ -24,7 +24,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_LEXATOM* LexemeBe
     input = *(me->buffer._read_p);
 
 _22:
-    character_begin_p = (me->buffer._read_p);
+    lexatom_begin_p = (me->buffer._read_p);
 
 
     __quex_debug("Init State\n");
@@ -297,7 +297,7 @@ goto _1;
 
 _46:
     __quex_debug("* TERMINAL <BEYOND>\n");
-    (me->buffer._read_p) = character_begin_p;
+    (me->buffer._read_p) = lexatom_begin_p;
 
 goto _1;
 

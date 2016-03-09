@@ -1,4 +1,5 @@
 Event Handling
 ---------------
-*.exe
+bash *.sh
+--not template.sh
 ---------------

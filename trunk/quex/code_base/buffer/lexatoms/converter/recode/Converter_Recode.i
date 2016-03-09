@@ -46,7 +46,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->pivot_iterator_end   = me->pivot_buffer;
     }
 
-    QUEX_INLINE E_ConversionResult
+    QUEX_INLINE E_LoadResult
     QuexConverter_ICU_convert(QuexConverter*        alter_ego, 
                               uint8_t**             source, const uint8_t*              SourceEnd, 
                               QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM*  DrainEnd)
@@ -82,8 +82,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                            /* flush = */FALSE,
                            &me->status);
 
-            if( *drain == DrainEnd ) return E_ConversionResult_OK;
-            else                     return E_ConversionResult_FAILURE;
+            if( *drain == DrainEnd ) return E_LoadResult_OK;
+            else                     return E_LoadResult_FAILURE;
 
         } else {
             ucnv_convertEx(me->to_handle, me->from_handle,
@@ -96,8 +96,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                            /* flush = */FALSE,
                            &me->status);
 
-            if( *drain == DrainEnd ) return E_ConversionResult_OK;
-            else                     return E_ConversionResult_FAILURE;
+            if( *drain == DrainEnd ) return E_LoadResult_OK;
+            else                     return E_LoadResult_FAILURE;
         }
 
         /*

@@ -100,7 +100,7 @@ ColumnCountReferencePDeltaAdd
    Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(r), 
    Cost:         1
    C-code: {
-       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p) * 5555));
+       __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((lexatom_begin_p - reference_p) * 5555));
    }
 
 ColumnCountReferencePSet
@@ -108,7 +108,7 @@ ColumnCountReferencePSet
    Registers:    CharacterBeginP(r),  ReferenceP(w), 
    Cost:         1
    C-code: {
-       __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p + 1000);
+       __QUEX_IF_COUNT_COLUMNS(reference_p = lexatom_begin_p + 1000);
    }
 
 GotoDoorId
@@ -126,7 +126,7 @@ GotoDoorIdIfInputPNotEqualPointer
    IsBranching: True
    Cost:         1
    C-code: {
-       if( me->buffer._read_p != character_begin_p ) goto _1;
+       if( me->buffer._read_p != lexatom_begin_p ) goto _1;
    }
 
 IfPreContextSetPositionAndGoto
@@ -136,7 +136,7 @@ IfPreContextSetPositionAndGoto
    Cost:         1
    C-code: {
        if( pre_context_24_fulfilled_f ) {
-           me->buffer._read_p -= 1;
+               me->buffer._read_p -= 1;
        goto _6;}
    }
 
@@ -246,7 +246,7 @@ RouterByLastAcceptance
    Cost:         1
    C-code: {
        switch( last_acceptance ) {
-           case 66:     me->buffer._read_p -= 1;
+       case 66:     me->buffer._read_p -= 1;
        goto _6;
        }
    }
@@ -258,9 +258,9 @@ RouterOnStateKey
    Cost:         1
    C-code: {
        switch( path_iterator - path_walker_18193_path_base ) {
-           case 0x1:  goto _3;
-           case 0x2:  goto _4;
-           case 0x3:  goto _5;
+       case 0x1:  goto _3;
+       case 0x2:  goto _4;
+       case 0x3:  goto _5;
        }
    }
 

@@ -20,7 +20,7 @@ QUEX_INLINE bool
 QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* me, 
                               const char*           FromCoding, 
                               const char*           ToCoding);
-QUEX_INLINE E_ConversionResult
+QUEX_INLINE E_LoadResult
 QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       me, 
                                  uint8_t**                   source, 
                                  const uint8_t*              SourceEnd, 
@@ -80,7 +80,7 @@ QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego,
 
     __quex_assert(me);
 
-    /* Default: assume input encoding to have dynamic character sizes.   */
+    /* Default: assume input encoding to have dynamic lexatom sizes.   */
     if( ucnv_compareNames(FromCoding, "UTF32") == 0 ) {
         FromCoding = "UTF32_PlatformEndian";
     }
@@ -99,10 +99,10 @@ QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego,
 
     /* ByteN / Character:                                               */
     if( ucnv_isFixedWidth(me->from_handle, &me->status) && U_SUCCESS(me->status) ) {
-        me->base.byte_n_per_character = ucnv_getMaxCharSize(me->from_handle);
+        me->base.byte_n_per_lexatom = ucnv_getMaxCharSize(me->from_handle);
     }
     else {
-        me->base.byte_n_per_character = -1;
+        me->base.byte_n_per_lexatom = -1;
     }
 
     if( ! ToCoding ) {
@@ -132,7 +132,7 @@ QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego,
     return true;
 }
 
-QUEX_INLINE E_ConversionResult
+QUEX_INLINE E_LoadResult
 QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego, 
                                  uint8_t**                   source, 
                                  const uint8_t*              SourceEnd, 
@@ -172,8 +172,8 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
     me->status = U_ZERO_ERROR;
     __quex_assert(*source >= SourceBegin);
 
-    return *drain == DrainEnd ? E_ConversionResult_FILL_COMPLETE 
-                              : E_ConversionResult_NO_MORE_DATA;
+    return *drain == DrainEnd ? E_LoadResult_COMPLETE 
+                              : E_LoadResult_INCOMPLETE;
 }
 
 QUEX_INLINE ptrdiff_t 

@@ -49,10 +49,10 @@ QUEX_INLINE void
 QUEX_BUFFER_ASSERT_CONSISTENCY(QUEX_NAME(Buffer)* B)                                            
 {                                                                                    
     if( ! B ) return;
-    __quex_assert(   B->input.character_index_begin == -1
-                  || B->input.character_index_begin >= 0);
-    __quex_assert(   B->input.character_index_end_of_stream == -1 
-                  || B->input.character_index_end_of_stream >= B->input.character_index_begin);
+    __quex_assert(   B->input.lexatom_index_begin == -1
+                  || B->input.lexatom_index_begin >= 0);
+    __quex_assert(   B->input.lexatom_index_end_of_stream == -1 
+                  || B->input.lexatom_index_end_of_stream >= B->input.lexatom_index_begin);
     QUEX_BUFFER_ASSERT_pointers_in_range(B);                                              
     QUEX_BUFFER_ASSERT_limit_codes_in_place(B);
 }

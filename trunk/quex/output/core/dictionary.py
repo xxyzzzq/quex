@@ -144,7 +144,7 @@ class Lng_Cpp(dict):
         # is always in the buffer. This may include that on the first buffer
         # load '\n' needs to be at the beginning of the buffer before the
         # content is loaded. Not so easy; must be carefully approached.
-        return "    %s\n" % self.ASSIGN("me->buffer._character_before_lexeme_start", 
+        return "    %s\n" % self.ASSIGN("me->buffer._lexatom_before_lexeme_start", 
                                         self.INPUT_P_DEREFERENCE(-1))
 
     def DEFINE(self, NAME, VALUE):
@@ -252,7 +252,7 @@ class Lng_Cpp(dict):
             E_R.Column:          "(me->counter._column_number_at_end)",
             E_R.Line:            "(me->counter._line_number_at_end)",
             E_R.LexemeStartP:    "(me->buffer._lexeme_start_p)",
-            E_R.CharacterBeginP: "character_begin_p",
+            E_R.CharacterBeginP: "lexatom_begin_p",
             E_R.ReferenceP:      "reference_p",
             E_R.LexemeEnd:       "LexemeEnd",
         }[Register]
@@ -268,7 +268,7 @@ class Lng_Cpp(dict):
             txt      = []
             for element in Op.content:
                 if element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
-                    txt.append("    %sif( me->buffer._character_before_lexeme_start == '\\n' )" % else_str)
+                    txt.append("    %sif( me->buffer._lexatom_before_lexeme_start == '\\n' )" % else_str)
                 elif element.pre_context_id != E_PreContextIDs.NONE:
                     txt.append("    %sif( pre_context_%i_fulfilled_f ) " % (else_str, element.pre_context_id))
                 else:
@@ -658,7 +658,7 @@ class Lng_Cpp(dict):
 
     def PRE_CONTEXT_CONDITION(self, PreContextID):
         if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
-            return "me->buffer._character_before_lexeme_start == '\\n'"
+            return "me->buffer._lexatom_before_lexeme_start == '\\n'"
         elif PreContextID == E_PreContextIDs.NONE:
             return "true"
         elif isinstance(PreContextID, (int, long)):
@@ -911,7 +911,7 @@ class Lng_Cpp(dict):
 
     def if_pre_context(self, PreContextId, ElseStr):
         if   PreContextId == E_PreContextIDs.BEGIN_OF_LINE:
-            return "    %sif( me->buffer._character_before_lexeme_start == '\\n' ) {" % ElseStr
+            return "    %sif( me->buffer._lexatom_before_lexeme_start == '\\n' ) {" % ElseStr
         elif PreContextId != E_PreContextIDs.NONE:
             return "    %sif( pre_context_%i_fulfilled_f ) {" % (ElseStr, PreContextId)
         else:

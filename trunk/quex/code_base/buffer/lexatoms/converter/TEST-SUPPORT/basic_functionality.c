@@ -28,12 +28,12 @@ static void         verify_source_content(uint8_t*       SourceP,
                                           const uint8_t* SourceEndP);
 static void         verify_drain_content(QUEX_TYPE_LEXATOM*       Drain, 
                                          const QUEX_TYPE_LEXATOM* DrainEndP);
-static void         verify_call_to_convert(QUEX_NAME(Converter)*      converter,
-                                           uint8_t**                  source_pp, 
-                                           const uint8_t*             SourceEndP,
+static void         verify_call_to_convert(QUEX_NAME(Converter)*    converter,
+                                           uint8_t**                source_pp, 
+                                           const uint8_t*           SourceEndP,
                                            QUEX_TYPE_LEXATOM**      drain_pp,  
                                            const QUEX_TYPE_LEXATOM* DrainEndP,
-                                           bool                       DrainFilledF);
+                                           E_LoadResult             DrainFilledF);
 static void         poison_drain_buffer();
 
 uint8_t             source[ARRAY_ELEMENT_N];
@@ -105,7 +105,7 @@ test_conversion_in_one_beat(QUEX_NAME(Converter)* converter, const char* CodecNa
          * converter must return 'true.'                                     */
         verify_call_to_convert(converter, &s_p, &source[source_byte_n],
                                &d_p, &drain[drain_character_n], 
-                               /* FilledF */ true);
+                               /* FilledF */ E_LoadResult_COMPLETE);
 
         verify_completion(converter, s_p, d_p);
     }
@@ -132,7 +132,7 @@ test_conversion_stepwise_source(QUEX_NAME(Converter)* converter,
              * can never be full.                                            */
             verify_call_to_convert(converter, &s_p, &source[i+1], 
                                    &d_p, &drain[drain_character_n], 
-                                   (i == source_byte_n-1) ? true : false);
+                                   (i == source_byte_n-1) ? E_LoadResult_COMPLETE : E_LoadResult_INCOMPLETE);
         }
         verify_completion(converter, s_p, d_p);
     }
@@ -158,7 +158,7 @@ test_conversion_stepwise_drain(QUEX_NAME(Converter)* converter,
             /* There are always enough source bytes to fill the drain character
              * as long as i < drain_character_n.                             */
             verify_call_to_convert(converter, &s_p, &source[source_byte_n], 
-                                   &d_p, &drain[i+1], /* FilledF */ true);
+                                   &d_p, &drain[i+1], E_LoadResult_COMPLETE);
         }
         
         verify_completion(converter, s_p, d_p);
@@ -299,22 +299,22 @@ poison_drain_buffer()
 static void
 verify_call_to_convert(QUEX_NAME(Converter)* converter,
                        uint8_t**             source_pp, const uint8_t*             SourceEndP,
-                       QUEX_TYPE_LEXATOM** drain_pp,  const QUEX_TYPE_LEXATOM* DrainEndP,
-                       bool                  DrainFilledF)
+                       QUEX_TYPE_LEXATOM**   drain_pp,  const QUEX_TYPE_LEXATOM* DrainEndP,
+                       E_LoadResult          DrainFilledF)
 {
     uint8_t*           s_p_before = *source_pp;
     QUEX_TYPE_LEXATOM* d_p_before = *drain_pp;
     QUEX_TYPE_LEXATOM* p;
-    E_ConversionResult filled_f;
+    E_LoadResult       result;
 
-    filled_f = converter->convert(converter, source_pp, SourceEndP, 
-                                  drain_pp, DrainEndP); 
+    result = converter->convert(converter, source_pp, SourceEndP, 
+                                drain_pp, DrainEndP); 
     self.total_converter_call_n += 1;
     for(p=d_p_before; p != *drain_pp ; ++p) {
         self.checksum = (self.checksum << 5) % 997 + *p;
     }
 
-    hwut_verify(filled_f == DrainFilledF);
+    hwut_verify(result == DrainFilledF);
 
     hwut_verify(s_p_before <= *source_pp && *source_pp <= SourceEndP);
     hwut_verify(d_p_before <= *drain_pp  && *drain_pp  <= DrainEndP); 

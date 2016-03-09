@@ -13,10 +13,10 @@
  *    * adapted pointers: ._read_p, ._lexeme_start_p and position registers.
  *    * buffer's content.
  *    * input.end_p, 
- *      input.character_index_begin, 
- *      input.character_index_end_of_stream
+ *      input.lexatom_index_begin, 
+ *      input.lexatom_index_end_of_stream
  *
- * The read and lexeme pointers shall point exactly to the same character as
+ * The read and lexeme pointers shall point exactly to the same lexatom as
  * before the load procedure. That is, they need
  */
 
@@ -109,15 +109,15 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
         QUEX_TYPE_LEXATOM       lexeme_start;
         QUEX_TYPE_LEXATOM*      position_register_1;
         QUEX_TYPE_LEXATOM*      position_register_3;
-        QUEX_TYPE_STREAM_POSITION character_index_begin;
+        QUEX_TYPE_STREAM_POSITION lexatom_index_begin;
     } before;
-    bool                 verdict_f;
-    ptrdiff_t            delta;
+    bool               verdict_f;
+    ptrdiff_t          delta;
     QUEX_TYPE_LEXATOM* PoisonP = (QUEX_TYPE_LEXATOM*)0x5A5A5A5A; 
     QUEX_TYPE_LEXATOM* NullP   = (QUEX_TYPE_LEXATOM*)0; 
-    size_t               PositionRegisterN = 3;
+    size_t             PositionRegisterN = 3;
     QUEX_TYPE_LEXATOM* (position_register[5]);
-    ptrdiff_t            count = 0;
+    ptrdiff_t          count = 0;
 
     position_register[0]       = PoisonP; 
     before.position_register_1 = position_register[1] = random_between(buffer->_lexeme_start_p, buffer->_read_p);
@@ -130,7 +130,7 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
     before.lexeme_start_p = buffer->_lexeme_start_p;
     before.lexeme_start   = *buffer->_lexeme_start_p;
 
-    before.character_index_begin = buffer->input.character_index_begin;
+    before.lexatom_index_begin = buffer->input.lexatom_index_begin;
 
     /* User registers [1] until including [3], borders are poisoned. */
     verdict_f = QUEX_NAME(Buffer_load_forward)(buffer, &position_register[1], 
@@ -147,8 +147,8 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
         hwut_verify(! verdict_f);  
     }
 
-    hwut_verify(buffer->input.character_index_begin >= before.character_index_begin);
-    hwut_verify(buffer->input.character_index_begin - before.character_index_begin == delta);
+    hwut_verify(buffer->input.lexatom_index_begin >= before.lexatom_index_begin);
+    hwut_verify(buffer->input.lexatom_index_begin - before.lexatom_index_begin == delta);
 
     hwut_verify(before.lexeme_start_p      -  buffer->_lexeme_start_p   == delta);
     hwut_verify(position_register[0]       == PoisonP);

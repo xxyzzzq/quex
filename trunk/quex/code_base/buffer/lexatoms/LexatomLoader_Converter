@@ -6,8 +6,8 @@
 /*
  *  PURPOSE: (NOTE: This has to be reworked)
  *  
- *  Reads data from a stream and converts the incoming characters into a
- *  character format required by the user. The user can specify the coding
+ *  Reads data from a stream and converts the incoming lexatoms into a
+ *  lexatom format required by the user. The user can specify the coding
  *  format of the input stream as well as the coding format in which he
  *  wants it to be put into his buffer.
  *
@@ -15,22 +15,22 @@
  *
  *        tell()          returning a value of the current input position
  *        seek(pos)       sets the the current input position in the stream
- *        read_characters(buffer, N) fills the buffer with N characters from the stream.
- *                                   returns the number of actually filled characters.
+ *        read_lexatoms(buffer, N) fills the buffer with N lexatoms from the stream.
+ *                                   returns the number of actually filled lexatoms.
  *  
  *
  *  MAIN GOAL: The main goal of a 'FixedSizeCharacterStream' class is to 
- *             fill a buffer with N characters starting from consecutive 
+ *             fill a buffer with N lexatoms starting from consecutive 
  *             stream positions.
  *
  *  ASSUMPTION: 
  *  
- *  -- The input character format is arbitrary. It can be anything that is
- *     supported by 'iconv'. Flexible character length codings are supported.
+ *  -- The input lexatom format is arbitrary. It can be anything that is
+ *     supported by 'iconv'. Flexible lexatom length codings are supported.
  *  
- *  -- The user's characters format has a fixed character size for each
- *     character. Any coding that involves different byte numbers for different
- *     characters or 'history' cannot be provided as user format.
+ *  -- The user's lexatoms format has a fixed lexatom size for each
+ *     lexatom. Any coding that involves different byte numbers for different
+ *     lexatoms or 'history' cannot be provided as user format.
  *  
  *  PRINCIPLE: 
  *  
@@ -39,8 +39,8 @@
  *              |  FILE  |  ------>  |  raw  |  ------> | Buffer |
  *              |________|           |_______|          |________|
  *
- *  A data stream (FILE) delivers characters in an arbitrary coding format.
- *  These characters are stored bytewise inside a 'raw buffer'. Then this data is
+ *  A data stream (FILE) delivers lexatoms in an arbitrary coding format.
+ *  These lexatoms are stored bytewise inside a 'raw buffer'. Then this data is
  *  transformed into the users coding format. The result is directly put into
  *  the user's buffer. 
  *  
@@ -54,7 +54,7 @@
  *       Raw Buffer:     ||aa.aa.aa.bb.cc.cc.cc.cc.dd.dd.ee.ee.ee||
  *  
  *  
- *  (2) Convert characters in the raw buffer and store into users buffer
+ *  (2) Convert lexatoms in the raw buffer and store into users buffer
  *
  *
  *        User's Buffer: ||AA.AA.BB.BB.CC.CC________________________||
@@ -78,13 +78,13 @@
  *         
  *        Goto (2)
  *  
- *  (4) Convert characters from raw buffer and store them into user's buffer
+ *  (4) Convert lexatoms from raw buffer and store them into user's buffer
  *  
  *        User's Buffer: ||AA.AA.BB.BB.CC.CC.DD.DD.EE.EE.FF.FF.GG.GG||
  *  
  *  (4b) goto (2b)
  *
- *  NOTE: The 'raw_buffer.iterator' remains between calls to "read_characters()".
+ *  NOTE: The 'raw_buffer.iterator' remains between calls to "read_lexatoms()".
  *        This is equivalent to having some bytes in the pipeline.
  **********************************************************************************/
 #if ! defined (__QUEX_OPTION_PLAIN_C)
@@ -129,8 +129,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE QUEX_NAME(LexatomLoader)*
     QUEX_NAME(LexatomLoader_Converter_new)(QUEX_NAME(ByteLoader)*            byte_loader,
-                                          QUEX_NAME(Converter)*  converter,
-                                          size_t                 RawBufferSize);
+                                           QUEX_NAME(Converter)*  converter,
+                                           size_t                 RawBufferSize);
 
     QUEX_INLINE void    QUEX_NAME(LexatomLoader_Converter_move_away_passed_content)(QUEX_NAME(LexatomLoader_Converter)*);
     QUEX_INLINE size_t  QUEX_NAME(__LexatomLoader_Converter_fill_raw_buffer)(QUEX_NAME(LexatomLoader_Converter)*);
