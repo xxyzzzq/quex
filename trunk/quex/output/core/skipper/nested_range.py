@@ -6,7 +6,7 @@ import quex.engine.state_machine.index              as     sm_index
 from   quex.engine.analyzer.door_id_address_label   import __nice, \
                                                            dial_db
 from   quex.engine.misc.string_handling             import blue_print
-from   quex.engine.misc.tools                            import typed
+from   quex.engine.misc.tools                       import typed
 from   quex.blackboard                              import Lng
 
 def do(Data, TheAnalyzer):
@@ -130,18 +130,26 @@ $$RELOAD$$:
     $$MARK_LEXEME_START$$
 
 $$LC_COUNT_BEFORE_RELOAD$$
-    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, &position[0], PositionRegisterN)) {
+    switch( QUEX_NAME(Buffer_load_forward)(&me->buffer, &position[0], PositionRegisterN) ) {
+    case E_LoadResult_DONE:
         /* Recover '_read_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         $$INPUT_P_TO_LEXEME_START$$
         /* text_end                           = me->buffer.input.end_p; */
-$$LC_COUNT_AFTER_RELOAD$$
+        $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$ /* End of range reached.             */
+    case E_LoadResult_NO_MORE_DATA:
+        /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
+        $$INPUT_P_TO_LEXEME_START$$
+        $$ON_SKIP_RANGE_OPEN$$
+    case E_LoadResult_BAD_LEXATOM:
+        goto $$ON_BAD_LEXATOM$$;
+    case E_LoadResult_FAILURE:
+        goto $$ON_LOAD_FAILURE$$;
+    case E_LoadResult_NO_SPACE_FOR_LOAD:
+        goto $$ON_OVERFLOW$$;
     }
-    /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
-    $$INPUT_P_TO_LEXEME_START$$
-    $$ON_SKIP_RANGE_OPEN$$
 """
 
 @typed(OpenerSequence=[int], CloserSequence=[int])

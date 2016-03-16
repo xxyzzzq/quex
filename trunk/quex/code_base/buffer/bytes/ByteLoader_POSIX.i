@@ -95,9 +95,9 @@ QUEX_NAME(ByteLoader_POSIX_load)(QUEX_NAME(ByteLoader)* me,
                                  void*                  buffer, 
                                  const size_t           ByteN, 
                                  bool*                  end_of_stream_f) 
+/* The POSIX interface does not allow to detect end of file upon reading.
+ * The caller will realize end of stream by a return of zero bytes.          */
 { 
-    /* The POSIX interface does not allow to detect end of file upon reading.
-     * The caller will realize end of stream by a return of zero bytes.      */
     int n = read(((QUEX_NAME(ByteLoader_POSIX)*)me)->fd, buffer, ByteN); 
     *end_of_stream_f = false;
     return n;

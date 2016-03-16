@@ -4,15 +4,16 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          CountInfo
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.operations.operation_list                  import Op
+from   quex.engine.operations.operation_list      import Op
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools                     import typed
 
-from   quex.blackboard   import E_CharacterCountType, \
-                                E_R, \
-                                setup as Setup, \
-                                Lng
-from   itertools   import izip, chain
+from   quex.blackboard import E_CharacterCountType, \
+                              E_R, \
+                              setup as Setup, \
+                              Lng
+
+from   itertools import izip, chain
 
 
 def _get_all_character_set(*DbList):
@@ -28,7 +29,7 @@ def _is_admissible(db, DefaultChar, AllCharSet, Bad):
     elif AllCharSet.contains(DefaultChar):              return False
     else:                                               return True
 
-class CountOpFactory:
+class LoopCountOpFactory:
     """________________________________________________________________________
     Produces Count Commands
 
@@ -37,16 +38,19 @@ class CountOpFactory:
 
     ___________________________________________________________________________
     """
-    def __init__(self, CMap, ColumnNPerChunk, InputPName, CharacterSet):
-        self.__map                  = CMap
-        self.column_count_per_chunk = ColumnNPerChunk
-        self.input_p_name           = InputPName
-        self.character_set          = CharacterSet.intersection(Setup.buffer_codec.source_set)
+    def __init__(self, CounterDb, CMap, InputPName, CharacterSet):
+        self.counter_db      = CounterDb
+        self.__map           = CMap
+        self.input_p_name    = InputPName
+        self.__character_set = CharacterSet
 
-        self.on_begin,         \
-        self.on_end,           \
-        self.on_before_reload, \
-        self.on_after_reload   = CountOpFactory.__prepare(ColumnNPerChunk)
+        self.__on_begin         = None
+        self.__on_end           = None
+        self.__on_before_reload = None
+        self.__on_after_reload  = None
+
+        # (Only indentation handler will set the following)
+        self.door_id_on_bad_indentation = None
 
     @staticmethod
     @typed(CounterDb=ParserDataLineColumn, CharacterSet=NumberSet)
@@ -58,18 +62,16 @@ class CountOpFactory:
             for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
 
-        ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(CharacterSet)
-
-        return CountOpFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
+        return LoopCountOpFactory(CounterDb, cmap, InputPName, CharacterSet) 
 
     @staticmethod
     @typed(ISetup=ParserDataIndentation, CounterDb=ParserDataLineColumn)
     def from_ParserDataIndentation(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        result = CountOpFactory.from_ParserDataLineColumn(CounterDb, 
-                                 ISetup.whitespace_character_set.get(), 
-                                 InputPName)
+        result = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, 
+                                                              ISetup.whitespace_character_set.get(), 
+                                                              InputPName)
         # Up to now, the '__map' contains only character sets which intersect with the 
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()
@@ -80,6 +82,36 @@ class CountOpFactory:
             )
         result.door_id_on_bad_indentation = DoorIdBad
         return result
+
+    def get_column_count_per_chunk(self):
+        return self.counter_db.count_command_map.get_column_number_per_chunk(self.character_set)
+
+    @property
+    def on_begin(self):
+        if not self.__on_begin: self.__prepare()
+        return self.__on_begin
+
+    @property
+    def on_end(self):
+        if not self.__on_end: self.__prepare()
+        return self.__on_end
+
+    @property
+    def on_before_reload(self):
+        if not self.__on_before_reload: self.__prepare()
+        return self.__on_before_reload
+
+    @property
+    def on_after_reload(self):
+        if not self.__on_after_reload: self.__prepare()
+        return self.__on_after_reload
+
+    @property
+    def character_set(self):
+        return self.__character_set.intersection(Setup.buffer_codec.source_set)
+
+    def character_set_update(self, MoreCharacterSet):
+        self.__character_set.unite_with(MoreCharacterSet)
 
     def is_equal(self, Other):
         if len(self.__map) != len(Other.__map):
@@ -99,7 +131,7 @@ class CountOpFactory:
         return result.covers_range(Min, Max)
 
     def requires_reference_p(self):
-        return self.column_count_per_chunk is not None
+        return self.get_column_count_per_chunk() is not None
 
     def get_incidence_id_map(self, BeyondIncidenceId=None):
         """RETURNS: A list of pairs: (character_set, incidence_id) 
@@ -150,7 +182,7 @@ class CountOpFactory:
         return result
 
     def _command(self, CC_Type, Parameter):
-        if self.column_count_per_chunk is None:
+        if self.get_column_count_per_chunk() is None:
 
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
@@ -174,7 +206,7 @@ class CountOpFactory:
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
                     Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                  self.column_count_per_chunk, 
+                                                  self.get_column_count_per_chunk(), 
                                                   False),
                     Op.ColumnCountReferencePSet(E_R.InputP),
                     Op.GotoDoorId(self.door_id_on_bad_indentation) 
@@ -185,7 +217,7 @@ class CountOpFactory:
             elif CC_Type == E_CharacterCountType.GRID:
                 return [
                     Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                  self.column_count_per_chunk,
+                                                  self.get_column_count_per_chunk(),
                                                   True),
                     Op.ColumnCountGridAdd(Parameter),
                     Op.ColumnCountReferencePSet(E_R.InputP)
@@ -198,11 +230,9 @@ class CountOpFactory:
                 ]
 
     def _command_on_lexeme_end(self, CC_Type):
-
         return 
 
-    @staticmethod
-    def __prepare(ColumnNPerChunk):
+    def __prepare(self):
         """BEFORE RELOAD:
                                                            input_p
                                                            |
@@ -222,22 +252,32 @@ class CountOpFactory:
                  |
                  reference_p
         """
-        if ColumnNPerChunk is None: 
-            return [], [], [], []
+        column_n_per_code_unit = self.get_column_count_per_chunk()
 
+        if column_n_per_code_unit is None: 
+            self.__on_begin         = [ ]
+            self.__on_end           = [ ]
+            self.__on_before_reload = [ ]
+            self.__on_after_reload  = [ ]
+        else:
+            # When there is more than one chunk possibly involved, then it is
+            # possible that reload happens in between one character. I such cases
+            # the 'input_p' cannot be used as reference for delta-add. Here,
+            # we must rely on the 'character begin_p'.
+            if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
+            else:                                               pointer = E_R.InputP
 
-        # When there is more than one chunk possibly involved, then it is
-        # possible that reload happens in between one character. I such cases
-        # the 'input_p' cannot be used as reference for delta-add. Here,
-        # we must rely on the 'character begin_p'.
-        if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
-        else:                                               pointer = E_R.InputP
-
-        on_begin         = [ Op.ColumnCountReferencePSet(pointer) ]
-        on_after_reload  = [ Op.ColumnCountReferencePSet(pointer) ]
-        on_end           = [ Op.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
-        on_before_reload = [ Op.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
-
-        return on_begin, on_end, on_before_reload, on_after_reload
+            self.__on_begin = [ 
+                Op.ColumnCountReferencePSet(pointer) 
+            ]
+            self.__on_end = [ 
+                Op.ColumnCountReferencePDeltaAdd(pointer, column_n_per_code_unit, False) 
+            ]
+            self.__on_before_reload = [ 
+                Op.ColumnCountReferencePDeltaAdd(pointer, column_n_per_code_unit, False) 
+            ]
+            self.__on_after_reload = [ 
+                Op.ColumnCountReferencePSet(pointer) 
+            ]
 
 

@@ -5,7 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.regular_expression.construct     import Pattern
 from   quex.input.code.base                        import SourceRef_VOID
 from   quex.engine.misc.interval_handling          import NumberSet, Interval
-from   quex.engine.counter                         import ParserDataIndentation
+from   quex.engine.loop_counter                    import ParserDataIndentation
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.misc.interval_handling          import NumberSet, Interval
 from   quex.output.core.variable_db                import variable_db

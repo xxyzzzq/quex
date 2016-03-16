@@ -14,21 +14,21 @@ where its leafs are the entries from other states.
                        \           /                      /
                       .-------------.                    /
                       |DoorID:      |                   /
-                      | OpList |                  /
+                      | OpList      |                  /
                       '-------------'                 /
                                    \ parent          /
                                     \               /
                                   .-------------------.
                                   | Root-DoorID       |
                                   |   TransitionMap   |
-                                     ...
+                                  '-------------------'
 
 (C) Frank-Rene Schaefer
 _______________________________________________________________________________
 """
 from   quex.engine.analyzer.door_id_address_label import IfDoorIdReferencedLabel
-from   quex.engine.operations.tree         import CommandTree
-from   quex.engine.misc.tools                          import flatten_list_of_lists, \
+from   quex.engine.operations.tree                import CommandTree
+from   quex.engine.misc.tools                     import flatten_list_of_lists, \
                                                          typed
 from   quex.blackboard                            import Lng
 

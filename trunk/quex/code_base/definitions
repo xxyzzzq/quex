@@ -94,6 +94,19 @@
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 
+#ifndef QUEX_TYPE_DEFINITIONS_E_LOAD_RESULT
+#define QUEX_TYPE_DEFINITIONS_E_LOAD_RESULT
+typedef enum {
+    E_LoadResult_COMPLETE,         /* Load filled drain completely.          */
+    E_LoadResult_INCOMPLETE,       /* Drain not filled completely.           */
+    E_LoadResult_DONE,             /* Complete or incomplete, load happened. */
+    E_LoadResult_BAD_LEXATOM,      /* Encoding error in stream.              */
+    E_LoadResult_NO_MORE_DATA,     /* No more data to fill drain.            */
+    E_LoadResult_NO_SPACE_FOR_LOAD, /* No space to load content into.        */
+    E_LoadResult_FAILURE           /* General low-level load failure.        */ 
+} E_LoadResult;
+#endif
+
 /* Define the QUEX_TYPE_STREAM_POSITION at a central place, so that it is the
  * same when it is used in multiple analyzers compiled into one binary.      */
 #ifndef    QUEX_TYPE_STREAM_POSITION

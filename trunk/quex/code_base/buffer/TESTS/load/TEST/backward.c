@@ -1,4 +1,4 @@
-/* PURPOSE: Testin Buffer_load_backward()
+/* PURPOSE: Testing Buffer_load_backward()
  *
  * Before the load backward can be tested, the buffer is brought into a
  * state where 'end of stream' is detected. This ensures that the backward

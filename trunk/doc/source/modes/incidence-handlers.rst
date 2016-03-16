@@ -117,8 +117,8 @@ Using ``RETURN`` or ``CONTINUE`` triggers a direct jump to the
    executed in that case.
 
 
-Failure and End of Stream
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Matching and Buffer Loading
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The incident of a input stream termination or a match failure can be handled by
 the three handlers shown below.
@@ -130,6 +130,21 @@ the three handlers shown below.
    to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
    pattern.
 
+.. data:: on_load_failure
+
+   Buffer loading failed for some unspecific reason. Under 'normal' conditions,
+   this error must never occurr. However, it may occurr for example if a file
+   is changed in the background, or someone inadvertedly tempered with the
+   analyzers data structures, or if a defective low-level file system driver is
+   used.
+
+.. data:: on_overflow
+
+   The reload process always tries to maintain the current lexeme inside the
+   buffer. If the lexeme becomes as large as the buffer itself, no reload can
+   happen. In the case that the reload failed due to a lexeme being too long
+   this handler is executed. Consider enlarging the buffer or using skippers
+   which do not maintain the lexeme.
 
 .. data:: on_failure
 

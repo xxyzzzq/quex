@@ -1,17 +1,19 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-import quex.engine.analyzer.core                  as     analyzer_generator
-from   quex.engine.operations.operation_list      import Op, \
-                                                         OpList
-import quex.engine.state_machine.index            as     index
-from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.misc.tools                     import typed
-from   quex.output.core.variable_db               import variable_db
-import quex.output.core.base                      as     generator
+import quex.engine.analyzer.core                          as     analyzer_generator
+from   quex.engine.operations.operation_list              import Op, \
+                                                                 OpList
+import quex.engine.state_machine.index                    as     index
+from   quex.engine.analyzer.door_id_address_label         import DoorID
+from   quex.engine.misc.tools                             import typed
+from   quex.output.core.variable_db                       import variable_db
+import quex.output.core.base                              as     generator
+import quex.output.cpp.counter_for_pattern                as     counter_coder
 
 from   quex.blackboard import E_StateIndices, \
                               E_R, \
                               E_CharacterCountType, \
-                              setup as Setup
+                              setup as Setup, \
+                              Lng
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, AfterBeyond=list)
 def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, 
@@ -66,20 +68,18 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None,
     """
     assert EngineType is not None
     # NOT: assert (not EngineType.subject_to_reload()) or ReloadStateExtern is
-    # None This would mean, that the user has to make these kinds of decisions.
+    # None. This would mean, that the user has to make these kinds of decisions.
     # But, we are easily able to ignore meaningless ReloadStateExtern objects.
 
-    parallel_sm_list       = None
-    parallel_terminal_list = []
-    if ParallelSmTerminalPairList is not None:
-        parallel_sm_list       = [ sm for sm, terminal in ParallelSmTerminalPairList ]
-        parallel_terminal_list = [ terminal for sm, terminal in ParallelSmTerminalPairList ]
+    parallel_sm_list,      \
+    parallel_terminal_list = _get_parallel_state_machines_and_terminals(ParallelSmTerminalPairList, 
+                                                                        CcFactory)
 
     # (*) Generate StateMachine
     #
-    CsSm = CharacterSetStateMachine.from_CountOpFactory(CcFactory, 
-                                                        LexemeMaintainedF,
-                                                        ParallelSmList=parallel_sm_list)
+    CsSm = CharacterSetStateMachine.from_LoopCountOpFactory(CcFactory, 
+                                                            LexemeMaintainedF,
+                                                            ParallelSmList=parallel_sm_list)
 
     # (*) Generate Analyzer
     #
@@ -125,6 +125,18 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None,
     txt = _get_source_code(CcFactory, analyzer, terminal_list)
     
     return txt, DoorID.incidence(CsSm.incidence_id_beyond)
+
+def _get_parallel_state_machines_and_terminals(ParallelSmTerminalPairList, CcFactory):
+    if ParallelSmTerminalPairList is None:
+        return None, []
+
+    # Must add counting information to terminals of parallel state machines.
+    for sm, terminal in ParallelSmTerminalPairList:
+        count_code = Lng.COMMAND_LIST(CcFactory.on_end)
+        terminal.pure_code()[0:0] = count_code
+
+    return [ sm for sm, terminal in ParallelSmTerminalPairList ], \
+           [ terminal for sm, terminal in ParallelSmTerminalPairList ]
 
 def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     """Prepare the entry and re-entry doors into the initial state

@@ -1,5 +1,5 @@
-from   quex.engine.counter                        import CountOpFactory
-from   quex.engine.operations.operation_list                  import Op
+from   quex.engine.loop_counter                   import LoopCountOpFactory
+from   quex.engine.operations.operation_list      import Op
 
 import quex.output.core.loop                      as     loop
 import quex.engine.analyzer.engine_supply_factory as     engine
@@ -68,9 +68,11 @@ def do(Data, TheAnalyzer):
     character_set = Data["character_set"]
 
     reload_state = TheAnalyzer.reload_state
+
+    ccfactory    = LoopCountOpFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()) 
         
     result,        \
-    door_id_beyond = loop.do(CountOpFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 
+    door_id_beyond = loop.do(ccfactory,
                              AfterBeyond       = [ Op.GotoDoorId(DoorID.continue_without_on_after_match()) ],
                              LexemeEndCheckF   = False,
                              LexemeMaintainedF = False,
