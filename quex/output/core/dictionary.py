@@ -875,11 +875,23 @@ class Lng_Cpp(dict):
         assert self.__code_generation_reload_label is None
 
         if ForwardF:
-            return [
-                cpp_reload_forward_str[0],
-            ]
+            txt = cpp_reload_forward_str
+            txt = txt.replace("$$ON_BAD_LEXATOM$$", 
+                              dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM)))
+            txt = txt.replace("$$ON_LOAD_FAILURE$$", 
+                              dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.LOAD_FAILURE)))
+            txt = txt.replace("$$ON_NO_SPACE_FOR_LOAD$$", 
+                              dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.OVERFLOW)))
+
         else:
-            return cpp_reload_backward_str[0]
+            txt = cpp_reload_backward_str
+            txt = txt.replace("$$ON_BAD_LEXATOM$$", 
+                              dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM)))
+            txt = txt.replace("$$ON_LOAD_FAILURE$$", 
+                              dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.LOAD_FAILURE)))
+            txt = txt.replace("$$ON_NO_SPACE_FOR_LOAD$$", 
+                              dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.OVERFLOW)))
+        return txt 
 
     def straighten_open_line_pragmas(self, FileName):
         norm_filename   = Setup.get_file_reference(FileName)
@@ -927,37 +939,55 @@ cpp_include_Multi_i_str = """
 #include <quex/code_base/single.i>
 """
 
-cpp_reload_forward_str = [
-"""    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
+cpp_reload_forward_str = """
+    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(*(me->buffer._read_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
-    /* Detect whether the buffer limit code appeared at non-border.          */
-    if( me->buffer._read_p != me->buffer.input.end_p ) {
-        __quex_assert(false); /* Later: on codec error! */
-    }
+    __quex_assert(me->buffer._read_p == me->buffer.input.end_p);
+    
     __quex_debug_reload_before();                 /* Report source position. */
-    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_LEXATOM**)position, PositionRegisterN) ) {
+    switch( QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_LEXATOM**)position, PositionRegisterN) ) {
+    case E_LoadResult_DONE:
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);      /* may use 'computed goto' */
+    case E_LoadResult_NO_MORE_DATA:
+        __quex_debug("reload impossible\\n");
+        QUEX_GOTO_STATE(target_state_else_index); /* may use 'computed goto' */
+    case E_LoadResult_BAD_LEXATOM:
+        goto $$ON_BAD_LEXATOM$$;
+    case E_LoadResult_FAILURE:
+        goto $$ON_LOAD_FAILURE$$;
+    case E_LoadResult_NO_SPACE_FOR_LOAD:
+        goto $$ON_NO_SPACE_FOR_LOAD$$;
+    default:
+        __quex_assert(false);
     }
-    __quex_debug("reload impossible\\n");
-    QUEX_GOTO_STATE(target_state_else_index);     /* may use 'computed goto' */
-"""]
+"""
 
-cpp_reload_backward_str = [
-"""    __quex_debug3("RELOAD_BACKWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
+cpp_reload_backward_str = """
+    __quex_debug3("RELOAD_BACKWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     /* Detect whether the buffer limit code appeared at non-border.          */
     if( me->buffer._read_p != me->buffer._memory._front ) {
         __quex_assert(false); /* Later: on codec error! */
     }
     __quex_debug_reload_before();                 /* Report source position. */
-    if( QUEX_NAME(Buffer_load_backward)(&me->buffer) ) {
+    switch( QUEX_NAME(Buffer_load_backward)(&me->buffer) ) {
+    case E_LoadResult_DONE:
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);      /* may use 'computed goto' */
+    case E_LoadResult_BAD_LEXATOM:
+        goto $$ON_BAD_LEXATOM$$;
+    case E_LoadResult_FAILURE:
+        goto $$ON_LOAD_FAILURE$$;
+    case E_LoadResult_NO_SPACE_FOR_LOAD:
+        goto $$ON_NO_SPACE_FOR_LOAD$$;
+    case E_LoadResult_NO_MORE_DATA:
+        __quex_debug("reload impossible\\n");
+        QUEX_GOTO_STATE(target_state_else_index); /* may use 'computed goto' */
+    default:
+        __quex_assert(false);
     }
-    __quex_debug("reload impossible\\n");
-    QUEX_GOTO_STATE(target_state_else_index);     /* may use 'computed goto' */
-"""]
+"""
 
 cpp_header_definition_str = """
 #include <quex/code_base/analyzer/struct/basic>

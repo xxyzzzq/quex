@@ -2,8 +2,8 @@
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-from helper                                    import *
-from quex.engine.misc.interval_handling             import NumberSet, Interval
+from helper                               import *
+from quex.engine.misc.interval_handling   import NumberSet, Interval
 from quex.output.core.TEST.generator_test import __Setup_init_language_database
 
 if "--hwut-info" in sys.argv:

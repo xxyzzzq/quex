@@ -32,7 +32,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                 me->to_handle = ucnv_open("UTF32_PlatformEndian", &me->status); 
                 break;
             case 2:  
-                me->to_handle = 0x0; /* 2 byte encoding may use the 'direct converter for UChar' */
+                /* 2 byte encoding may use the 'direct converter for UChar'  */
+                me->to_handle = 0x0; 
                 break;
             case 1:  
                 me->to_handle = ucnv_open("ISO-8859-1", &me->status); 
@@ -50,11 +51,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QuexConverter_ICU_convert(QuexConverter*        alter_ego, 
                               uint8_t**             source, const uint8_t*              SourceEnd, 
                               QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM*  DrainEnd)
+    /* RETURNS: 'true'  if the drain was completely filled.
+     *          'false' if the drain could not be filled completely and more 
+     *                  source bytes are required.                           */
     {
-        /* RETURNS: 'true'  if the drain was completely filled.
-         *          'false' if the drain could not be filled completely and more source
-         *                  bytes are required.                                          */
-        QuexConverter_ICU*    me         = (QuexConverter_ICU*)alter_ego;
+        QuexConverter_ICU*    me = (QuexConverter_ICU*)alter_ego;
 
         __quex_assert(me != 0x0);
         me->status = U_ZERO_ERROR;

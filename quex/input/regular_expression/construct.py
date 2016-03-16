@@ -102,8 +102,7 @@ class Pattern(object):
     def set_incidence_id(self, Id):
         self.__sm.set_id(Id)
 
-    #@typed(CsLC=ParserDataLineColumn)
-    def prepare_count_info(self, CsLC, CodecTrafoInfo):                
+    def prepare_count_info(self, CounterDb, CodecTrafoInfo):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 
         on a UNICODE state machine--not on a possibly transformed codec state
@@ -119,9 +118,9 @@ class Pattern(object):
         # If the pre-context is 'trivial begin of line', then the column number
         # starts counting at '1' and the column number may actually be set
         # instead of being added.
-        self.__count_info = CountInfo.from_StateMachine(self.__sm, CsLC, 
-                                   self.pre_context_trivial_begin_of_line_f, 
-                                   CodecTrafoInfo)
+        self.__count_info = CountInfo.from_StateMachine(self.__sm, CounterDb, 
+                                                        self.pre_context_trivial_begin_of_line_f, 
+                                                        CodecTrafoInfo)
         return self.__count_info
 
     def count_info(self):                          

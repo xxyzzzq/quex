@@ -69,7 +69,9 @@ class TerminalFactory:
             E_TerminalType.MATCH_PATTERN: self.do_match_pattern,
             E_TerminalType.MATCH_FAILURE: self.do_match_failure,
             E_TerminalType.END_OF_STREAM: self.do_end_of_stream,
-            E_TerminalType.BAD_LEXATOM:   self.do_bad_lexatom,    # Treates as 'end_of_stream'
+            E_TerminalType.BAD_LEXATOM:   self.do_bad_lexatom,    # Treated as 'end_of_stream'
+            E_TerminalType.LOAD_FAILURE:  self.do_load_failure,   # Treated as 'end_of_stream'
+            E_TerminalType.OVERFLOW:      self.do_overflow,       # Treated as 'end_of_stream'
             E_TerminalType.PLAIN:         self.do_plain,
         }[TerminalType](Code, ThePattern)
 
@@ -181,6 +183,24 @@ class TerminalFactory:
         comment_txt = "Bad lexatom detection FORCES a return from the lexical analyzer, so that no\n" \
                       "tokens can be filled after the termination token."
         return self._do_terminate(Code, "BAD_LEXATOM", comment_txt)
+
+    def do_load_failure(self, Code, ThePattern):
+        """Load failure: loading of buffer failed due to an unspecific reason.
+        The reason could not be determined inside the Quex framework.
+
+        As with temination: the TERMINATION token is sent, if not defined differently.
+        """
+        comment_txt = "Load failure FORCES a return from the lexical analyzer, so that no\n" \
+                      "tokens can be filled after the termination token."
+        return self._do_terminate(Code, "LOAD_FAILURE", comment_txt)
+
+    def do_overflow(self, Code, ThePattern):
+        """Overflow: Lexeme size exceeds buffer size.
+
+        As with temination: the TERMINATION token is sent, if not defined differently.
+        """
+        comment_txt = "Lexeme size exceeds buffer size. No further buffer load possible."
+        return self._do_terminate(Code, "OVERFLOW", comment_txt)
 
     def _do_terminate(self, Code, Name, Comment):
         lexeme_begin_f,     \

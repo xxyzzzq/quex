@@ -241,7 +241,7 @@ QUEX_INLINE bool
 QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)* me)
 { 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    if     ( me->_read_p != me->input.end_p )                return false;
+    if     ( me->_read_p != me->input.end_p )              return false;
     else if( me->input.lexatom_index_end_of_stream == -1 ) return false;
 
     return    QUEX_NAME(Buffer_input_lexatom_index_end)(me) 
@@ -253,7 +253,7 @@ QUEX_NAME(Buffer_is_end_of_stream_inside)(QUEX_NAME(Buffer)* me)
 { 
     const ptrdiff_t ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
 
-    if( me->input.lexatom_index_end_of_stream == -1 ) return false;
+    if     ( me->input.lexatom_index_end_of_stream == -1 )                           return false;
     else if( me->input.lexatom_index_end_of_stream < me->input.lexatom_index_begin ) return false;
     
     return me->input.lexatom_index_end_of_stream - me->input.lexatom_index_begin < ContentSize;
@@ -263,9 +263,9 @@ QUEX_INLINE bool
 QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)* buffer)
 { 
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-    if     ( buffer->_read_p != buffer->_memory._front )                  return false;
-    else if( QUEX_NAME(Buffer_input_lexatom_index_begin)(buffer) != 0 ) return false;
-    else                                                                  return true;
+    if     ( buffer->_read_p != buffer->_memory._front )           return false;
+    else if( QUEX_NAME(Buffer_input_lexatom_index_begin)(buffer) ) return false;
+    else                                                           return true;
 }
 
 QUEX_INLINE bool
@@ -295,17 +295,17 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
  * Moves the region of size 'Size' from the end of the buffer to the beginning
  * of the buffer and tries to load as many lexatoms as possible behind it. */
 {
-    QUEX_TYPE_LEXATOM*       BeginP      = &me->_memory._front[1];
-    QUEX_TYPE_LEXATOM*       EndP        = me->_memory._back;
-    const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
-    QUEX_TYPE_STREAM_POSITION  load_lexatom_index;
-    ptrdiff_t                  load_request_n;
-    QUEX_TYPE_LEXATOM*       load_p;
-    ptrdiff_t                  loaded_n;
-    intmax_t                   move_distance;
-    ptrdiff_t                  move_size;
-    bool                       end_of_stream_f  = false;
-    bool                       encoding_error_f = false;
+    QUEX_TYPE_LEXATOM*        BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*        EndP        = me->_memory._back;
+    const ptrdiff_t           ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    QUEX_TYPE_STREAM_POSITION load_lexatom_index;
+    ptrdiff_t                 load_request_n;
+    QUEX_TYPE_LEXATOM*        load_p;
+    ptrdiff_t                 loaded_n;
+    intmax_t                  move_distance;
+    ptrdiff_t                 move_size;
+    bool                      end_of_stream_f  = false;
+    bool                      encoding_error_f = false;
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     __quex_assert(me->input.lexatom_index_begin      <= NewCharacterIndexBegin);
@@ -319,20 +319,20 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
         return false;
     }
 
-    /* (1) Move existing content in the buffer to appropriate position.      */
-    move_distance        = NewCharacterIndexBegin - me->input.lexatom_index_begin;
-    move_size            = QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)move_distance);
+    /* Move existing content in the buffer to appropriate position.          */
+    move_distance      = NewCharacterIndexBegin - me->input.lexatom_index_begin;
+    move_size          = QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)move_distance);
     load_lexatom_index = NewCharacterIndexBegin + move_size;
-    load_request_n       = ContentSize - move_size; 
-    load_p               = &BeginP[move_size];
+    load_request_n     = ContentSize - move_size; 
+    load_p             = &BeginP[move_size];
 
     __quex_assert(load_lexatom_index == NewCharacterIndexBegin + (load_p - BeginP));
     __quex_assert(load_p >= BeginP);
     __quex_assert(&load_p[load_request_n] <= EndP);
     (void)EndP;
     loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, load_p, load_request_n,
-                                            load_lexatom_index,
-                                            &end_of_stream_f, &encoding_error_f);
+                                             load_lexatom_index,
+                                             &end_of_stream_f, &encoding_error_f);
 
     if( (! loaded_n) || end_of_stream_f ) { /* End of stream detected.       */
         QUEX_NAME(Buffer_register_eos)(me, load_lexatom_index + loaded_n);
@@ -492,10 +492,10 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)*    me,
     return move_distance;
 }
 
-QUEX_INLINE bool
-QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
+QUEX_INLINE E_LoadResult
+QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*  me,
                                QUEX_TYPE_LEXATOM** position_register,
-                               const size_t          PositionRegisterN)
+                               const size_t        PositionRegisterN)
 /* Load as much new content into the buffer as possible--from what lies ahead
  * in the input stream. Maintains '_read_p', '_lexeme_start_p' inside the
  * buffer (if possible also fallback region). The 'input.end_p' pointer and
@@ -514,8 +514,13 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
  *               => pointers are 'disabled' because 'end_p = _read_p'.
  *                  return 'false'.
  *
- * RETURNS: true  => load successful: analysis MAY CONTINUE.
- *          false => nothing loaded:  analysis MUST STOP!                    
+ * RETURNS: 
+ *          
+ *     DONE              => Something has been loaded   (analysis MAY CONTINUE)
+ *     FAILURE           => General load failure.       (analysis MUST STOP)
+ *     NO_SPACE_FOR_LOAD => Lexeme exceeds buffer size. (analysis MUST STOP)
+ *     ENCODING_ERROR    => Failed. conversion error    (analysis MUST STOP)
+ *     NO_MORE_DATA      => No more data available.     (analysis MUST STOP)
  *
  * The case of 'end-of-stream' may be true in both cases. When 'end-of-stream' 
  * is detected, the lexatom index of the 'end-of-stream' is registered. This 
@@ -538,7 +543,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
 
     if( ! me->filler || ! me->filler->byte_loader ) {
         QUEX_NAME(Buffer_register_eos)(me, ci_begin + (me->input.end_p - BeginP));
-        return false;       /* No filler, no loader => no loading!           */
+        return E_LoadResult_FAILURE;  /* No filler, no loader => no loading! */
     }
 
     /* Move remaining content.
@@ -547,21 +552,22 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
     move_distance = QUEX_NAME(Buffer_move_away_passed_content)(me, position_register, 
                                                                PositionRegisterN);
     if( ! move_distance && me->input.end_p == EndP ) {
-        return false;        /* Cannot free space for loading => no loading! */
+        return E_LoadResult_NO_SPACE_FOR_LOAD;  /* No free space for loading. */
     }
 
     /* Load new content.                                                     */
     ci_load_begin  = me->input.lexatom_index_begin + (me->input.end_p - BeginP);
-    load_request_n = ContentSize                     - (me->input.end_p - BeginP);
+    load_request_n = ContentSize                   - (me->input.end_p - BeginP);
     loaded_n       = QUEX_NAME(LexatomLoader_load)(me->filler, 
                                                    me->input.end_p, load_request_n,
-                                                   ci_load_begin, &end_of_stream_f,
+                                                   ci_load_begin, 
+                                                   &end_of_stream_f,
                                                    &encoding_error_f);
     QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[loaded_n], -1);
 
     if( ! loaded_n ) {
-        /* Filler blocks until either some lexatoms are filled, or
-         * returns fills lexatoms indicating 'end-of-stream'.              */
+        /* If filler returned, then either some lexatoms have been filled, 
+         * or it indicates 'end-of-stream' by 'load_n = 0'.                  */
         end_of_stream_f = true; 
     }
     if( end_of_stream_f ) {
@@ -570,7 +576,9 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
 
     __quex_debug_buffer_load(me, "LOAD FORWARD(exit)\n");
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    return loaded_n ? true : false;
+    if     ( encoding_error_f ) return E_LoadResult_BAD_LEXATOM;
+    else if( loaded_n )         return E_LoadResult_DONE;
+    else                        return E_LoadResult_NO_MORE_DATA;
 }
 
 QUEX_INLINE ptrdiff_t        
@@ -638,7 +646,7 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
     return move_distance;
 }
 
-QUEX_INLINE bool   
+QUEX_INLINE E_LoadResult   
 QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
 /* Load *previous* content into the buffer so that the analyzer can continue
  * seeminglessly (in backward direction).
@@ -648,8 +656,13 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
  *
  *           Buffer and pointers are adapted are adapted IN ANY CASE!
  *
- * RETURNS: true  => load successful:           backward analysis MAY CONTINUE.
- *          false => begin of stream or ERROR:  backward analysis MUST STOP!
+ * RETURNS: 
+ *          
+ *     DONE              => Something has been loaded   (analysis MAY CONTINUE)
+ *     FAILURE           => General load failure.       (analysis MUST STOP)
+ *     NO_SPACE_FOR_LOAD => Lexeme exceeds buffer size. (analysis MUST STOP)
+ *     ENCODING_ERROR    => Failed. Conversion error.   (analysis MUST STOP)
+ *     NO_MORE_DATA      => Begin of stream reached.    (analysis MUST STOP)
  *
  *  __________________________________________________________________________
  * ! In the false case, the range from 'Begin' to '_lexeme_start_p' may       !
@@ -666,7 +679,7 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
  *  (2) When tracing back along a 'pseudo-ambigous post context'. However,
  *      the stretch from 'end-of-core' pattern to 'end-of-post context' lies
  *      completely in between 'lexeme start' to 'read '. Thus, one never has
- *      to go farther back then the buffer's begin.                        */
+ *      to go farther back then the buffer's begin.                          */
 {
     QUEX_TYPE_LEXATOM*  BeginP = &me->_memory._front[1];
     ptrdiff_t           move_distance;
@@ -680,16 +693,16 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
 
     /* REFUSE CASES:                                                         */
     if( ! me->filler || ! me->filler->byte_loader ) {
-        return false;                    /* Buffer based analysis.           */
+        return E_LoadResult_FAILURE;  /* No filler, no loader => no loading! */
     }
     else if( ! QUEX_NAME(ByteLoader_seek_is_enabled)(me->filler->byte_loader) ) {
-        return false;                    /* Stream cannot go backwards.      */
+        return E_LoadResult_NO_MORE_DATA; /* Stream cannot go backwards.     */
     }
 
     move_distance = QUEX_NAME(Buffer_move_away_upfront_content)(me);
 
     if( ! move_distance ) {
-        return false;
+        return E_LoadResult_NO_SPACE_FOR_LOAD; /* Cannot be further back.    */
     }
 
     /* Load new content.                                                     */
@@ -697,18 +710,21 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
                                              BeginP, move_distance,
                                              me->input.lexatom_index_begin, 
                                              &end_of_stream_f, &encoding_error_f);
+    if( encoding_error_f ) {
+        return E_LoadResult_BAD_LEXATOM;
+    }
 
     if( loaded_n  != move_distance ) {
         /* Serious: previously loaded content could not be loaded again!     
          * => Buffer has now hole: 
          *    from BeginP[loaded_n] to Begin[move_distance]                 
          * The analysis can continue in forward direction, but not backwards.*/
-        return false;
+        return E_LoadResult_FAILURE;     
     }
 
     __quex_debug_buffer_load(me, "BACKWARD(exit)\n");
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    return true;
+    return E_LoadResult_DONE;     
 }
 
 QUEX_INLINE ptrdiff_t

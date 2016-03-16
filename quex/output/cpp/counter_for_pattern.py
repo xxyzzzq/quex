@@ -3,10 +3,13 @@
 _______________________________________________________________________________
 """
 import quex.engine.state_machine.character_counter as character_counter
+from   quex.engine.operations.operation_list       import Op
 from   quex.engine.misc.tools import typed
-from   quex.blackboard import E_Count, \
-                              E_IncidenceIDs, \
-                              Lng
+from   quex.blackboard        import E_Count, \
+                                     E_R, \
+                                     E_IncidenceIDs, \
+                                     Lng, \
+                                     setup as Setup
 
 def get(ThePattern, ShiftF=True):
     """Line and column number actions for a pattern.
@@ -69,9 +72,18 @@ def get(ThePattern, ShiftF=True):
 
     return do_CountInfo(ThePattern.count_info(), ShiftF)
 
+def do_CountInfo_from_StateMachine(SM, CounterDb, BeginOfLinePreContextF=False):
+    count_info = character_counter.CountInfo.from_StateMachine(SM, CounterDb, 
+                                                               BeginOfLinePreContextF, 
+                                                               Setup.buffer_codec)
+    default_counting_f, \
+    counter_code        = do_CountInfo(count_info, ShiftF=True)
+    return counter_code
+
 @typed(counter=character_counter.CountInfo)
 def do_CountInfo(counter, ShiftF=True):
-    """RETURN: Verdict, CounterCode
+    """RETURN: [0] Verdict
+               [1] CounterCode
 
         Verdict == True  --> Pattern requires run-time counting. Default
                              counter implementation required.
@@ -144,3 +156,4 @@ def do_CountInfo(counter, ShiftF=True):
             txt.append("\n")
 
     return False, txt
+

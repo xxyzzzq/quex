@@ -15,27 +15,27 @@
 #
 ################################################################################
 #
-import quex.engine.misc.error              as     error
-from   quex.engine.misc.file_operations    import open_file_or_die
-from   quex.engine.misc.file_in            import EndOfStreamException, \
-                                                  check, \
-                                                  os, \
-                                                  parse_identifier_assignment, \
-                                                  read_identifier, \
-                                                  read_integer, \
-                                                  skip_whitespace
-import quex.input.files.mode               as mode
-import quex.input.files.token_type         as token_type
-import quex.input.files.code_fragment      as code_fragment
-import quex.input.regular_expression.core  as regular_expression
+import quex.engine.misc.error                   as     error
+from   quex.engine.misc.file_operations         import open_file_or_die
+from   quex.engine.misc.file_in                 import EndOfStreamException, \
+                                                       check, \
+                                                       os, \
+                                                       parse_identifier_assignment, \
+                                                       read_identifier, \
+                                                       read_integer, \
+                                                       skip_whitespace
+import quex.input.files.mode                    as     mode
+import quex.input.files.token_type              as     token_type
+import quex.input.files.code_fragment           as     code_fragment
+import quex.input.regular_expression.core       as     regular_expression
 from   quex.input.regular_expression.auxiliary  import PatternShorthand
-from   quex.input.setup                    import NotificationDB
-from   quex.output.cpp.token_id_maker      import TokenInfo, prepare_default_standard_token_ids
-from   quex.input.code.base     import SourceRef
-from   quex.input.code.core     import CodeUser
-from   quex.blackboard                     import setup as Setup, Lng
-import quex.blackboard                     as     blackboard
-from   quex.input.regular_expression.exception                      import RegularExpressionException
+from   quex.input.setup                         import NotificationDB
+from   quex.output.cpp.token_id_maker           import TokenInfo, prepare_default_standard_token_ids
+from   quex.input.code.base                     import SourceRef
+from   quex.input.code.core                     import CodeUser
+from   quex.blackboard                          import setup as Setup, Lng
+import quex.blackboard                          as     blackboard
+from   quex.input.regular_expression.exception  import RegularExpressionException
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 

@@ -1,16 +1,25 @@
+from   quex.input.code.core                        import CodeTerminal
+from   quex.engine.loop_counter                     import LoopCountOpFactory
 from   quex.engine.analyzer.door_id_address_label  import __nice, dial_db
 import quex.engine.analyzer.engine_supply_factory  as     engine
-from   quex.output.core.variable_db import variable_db
-from   quex.output.core.skipper.common        import line_counter_in_loop, \
-                                                          get_character_sequence, \
-                                                          get_on_skip_range_open, \
-                                                          line_column_counter_in_loop
+from   quex.engine.operations.operation_list       import Op
+from   quex.engine.analyzer.door_id_address_label  import DoorID
+import quex.output.core.loop                       as     loop
 import quex.engine.state_machine.index             as     sm_index
+from   quex.engine.analyzer.terminal.core          import Terminal
+from   quex.engine.state_machine.core              import StateMachine
+from   quex.engine.misc.interval_handling          import NumberSet_All
 from   quex.engine.misc.string_handling            import blue_print
-from   quex.engine.misc.tools                           import r_enumerate, \
+import quex.output.cpp.counter_for_pattern         as     counter_coder
+from   quex.engine.misc.tools                      import r_enumerate, \
                                                           typed, \
                                                           flatten_list_of_lists
 
+from   quex.output.core.variable_db                import variable_db
+from   quex.output.core.skipper.common             import line_counter_in_loop, \
+                                                          get_character_sequence, \
+                                                          get_on_skip_range_open, \
+                                                          line_column_counter_in_loop
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, Lng
@@ -26,13 +35,14 @@ def do(Data, TheAnalyzer):
         ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
                   inp == c[0]       inp == c[1]       inp == c[2]
     """
+    CounterDb       = Data["counter_db"]
     CloserSequence  = Data["closer_sequence"]
     CloserPattern   = Data["closer_pattern"]
     ModeName        = Data["mode_name"]
     OnSkipRangeOpen = Data["on_skip_range_open"]
     DoorIdAfter     = Data["door_id_after"]
 
-    return get_skipper(CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter) 
+    return get_skipper(TheAnalyzer, CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter, CounterDb) 
 
 template_str = """
     $$DELIMITER_COMMENT$$
@@ -129,7 +139,8 @@ $$LC_COUNT_BEFORE_RELOAD$$
      *    of the buffer, thus we record the current position in the lexeme start pointer and
      *    recover it after the loading. */
     me->buffer._read_p = text_end;
-    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, &position[0], PositionRegisterN) ) {
+    switch( QUEX_NAME(Buffer_load_forward)(&me->buffer, &position[0], PositionRegisterN) ) {
+    case E_LoadResult_DONE:
         /* Recover '_read_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         $$INPUT_P_TO_LEXEME_START$$
@@ -139,14 +150,21 @@ $$LC_COUNT_BEFORE_RELOAD$$
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$
+    case E_LoadResult_NO_SPACE_FOR_LOAD:
+        /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
+        $$INPUT_P_TO_LEXEME_START$$
+        $$ON_SKIP_RANGE_OPEN$$;
+    case E_LoadResult_BAD_LEXATOM:
+        goto $$ON_ENCODING_ERROR$$;
+    case E_LoadResult_FAILURE:
+        goto $$ON_LOAD_FAILURE$$;
+    case E_LoadResult_NO_SPACE_FOR_LOAD:
+        goto $$ON_OVERFLOW$$;
     }
-    /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
-    $$INPUT_P_TO_LEXEME_START$$
-    $$ON_SKIP_RANGE_OPEN$$;
 """
 
 @typed(EndSequence=[int])
-def get_skipper(EndSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter):
+def OLD_get_skipper(EndSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter):
     assert len(EndSequence) >= 1
 
     global template_str
@@ -217,6 +235,71 @@ def get_skipper(EndSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAft
     variable_db.require("input") 
 
     return [ code_str ]
+
+def get_skipper(TheAnalyzer, CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter, CounterDb):
+    """
+                                        .---<---+----------<------+
+                                        |       |                 |        
+                                        |       | not             |       
+                                      .------.  | Closer[0]       |       
+       ------------------------------>| Loop +--'                 |       
+                                      |      |                    | no    
+                                      |      |                    |       
+                                      |      |          .-------------.          
+                                      |      +----->----| Closer[1-N] |------------> RESTART
+                                      |      |          |      ?      |   yes           
+                                      |      |          '-------------'             
+                                      |      |                             
+                                      |  BLC +-->-.  
+                                  .->-|      |     \                 Reload State 
+                .-DoorID(S, 1)--./    '------'      \             .-----------------.
+           .----| after_reload  |                    \          .---------------.   |
+           |    '---------------'                     '---------| before_reload |   |
+           |                                                    '---------------'   |
+           '-----------------------------------------------------|                  |
+                                                         success '------------------'     
+                                                                         | failure      
+                                                                         |            
+                                                                  .---------------.       
+                                                                  | SkipRangeOpen |       
+                                                                  '---------------'                                                                   
+
+    """
+    psml             = _get_state_machine_vs_terminal_list(CloserSequence, 
+                                                           CounterDb)
+    count_op_factory = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, 
+                                                                NumberSet_All(), 
+                                                                Lng.INPUT_P()) 
+    after_beyond     = [ 
+        Op.GotoDoorId(DoorID.continue_without_on_after_match()) 
+    ]
+
+    result,          \
+    door_id_beyond   = loop.do(count_op_factory,
+                               AfterBeyond       = after_beyond,
+                               LexemeEndCheckF   = False,
+                               LexemeMaintainedF = False,
+                               EngineType        = engine.FORWARD,
+                               ReloadStateExtern = TheAnalyzer.reload_state,
+                               ParallelSmTerminalPairList = psml) 
+    return result
+
+def _get_state_machine_vs_terminal_list(CloserSequence, CounterDb): 
+    """Additionally to all characters, the loop shall walk along the 'closer'.
+    If the closer matches, the range skipping exits. Characters need to be 
+    counted properly.
+
+    RETURNS: list(state machine, terminal)
+
+    The list contains only one single element.
+    """
+    sm = StateMachine.from_sequence(CloserSequence)
+    sm.set_id(dial_db.new_incidence_id())
+
+    code = [ Lng.GOTO(DoorID.continue_without_on_after_match()) ]
+    terminal = Terminal(CodeTerminal(code), "<SKIP RANGE TERMINATED>")
+    terminal.set_incidence_id(sm.get_id())
+    return [ (sm, terminal) ]
 
 def __lc_counting_replacements(code_str, EndSequence):
     """Line and Column Number Counting(Range Skipper):

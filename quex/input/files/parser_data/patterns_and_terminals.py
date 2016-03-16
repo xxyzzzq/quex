@@ -4,7 +4,7 @@ from   quex.input.code.core                              import CodeTerminal, \
                                                                 CodeTerminalOnMatch, \
                                                                 CodeGeneratedBlock, \
                                                                 CodeGenerated
-from   quex.engine.counter                               import CountOpFactory
+from   quex.engine.loop_counter                          import LoopCountOpFactory
 from   quex.engine.incidence_db                          import IncidenceDB
 from   quex.engine.analyzer.terminal.core                import Terminal
 from   quex.engine.analyzer.terminal.factory             import TerminalFactory
@@ -22,6 +22,7 @@ from   quex.engine.misc.tools import typed
 import quex.engine.misc.error   as     error
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
+                              standard_incidence_db_is_immutable, \
                               Lng, \
                               E_IncidenceIDs, \
                               E_TerminalType
@@ -147,8 +148,7 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
 
     # (*) Counting information must be determined BEFORE transformation
     for pattern in pattern_list:
-        pattern.prepare_count_info(CounterDb, 
-                                   Setup.buffer_codec)
+        pattern.prepare_count_info(CounterDb, Setup.buffer_codec)
 
     # (*) Transform anything into the buffer's codec
     #     Skippers: What is relevant to enter the skippers is transformed.
@@ -261,7 +261,7 @@ def _pattern_delete_and_reprioritize(ppt_list, BaseModeSequence):
     # -- Re-sort and re-assign new incidence id which reflect the new order. 
     ppt_list.sort(key=attrgetter("priority"))
     for priority, pattern, terminal in ppt_list: 
-        if pattern.incidence_id() in IncidenceDB.unmutable_incidence_ids:
+        if standard_incidence_db_is_immutable(pattern.incidence_id()):
             continue
         new_pattern_id = dial_db.new_incidence_id() # new id > any older id.
         pattern.set_incidence_id(new_pattern_id)
@@ -452,8 +452,8 @@ def _prepare_skip_character_set(ModeName, OptionsDb, CounterDb, IncidenceDb, MHI
     # Counting actions are added to the terminal automatically by the
     # terminal_factory. The only thing that remains for each sub-terminal:
     # 'goto skipper'.
-    ccfactory = CountOpFactory.from_ParserDataLineColumn(CounterDb, total_set, 
-                                                          Lng.INPUT_P())
+    ccfactory = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, total_set, 
+                                                             Lng.INPUT_P())
 
     new_ppt_list = [
         PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, 

@@ -130,7 +130,7 @@ class CharacterSetStateMachine:
         self.incidence_id_beyond = BeyondIid
 
     @staticmethod
-    def from_CountOpFactory(ccfactory, LexemeMaintainedF, ParallelSmList=None):
+    def from_LoopCountOpFactory(ccfactory, LexemeMaintainedF, ParallelSmList=None):
         """The function 'get_terminal_list' returns a list of termins which 
         fit the incidence ids of the counting actions.
         """

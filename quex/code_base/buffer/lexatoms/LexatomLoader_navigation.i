@@ -92,12 +92,12 @@ QUEX_NAME(LexatomLoader_lexatom_index_seek)(QUEX_NAME(LexatomLoader)*         me
     }
 
     /* step_forward_n_lexatoms() calls derived.load_lexatoms() 
-     * which increments 'lexatom_index_next_to_fill'.                      */
+     * which increments 'lexatom_index_next_to_fill'.                        */
     if( ! QUEX_NAME(LexatomLoader_lexatom_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
         QUEX_NAME(LexatomLoader_lexatom_index_reset_backup)(me, 
-                                                             backup_lexatom_index_next_to_fill, 
-                                                             backup_stomach_byte_n, 
-                                                             backup_byte_loader_position);
+                                                            backup_lexatom_index_next_to_fill, 
+                                                            backup_stomach_byte_n, 
+                                                            backup_byte_loader_position);
         return false;
     }
     __quex_assert(me->lexatom_index_next_to_fill == CharacterIndex);

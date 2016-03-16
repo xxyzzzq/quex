@@ -45,6 +45,16 @@ QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)*   alter
                                               const QUEX_TYPE_LEXATOM* BufferEnd,
                                               const void*                ContentEnd);
 
+QUEX_INLINE E_LoadResult
+QUEX_NAME(LexatomLoader_call_converter)(QUEX_NAME(LexatomLoader_Converter)* me,
+                                        QUEX_TYPE_LEXATOM**                 insertion_p,
+                                        QUEX_TYPE_LEXATOM*                  RegionBeginP,
+                                        const QUEX_TYPE_LEXATOM*            RegionEndP);
+QUEX_INLINE void
+QUEX_NAME(LexatomLoader_remove_spurious_BOM)(QUEX_NAME(LexatomLoader_Converter)* me,
+                                            QUEX_TYPE_LEXATOM**                  buffer_insertion_p,
+                                            QUEX_TYPE_LEXATOM*                   RegionBeginP);
+
 QUEX_INLINE void   
 QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me, 
                           uint8_t* Begin, size_t SizeInBytes);
@@ -55,11 +65,6 @@ QUEX_INLINE bool
 QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
                           QUEX_NAME(ByteLoader)*            byte_loader, 
                           bool*                  end_of_stream_f);
-
-QUEX_INLINE void
-QUEX_NAME(LexatomLoader_remove_spurious_BOM)(QUEX_NAME(LexatomLoader_Converter)* me,
-                                            QUEX_TYPE_LEXATOM**              buffer_insertion_p,
-                                            QUEX_TYPE_LEXATOM*               RegionBeginP);
 
 QUEX_INLINE QUEX_NAME(LexatomLoader)*
 QUEX_NAME(LexatomLoader_Converter_new)(QUEX_NAME(ByteLoader)* byte_loader,
@@ -204,7 +209,6 @@ QUEX_NAME(LexatomLoader_Converter_load_lexatoms)(QUEX_NAME(LexatomLoader)* alter
     QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
     QUEX_TYPE_LEXATOM*                  buffer_insertion_p = RegionBeginP;
     const QUEX_TYPE_LEXATOM*            BufferRegionEnd    = &RegionBeginP[N];
-    ptrdiff_t                           converted_lexatom_n;
     E_LoadResult                        load_result;
     bool                                raw_load_complete_f;
     bool                                raw_end_of_stream_f;
@@ -213,22 +217,21 @@ QUEX_NAME(LexatomLoader_Converter_load_lexatoms)(QUEX_NAME(LexatomLoader)* alter
     QUEX_TYPE_LEXATOM*               buffer_insertion_begin_p;
 #   endif
     (void)encoding_error_f;
+    (void)raw;
 
     __quex_assert(me->converter);
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
     QUEX_ASSERT_RAW_BUFFER(raw);
+
     /* NOT: QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
      * The buffer must remain intact, in case that not all is loaded.        */
 
     /* Some converters keep some content internally. So, it is a more general
      * solution to convert first and reload new bytes upon need.             */
-    load_result = me->converter->convert(me->converter, 
-                                         &raw->next_to_convert_p, raw->fill_end_p,
-                                         &buffer_insertion_p,     BufferRegionEnd);
-
-    QUEX_NAME(LexatomLoader_remove_spurious_BOM)(me, &buffer_insertion_p, 
-                                                 RegionBeginP);
+    load_result = QUEX_NAME(LexatomLoader_call_converter)(me, &buffer_insertion_p, 
+                                                          RegionBeginP,
+                                                          BufferRegionEnd);
 
     /* Convert, as long as the following two hold:
      *  (i)  Drain is not totally filled.
@@ -249,34 +252,42 @@ QUEX_NAME(LexatomLoader_Converter_load_lexatoms)(QUEX_NAME(LexatomLoader)* alter
             raw_load_complete_f = false;
         }
 
-        /*  next_to_convert_p == raw->fill_end_p => nothing happens.         */
-        load_result = me->converter->convert(me->converter, 
-                                             &raw->next_to_convert_p, raw->fill_end_p,
-                                             &buffer_insertion_p,     BufferRegionEnd);
-
-        QUEX_NAME(LexatomLoader_remove_spurious_BOM)(me, &buffer_insertion_p, RegionBeginP);
+        /* next_to_convert_p == raw->fill_end_p => nothing happens.          */
+        load_result = QUEX_NAME(LexatomLoader_call_converter)(me, &buffer_insertion_p, 
+                                                              RegionBeginP,
+                                                              BufferRegionEnd);
     }
 
-    me->converter->virginity_f = false;
-
-    if( load_result != E_LoadResult_COMPLETE && raw_end_of_stream_f ) {
-       if( raw->next_to_convert_p == raw->fill_end_p ) {
-           *end_of_stream_f = true;
-       } else {
-           /* There are still bytes, but they were not converted.               
-            * ('load_result' => remainder is converted next time)            */
-           __QUEX_STD_printf("Error. At end of file, byte sequence not interpreted as character.");
-       }
-    }
+    __quex_assert(BufferRegionEnd >= buffer_insertion_p);
     /* NOT: QUEX_IF_ASSERTS_poison(buffer_insertion_p, BufferRegionEnd);
      *      Buffer MUST be left as is, in case of ERROR!                     */
-    __quex_assert(BufferRegionEnd >= buffer_insertion_p);
+
+    switch( load_result ) {
+        case E_LoadResult_COMPLETE:
+            break;
+        case E_LoadResult_INCOMPLETE:
+            /* Converter could not fill the drain. This can only happen, if the
+             * raw buffer could not be loaded with sufficient data to be 
+             * converted. This is exactly the 'end of stream' condition      */
+            __quex_assert(raw_end_of_stream_f);   /* Else, converter failed. */
+            __quex_assert(raw->next_to_convert_p == raw->fill_end_p);
+            /* Nothing can be loaded; Everything is converted.               */
+            *end_of_stream_f = true;
+            break;
+        case E_LoadResult_BAD_LEXATOM:
+            *encoding_error_f = true;
+            break;
+
+        case E_LoadResult_NO_MORE_DATA:
+            /* A converter does not load--when called, there should be data.
+             * => Cannot complain 'NO_MORE_DATA' (end of stream).            */
+        default:
+            __quex_assert(false);
+    }
 
     /* 'buffer_insertion_p' was updated by 'convert' and points behind the 
      * last byte that was converted.                                         */ 
-    converted_lexatom_n = buffer_insertion_p - RegionBeginP;
-
-    return (size_t)converted_lexatom_n;
+    return (size_t)(buffer_insertion_p - RegionBeginP);
 }
 
 QUEX_INLINE void 
@@ -321,18 +332,38 @@ QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)* alter_e
     raw->fill_end_p = FilledEndP;   
     QUEX_ASSERT_RAW_BUFFER(raw);
 
-    load_result = me->converter->convert(me->converter, 
-                                         &raw->next_to_convert_p, raw->fill_end_p,
-                                         &insertion_p,            RegionEndP);
+    load_result = QUEX_NAME(LexatomLoader_call_converter)(me, &insertion_p, 
+                                                          RegionBeginP,
+                                                          RegionEndP);
     (void)load_result;
-
-    QUEX_NAME(LexatomLoader_remove_spurious_BOM)(me, &insertion_p, RegionBeginP);
-    me->converter->virginity_f = false;
     
     QUEX_ASSERT_RAW_BUFFER(raw);
     return insertion_p - RegionBeginP;
 }
 
+QUEX_INLINE E_LoadResult
+QUEX_NAME(LexatomLoader_call_converter)(QUEX_NAME(LexatomLoader_Converter)* me,
+                                        QUEX_TYPE_LEXATOM**                 insertion_p,
+                                        QUEX_TYPE_LEXATOM*                  RegionBeginP,
+                                        const QUEX_TYPE_LEXATOM*            RegionEndP)
+{
+    QUEX_NAME(RawBuffer)*  raw = &me->raw_buffer;
+    E_LoadResult           load_result;
+    (void)load_result;
+
+    load_result = me->converter->convert(me->converter, 
+                                         &raw->next_to_convert_p, raw->fill_end_p,
+                                         insertion_p, RegionEndP);
+    
+    QUEX_NAME(LexatomLoader_remove_spurious_BOM)(me, insertion_p, RegionBeginP);
+    me->converter->virginity_f = false;
+
+    /* A converter does not load => It cannot report 'end of stream'     */
+    __quex_assert(   load_result == E_LoadResult_COMPLETE
+                  || load_result == E_LoadResult_INCOMPLETE
+                  || load_result == E_LoadResult_BAD_LEXATOM);
+    return load_result;
+}
 
 QUEX_INLINE void
 QUEX_NAME(LexatomLoader_remove_spurious_BOM)(QUEX_NAME(LexatomLoader_Converter)* me,

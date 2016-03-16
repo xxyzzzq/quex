@@ -1,15 +1,15 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-import quex.output.core.skipper.character_set as character_set_skipper
-import quex.output.core.skipper.range         as range_skipper
-import quex.output.core.skipper.nested_range  as nested_range_skipper
+import quex.output.core.skipper.character_set      as character_set_skipper
+import quex.output.core.skipper.range              as range_skipper
+import quex.output.core.skipper.nested_range       as nested_range_skipper
 import quex.output.core.skipper.indentation_counter as     indentation_counter
-from   quex.output.core.TEST.generator_test   import *
-from   quex.output.core.variable_db import variable_db
-from   quex.output.core.TEST.generator_test   import __Setup_init_language_database
-from   quex.input.code.base             import CodeFragment
-from   quex.output.core.base                  import do_state_router
+from   quex.output.core.TEST.generator_test        import *
+from   quex.output.core.variable_db                import variable_db
+from   quex.output.core.TEST.generator_test        import __Setup_init_language_database
+from   quex.input.code.base                        import CodeFragment
+from   quex.output.core.base                       import do_state_router
 from   quex.engine.state_machine.core              import StateMachine
 from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
 from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
@@ -89,6 +89,7 @@ def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=
         "mode_name":          "MrUnitTest",
         "on_skip_range_open": CodeFragment([end_str]),
         "door_id_after":      DoorID.continue_without_on_after_match(),
+        "counter_db":         CounterSetupLineColumn_Default(),
     }
 
     skipper_code = range_skipper.do(data, Analyzer)
@@ -115,6 +116,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
         "mode_name":          "MrUnitTest",
         "on_skip_range_open": CodeFragment([end_str]),
         "door_id_after":      DoorID.continue_without_on_after_match(),
+        "counter_db":         CounterSetupLineColumn_Default(),
     }
 
     skipper_code = nested_range_skipper.do(data, Analyzer)
@@ -186,11 +188,13 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
     if type(SourceCode) == list:
         plain_code = "".join(Lng.GET_PLAIN_STRINGS(SourceCode))
 
-    label_failure     = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
-    label_bad_lexatom = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM))
-    label_eos         = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
-    label_reentry     = dial_db.get_label_by_door_id(DoorID.global_reentry())
-    label_reentry2    = dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match())
+    label_failure      = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
+    label_bad_lexatom  = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM))
+    label_load_failure = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.LOAD_FAILURE))
+    label_overflow     = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.OVERFLOW))
+    label_eos          = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
+    label_reentry      = dial_db.get_label_by_door_id(DoorID.global_reentry())
+    label_reentry2     = dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match())
     if DoorIdOnSkipRangeOpen is not None:
         label_sro = dial_db.get_label_by_door_id(DoorIdOnSkipRangeOpen)
     else:
@@ -210,6 +214,8 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
                        ("$$TERMINAL_END_OF_STREAM$$", label_eos),
                        ("$$TERMINAL_FAILURE$$",       label_failure),
                        ("$$BAD_LEXATOM$$",            label_bad_lexatom),
+                       ("$$LOAD_FAILURE$$",           label_load_failure),
+                       ("$$OVERFLOW$$",               label_overflow),
                        ("$$REENTRY$$",                label_reentry),
                        ("$$LEXEME_MACRO_SETUP$$",     Lng.LEXEME_MACRO_SETUP()),
                        ("$$LEXEME_MACRO_CLEAN_UP$$",  Lng.LEXEME_MACRO_CLEAN_UP()),
@@ -273,15 +279,19 @@ $$REENTRY2$$:
 
 $$TERMINAL_FAILURE$$:
 $$BAD_LEXATOM$$:
+$$LOAD_FAILURE$$:
+$$OVERFLOW$$:
 $$TERMINAL_END_OF_STREAM$$:
 $$SKIP_RANGE_OPEN$$:
 $$END_STR$$
 #undef engine
 
     if( 0 ) {
-        /* Avoit undefined label warnings: */
+        /* Avoid undefined label warnings: */
         goto $$TERMINAL_FAILURE$$;
         goto $$BAD_LEXATOM$$;
+        goto $$LOAD_FAILURE$$;
+        goto $$OVERFLOW$$;
         goto $$TERMINAL_END_OF_STREAM$$;
         goto $$SKIP_RANGE_OPEN$$;
         goto $$REENTRY$$;

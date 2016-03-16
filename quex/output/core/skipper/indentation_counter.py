@@ -3,10 +3,9 @@ from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.operations.operation_list        import Op
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
-from   quex.engine.counter                          import CountOpFactory
+from   quex.engine.loop_counter                     import LoopCountOpFactory
 from   quex.engine.state_machine.character_counter  import CountInfo
 import quex.output.core.loop                        as     loop
-import quex.output.cpp.counter_for_pattern          as     counter_coder
 from   quex.blackboard                              import Lng, \
                                                            E_IncidenceIDs, \
                                                            E_R, \
@@ -93,17 +92,17 @@ def do(Data, TheAnalyzer):
     #    explicitly disallowed to be used as indentation.
     bad_indentation_iid = dial_db.new_incidence_id() 
 
-    reload_state = TheAnalyzer.reload_state
+    reload_state        = TheAnalyzer.reload_state
 
-    sm_terminal_list = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
-                                                           isetup.sm_newline.get(),
-                                                           isetup.sm_comment.get(), 
-                                                           counter_db)
+    sm_terminal_list    = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
+                                                              isetup.sm_newline.get(),
+                                                              isetup.sm_comment.get(), 
+                                                              counter_db)
 
     # 'whitespace' --> normal counting
     # 'bad'        --> goto bad character indentation handler
     # else         --> non-whitespace detected => handle indentation
-    ccfactory = CountOpFactory.from_ParserDataIndentation(isetup, 
+    ccfactory = LoopCountOpFactory.from_ParserDataIndentation(isetup, 
                                                           counter_db, 
                                                           Lng.INPUT_P(), 
                                                           DoorID.incidence(bad_indentation_iid))
@@ -135,103 +134,35 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
     """
     result = []
     # If nothing is to be done, nothing is appended
-    _add_suppressed_newline(result, SmSuppressedNewline)
-    _add_newline(result, SmNewline)
-    _add_comment(result, SmComment, CounterDb)
+    _add_pair(result, SmSuppressedNewline, "<INDENTATION SUPPRESSED NEWLINE>")
+    _add_pair(result, SmNewline, "<INDENTATION NEWLINE>")
+    _add_pair(result, SmComment, "<INDENTATION COMMENT>")
 
     for sm, terminal in result:
         assert sm.get_id() == terminal.incidence_id()
     return result
 
-def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):
-    """Add a pair (suppressed newline, terminal on suppressed newline to 'psml'.
-
-    A suppresed newline is not like a newline--the next line is considered as 
-    being appended to the current line. Nevertheless the line number needs to
-    incremented, just the column number is not reset to 1. Then, it continues
-    with indentation counting.
+def _add_pair(psml, SmOriginal, Name):
+    """Add a state machine-terminal pair to 'psml'. A terminal is generated
+    which transits to 'INDENTATION_HANDLER'. The state machine is cloned
+    for safety.
     """
-    if SmSuppressedNewlineOriginal is None:
-        return
+    if SmOriginal is None: return
+
+    incidence_id = dial_db.new_incidence_id()
 
     # Disconnect from machines being used elsewhere.
-    SmSuppressedNewline = SmSuppressedNewlineOriginal.clone()
-    SmSuppressedNewline.set_id(dial_db.new_incidence_id())
+    sm = SmOriginal.clone()
+    sm.set_id(incidence_id)
 
-    # The parser MUST ensure that if there is a newline suppressor, there MUST
-    # be a newline being defined.
-    cl = [
-        Op.LineCountAdd(1),
-        Op.AssignConstant(E_R.Column, 1),
-        Op.GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)),
+    code = [ 
+        Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)) 
     ]
-    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
-                                     "<INDENTATION SUPPRESSED NEWLINE>")
-    terminal.set_incidence_id(SmSuppressedNewline.get_id())
 
-    psml.append((SmSuppressedNewline, terminal))
+    terminal = Terminal(CodeTerminal(code), Name)
+    terminal.set_incidence_id(incidence_id)
 
-def _add_newline(psml, SmNewlineOriginal):
-    """Add a pair (newline state machine, terminal on newline) to 'psml'.
-
-    When a newline occurs, the column count can be set to 1 and the line number
-    is incremented. Then the indentation counting restarts.
-    """
-    assert SmNewlineOriginal is not None
-
-    # Disconnect from machines being used elsewhere.
-    SmNewline = SmNewlineOriginal.clone()
-    SmNewline.set_id(dial_db.new_incidence_id())
-
-    # The SmNewline has been used before in the main state machine with a 
-    # different incidence id. It is essential to clone!
-
-    cl = [
-        Op.LineCountAdd(1),
-        Op.AssignConstant(E_R.Column, 1),
-        Op.GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER))
-    ]
-    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
-                        "<INDENTATION NEWLINE>")
-    terminal.set_incidence_id(SmNewline.get_id())
-
-    psml.append((SmNewline, terminal))
-
-def _add_comment(psml, SmCommentOriginal, CounterDb):
-    """On matching the comment state machine goto a terminal that does the 
-    following:
-    """
-    if SmCommentOriginal is None: return
-
-    comment_skip_iid = dial_db.new_incidence_id()
-
-    # Disconnect from machines being used elsewhere.
-    SmComment = SmCommentOriginal.clone()
-    SmComment.set_id(comment_skip_iid)
-
-    if SmComment.get_ending_character_set().contains_only(ord('\n')):
-        code = Lng.COMMAND_LIST([
-            Op.LineCountAdd(1),
-            Op.AssignConstant(E_R.Column, 1),
-        ])
-    else:
-        count_info = CountInfo.from_StateMachine(SmComment, 
-                                                 CounterDb,
-                                                 CodecTrafoInfo=Setup.buffer_codec)
-
-        default_counting_required_f, \
-        count_code                   = counter_coder.do_CountInfo(count_info)
-
-        code = [ Lng.COMMAND(Op.Assign(E_R.ReferenceP, E_R.LexemeStartP)) ]
-        code.extend(count_code)
-        code.append(Lng.COMMAND(Op.Assign(E_R.LexemeStartP, E_R.ReferenceP)))
-
-    code.append(Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)))
-
-    terminal = Terminal(CodeTerminal(code), "INDENTATION COMMENT")
-    terminal.set_incidence_id(comment_skip_iid)
-
-    psml.append((SmComment, terminal))
+    psml.append((sm, terminal))
 
 def _code_terminal_on_bad_indentation_character(code, ISetup, ModeName, 
                                                 incidence_db, BadIndentationIid):

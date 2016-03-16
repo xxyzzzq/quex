@@ -520,6 +520,18 @@ class StateMachine(object):
                 successor_db[predecessor_si].add(si)
         return successor_db
 
+    def collect_trigger_set_union(self):
+        """RETURNS: Union of all character sets that are triggering. This
+                    EXCLUDES transitions to drop-out or encoding error.
+        """
+        result = NumberSet()
+        for state in self.states.itervalues():
+            for ti, trigger_set in state.target_map.get_map().iteritems():
+                if self.states[ti].has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM):
+                    continue
+                result.unite_with(trigger_set)
+        return result
+
     def get_number_sequence(self):
         """Returns a number sequence that represents the state machine.
         If the state machine cannot be represented by a plain chain of 
@@ -718,6 +730,38 @@ class StateMachine(object):
         assert x == y                     # DEBUG
 
         return result
+
+    def cut_first_transition(self):
+        """Cuts the first transition and leaves the remaining states in place. 
+
+        ASSUMPTIONS: (1) The state machine is a DFA.
+                     (2) There is NO transition to the init state.
+                     (3) There is ONLY ONE subsequent state to the init state.
+
+        RETURNS: Trigger set that performs the first transition.
+                 None, in case of failure.
+
+        ADAPTS:  Makes the init state's success state the new init state.
+        """
+        # (1) DFA?
+        assert self.is_DFA_compliant()
+
+        # (2) No transition to init state
+        init_state_index = self.init_state_index
+        if any(init_state_index in state.target_map.get_map()
+               for state in self.states.iteritems()):
+            return None
+
+        # (3) Only one successor state?
+        tm = self.get_init_state().target_map.get_map()
+        if tm.size() != 1: return None
+        successor_i, trigger_set = tm.iteritems().next()
+
+        # Successor of init state becomes new init state.
+        del self.states[self.init_state_index]
+        self.init_state_index = successor_i
+
+        return trigger_set
 
     def clean_up(self):
         # Delete states which are not connected from the init state.
