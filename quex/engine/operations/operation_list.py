@@ -103,9 +103,7 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
     # of fly-weight-able command identifier. Use a positive list, NOT a negative
     # list. That way, new additions do not enter accidently into the fly weight
     # set.
-    fly_weight_set = (E_Op.InputPDecrement, 
-                      E_Op.InputPIncrement, 
-                      E_Op.InputPDereference)
+    fly_weight_set = (E_Op.InputPDereference,)
     fly_weight_db  = {}
 
     def __new__(self, Id, *ParameterList):
@@ -169,12 +167,12 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         return Op(E_Op.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
     
     @staticmethod
-    def InputPIncrement():
-        return Op(E_Op.InputPIncrement)
+    def Increment(Register):
+        return Op(E_Op.Increment, Register)
     
     @staticmethod
-    def InputPDecrement():
-        return Op(E_Op.InputPDecrement)
+    def Decrement(Register):
+        return Op(E_Op.Decrement, Register)
     
     @staticmethod
     def InputPDereference():
@@ -221,6 +219,10 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         return Op(E_Op.GotoDoorId, DoorId)
     
     @staticmethod
+    def GotoDoorIdIfCounterEqualZero(DoorId):
+        return Op(E_Op.GotoDoorIdIfCounterEqualZero, DoorId)
+
+    @staticmethod
     def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
         return Op(E_Op.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
     
@@ -241,7 +243,6 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
             result.content = AccepterContent.from_iterable(AcceptanceScheme)
         return result
 
-    
     @staticmethod
     def RouterByLastAcceptance():
         return Op(E_Op.RouterByLastAcceptance)
@@ -390,8 +391,6 @@ def is_switchable(A, B):
 
     return True
 
-
-
 def __configure():
     """Configure the database for commands.
             
@@ -452,15 +451,17 @@ def __configure():
                                                (E_R.ThreadOfControl,w))
     c(E_Op.GotoDoorIdIfInputPNotEqualPointer, ("door_id",                              "pointer"),
                                                (E_R.ThreadOfControl,w), (E_R.InputP,r), (1,r))
+    c(E_Op.GotoDoorIdIfCounterEqualZero,      ("door_id",),
+                                               (E_R.ThreadOfControl,w), (E_R.Counter,r))
     #
     c(E_Op.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
                                               (E_R.InputP,r), (E_R.PreContextFlags,r), (E_R.PositionRegister,w,1)) # Argument '1' --> sub_id_reference
     c(E_Op.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_element"),
                                               (E_R.PreContextFlags, r), (E_R.PositionRegister, r), (E_R.ThreadOfControl, w), 
                                               (E_R.InputP, r+w))
-    c(E_Op.InputPDecrement,                  None, (E_R.InputP,r+w))
-    c(E_Op.InputPIncrement,                  None, (E_R.InputP,r+w))
     c(E_Op.InputPDereference,                None, (E_R.InputP,r), (E_R.Input,w))
+    c(E_Op.Decrement,                        ("register",), (0,r+w))
+    c(E_Op.Increment,                        ("register",), (0,r+w))
     #
     c(E_Op.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r), (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
     #

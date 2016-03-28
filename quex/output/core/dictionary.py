@@ -255,6 +255,7 @@ class Lng_Cpp(dict):
             E_R.CharacterBeginP: "lexatom_begin_p",
             E_R.ReferenceP:      "reference_p",
             E_R.LexemeEnd:       "LexemeEnd",
+            E_R.Counter:         "counter",
         }[Register]
 
     def COMMAND_LIST(self, OpList):
@@ -327,6 +328,10 @@ class Lng_Cpp(dict):
 
         elif Op.id == E_Op.GotoDoorId:
             return self.GOTO(Op.content.door_id)
+
+        elif Op.id == E_Op.GotoDoorIdIfCounterEqualZero:
+            return "if( %s == 0 ) %s\n" % (self.REGISTER_NAME(E_R.Counter), 
+                                           self.GOTO(Op.content.door_id))
 
         elif Op.id == E_Op.GotoDoorIdIfInputPNotEqualPointer:
             return "if( %s != %s ) %s\n" % (self.INPUT_P(), 
@@ -425,11 +430,11 @@ class Lng_Cpp(dict):
         elif Op.id == E_Op.InputPDereference:
             return "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE())
 
-        elif Op.id == E_Op.InputPIncrement:
-            return "    %s\n" % self.INPUT_P_INCREMENT()
+        elif Op.id == E_Op.Increment:
+            return "    ++%s;\n" % self.REGISTER_NAME(Op.content.register)
 
-        elif Op.id == E_Op.InputPDecrement:
-            return "    %s\n" % self.INPUT_P_DECREMENT()
+        elif Op.id == E_Op.Decrement:
+            return "    --%s;\n" % self.REGISTER_NAME(Op.content.register)
 
         else:
             assert False, "Unknown command '%s'" % Op.id
@@ -980,7 +985,6 @@ cpp_reload_backward_str = """
     case E_LoadResult_FAILURE:
         goto $$ON_LOAD_FAILURE$$;
     case E_LoadResult_NO_SPACE_FOR_LOAD:
-        goto $$ON_NO_SPACE_FOR_LOAD$$;
     case E_LoadResult_NO_MORE_DATA:
         __quex_debug("reload impossible\\n");
         QUEX_GOTO_STATE(target_state_else_index); /* may use 'computed goto' */

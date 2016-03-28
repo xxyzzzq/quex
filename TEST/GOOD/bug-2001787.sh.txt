@@ -16,9 +16,7 @@
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ## An Assert-Abortion might be an intended element of the experiment.
 URL 'http://www.dog.com/get?q=food' 
-Simple.cpp:590:	terminate called after throwing an instance of 'std::runtime_error'
+Simple.cpp:738:	terminate called after throwing an instance of 'std::runtime_error'
   what():  
-    Match failure in mode 'ONE_AND_ONLY'.
-    No 'on_failure' section provided for this mode.
-    Proposal: Define 'on_failure' and analyze 'Lexeme'.
-
+Mode 'ONE_AND_ONLY': Match failure, no pattern matched!
+The 'on_failure' handler has not been specified.

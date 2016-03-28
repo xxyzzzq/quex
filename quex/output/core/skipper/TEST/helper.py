@@ -213,9 +213,9 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
                        ("$$COUNTER_PRINT$$",          counter_print_str),
                        ("$$TERMINAL_END_OF_STREAM$$", label_eos),
                        ("$$TERMINAL_FAILURE$$",       label_failure),
-                       ("$$BAD_LEXATOM$$",            label_bad_lexatom),
-                       ("$$LOAD_FAILURE$$",           label_load_failure),
-                       ("$$OVERFLOW$$",               label_overflow),
+                       ("$$ON_BAD_LEXATOM$$",            label_bad_lexatom),
+                       ("$$ON_LOAD_FAILURE$$",           label_load_failure),
+                       ("$$NO_MORE_SPACE$$",               label_overflow),
                        ("$$REENTRY$$",                label_reentry),
                        ("$$LEXEME_MACRO_SETUP$$",     Lng.LEXEME_MACRO_SETUP()),
                        ("$$LEXEME_MACRO_CLEAN_UP$$",  Lng.LEXEME_MACRO_CLEAN_UP()),
@@ -278,9 +278,9 @@ $$REENTRY2$$:
     goto ENTRY;
 
 $$TERMINAL_FAILURE$$:
-$$BAD_LEXATOM$$:
-$$LOAD_FAILURE$$:
-$$OVERFLOW$$:
+$$ON_BAD_LEXATOM$$:
+$$ON_LOAD_FAILURE$$:
+$$NO_MORE_SPACE$$:
 $$TERMINAL_END_OF_STREAM$$:
 $$SKIP_RANGE_OPEN$$:
 $$END_STR$$
@@ -289,9 +289,9 @@ $$END_STR$$
     if( 0 ) {
         /* Avoid undefined label warnings: */
         goto $$TERMINAL_FAILURE$$;
-        goto $$BAD_LEXATOM$$;
-        goto $$LOAD_FAILURE$$;
-        goto $$OVERFLOW$$;
+        goto $$ON_BAD_LEXATOM$$;
+        goto $$ON_LOAD_FAILURE$$;
+        goto $$NO_MORE_SPACE$$;
         goto $$TERMINAL_END_OF_STREAM$$;
         goto $$SKIP_RANGE_OPEN$$;
         goto $$REENTRY$$;

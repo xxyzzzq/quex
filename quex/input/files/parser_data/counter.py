@@ -8,6 +8,7 @@ from   quex.input.code.base                       import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
 from   quex.engine.misc.interval_handling         import NumberSet
+from   quex.engine.operations.operation_list      import Op
 from   quex.blackboard                            import E_CharacterCountType
 
 from   quex.blackboard import setup as Setup
@@ -33,7 +34,61 @@ class CountOpMapEntry(namedtuple("CountOpMapEntry", ("cc_type", "value", "sr")))
     def __new__(self, CCType, Value, sr):
         return super(CountOpMapEntry, self).__new__(self, CCType, Value, sr)
 
-CountInfo = namedtuple("CountInfo",  ("incidence_id", "cc_type", "parameter", "character_set"))
+class CountInfo(object):
+    def __init__(self, CC_Type, Parameter, CharacterSet):
+        self.incidence_id  = IncidenceId
+        self.cc_type       = CC_Type
+        self.parameter     = paramater
+        self.character_set = CharacterSet 
+
+    def get_OpList(self, ColumnCountPerChunk):
+        if ColumnCountPerChunk is None:
+
+            if CC_Type == E_CharacterCountType.BAD:
+                return [ 
+                    Op.GotoDoorId(self.door_id_on_bad_indentation) 
+                ]
+            elif CC_Type == E_CharacterCountType.COLUMN:
+                return [
+                    Op.ColumnCountAdd(Parameter),
+                ]
+            elif CC_Type == E_CharacterCountType.GRID:
+                return [
+                    Op.ColumnCountGridAdd(Parameter),
+                ]
+            elif CC_Type == E_CharacterCountType.LINE:
+                return [ 
+                    Op.LineCountAdd(Parameter),
+                    Op.AssignConstant(E_R.Column, 1),
+                ]
+        else:
+
+            if CC_Type == E_CharacterCountType.BAD:
+                return [ 
+                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                                                  self.get_column_count_per_chunk(), 
+                                                  False),
+                    Op.ColumnCountReferencePSet(E_R.InputP),
+                    Op.GotoDoorId(self.door_id_on_bad_indentation) 
+                ]
+            elif CC_Type == E_CharacterCountType.COLUMN:
+                return [
+                ]
+            elif CC_Type == E_CharacterCountType.GRID:
+                return [
+                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                                                  self.get_column_count_per_chunk(),
+                                                  True),
+                    Op.ColumnCountGridAdd(Parameter),
+                    Op.ColumnCountReferencePSet(E_R.InputP)
+                ]
+            elif CC_Type == E_CharacterCountType.LINE:
+                return [ 
+                    Op.LineCountAdd(Parameter),
+                    Op.AssignConstant(E_R.Column, 1),
+                    Op.ColumnCountReferencePSet(E_R.InputP)
+                ]
+
 
 class CountOpMap(object):
     """Association of character sets with triggered count commands.

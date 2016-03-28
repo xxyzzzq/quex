@@ -1,9 +1,9 @@
-from   quex.input.code.core  import CodeTerminal, \
+from   quex.input.code.core             import CodeTerminal, \
                                                CodeTerminal_NULL
 from   quex.engine.analyzer.state.core  import Processor
 from   quex.engine.analyzer.state.entry import Entry
 import quex.engine.state_machine.index  as     index
-from   quex.engine.misc.tools                import typed
+from   quex.engine.misc.tools           import typed
 
 from   types import FunctionType
 from   copy  import copy
@@ -36,6 +36,7 @@ class Terminal(Processor):
         self.__incidence_id = None
         self.__code         = Code
         self.__name         = Name
+        self.__requires_goto_loop_entry_f = False
 
     def incidence_id(self):
         return self.__incidence_id
@@ -62,6 +63,12 @@ class Terminal(Processor):
 
     def requires_lexeme_begin_f(self):
         return self.__code.requires_lexeme_begin_f()
+
+    def requires_goto_loop_entry_f(self):
+        return self.__requires_goto_loop_entry_f
+
+    def set_requires_goto_loop_entry_f(self):
+        self.__requires_goto_loop_entry_f = True
 
 class TerminalGenerated(Terminal):
     @typed(Name=(str,unicode), GeneratorFunction=FunctionType, Data=dict, Code=list)

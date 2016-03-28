@@ -23,8 +23,8 @@ State 1:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 1: pos -= 1;  goto Pattern1;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 2:

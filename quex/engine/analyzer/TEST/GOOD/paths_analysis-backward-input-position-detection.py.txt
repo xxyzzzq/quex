@@ -28,5 +28,5 @@ State 2:
 
 .drop_out:
 QuexDebug: { string=pattern 0: backward input position detected\n,  }
-InputPIncrement
+Increment: { register=InputP,  }
 GotoDoorId: DoorID(s=21, d=BIPD_RETURN)

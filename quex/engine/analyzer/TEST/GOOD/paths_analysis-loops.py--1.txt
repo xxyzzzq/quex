@@ -54,9 +54,9 @@ State 2:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: pos = position[PostContext_2] ; goto Pattern2;
 case 3: pos = position[PostContext_3] ; goto Pattern3;
+case 2: pos = position[PostContext_2] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_4] ; goto Pattern4;
 
 
@@ -66,9 +66,9 @@ State 3:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: pos = position[PostContext_2] ; goto Pattern2;
 case 3: pos = position[PostContext_3] ; goto Pattern3;
+case 2: pos = position[PostContext_2] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_4] ; goto Pattern4;
 
 
@@ -78,22 +78,22 @@ State 4:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: goto Pattern2;
 case 3: pos = position[PostContext_3] ; goto Pattern3;
-  case 4: pos = position[PostContext_4] ; goto Pattern4;
+case 2: goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 4: pos = position[PostContext_4] ; goto Pattern4;
 
 
-    State 5:
+State 5:
 .entry:
 .from 4: if 'PreContext_2': position[PostContext_2]  = input_p;
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 3: pos = position[PostContext_3] ; goto Pattern3;
 case 2: pos -= 1;  goto Pattern2;
-  case 3: pos = position[PostContext_3] ; goto Pattern3;
-    case 4: pos = position[PostContext_4] ; goto Pattern4;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 4: pos = position[PostContext_4] ; goto Pattern4;
 
 
 State 6:
@@ -126,10 +126,10 @@ State 8:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 3: pos = position[PostContext_3] ; goto Pattern3;
 case 2: pos = position[PostContext_2] ; goto Pattern2;
-  case 3: pos = position[PostContext_3] ; goto Pattern3;
-    case 4: pos = position[PostContext_4] ; goto Pattern4;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 4: pos = position[PostContext_4] ; goto Pattern4;
 
 
 State 9:
@@ -138,11 +138,11 @@ State 9:
 
 .drop_out:
 on last_acceptance:
-case 1: goto Pattern1;
-        case 2: pos = position[PostContext_2] ; goto Pattern2;
 case 3: pos = position[PostContext_3] ; goto Pattern3;
-        case 4: pos = position[PostContext_4] ; goto Pattern4;
+case 1: goto Pattern1;
+case 2: pos = position[PostContext_2] ; goto Pattern2;
 case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 4: pos = position[PostContext_4] ; goto Pattern4;
 
 
         State 0:
@@ -212,9 +212,9 @@ case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
   .drop_out:
     on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: pos = position[PostContext_0] ; goto Pattern2;
 case 3: pos = position[PostContext_1] ; goto Pattern3;
+case 2: pos = position[PostContext_0] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_2] ; goto Pattern4;
 
 
@@ -224,9 +224,9 @@ State 3:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: pos = position[PostContext_0] ; goto Pattern2;
 case 3: pos = position[PostContext_1] ; goto Pattern3;
+case 2: pos = position[PostContext_0] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_2] ; goto Pattern4;
 
 
@@ -236,9 +236,9 @@ State 4:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: goto Pattern2;
 case 3: pos = position[PostContext_1] ; goto Pattern3;
+case 2: goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_2] ; goto Pattern4;
 
 
@@ -248,9 +248,9 @@ State 5:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: pos -= 1;  goto Pattern2;
 case 3: pos = position[PostContext_1] ; goto Pattern3;
+case 2: pos -= 1;  goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_2] ; goto Pattern4;
 
 
@@ -284,9 +284,9 @@ State 8:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
-case 2: pos = position[PostContext_0] ; goto Pattern2;
 case 3: pos = position[PostContext_1] ; goto Pattern3;
+case 2: pos = position[PostContext_0] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 4: pos = position[PostContext_2] ; goto Pattern4;
 
 
@@ -296,10 +296,10 @@ State 9:
 
 .drop_out:
 on last_acceptance:
+case 3: pos = position[PostContext_1] ; goto Pattern3;
 case 1: goto Pattern1;
 case 2: pos = position[PostContext_0] ; goto Pattern2;
-case 3: pos = position[PostContext_1] ; goto Pattern3;
-case 4: pos = position[PostContext_2] ; goto Pattern4;
 case Failure: pos = lexeme_start_p + 1;  goto Failure;
+case 4: pos = position[PostContext_2] ; goto Pattern4;
 
 

@@ -3,8 +3,6 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          ParserDataIndentation, \
                                                          CountInfo
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.operations.operation_list      import Op
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools                     import typed
 
@@ -13,7 +11,8 @@ from   quex.blackboard import E_CharacterCountType, \
                               setup as Setup, \
                               Lng
 
-from   itertools import izip, chain
+from   itertools   import izip, chain
+from   collections import defaultdict
 
 
 def _get_all_character_set(*DbList):
@@ -83,6 +82,35 @@ class LoopCountOpFactory:
         result.door_id_on_bad_indentation = DoorIdBad
         return result
 
+    def loop_character_set(self):
+        return NumberSet.from_union_of_iterable(x.character_set for x in self.__map)
+
+    def iterable_in_sub_set(self, SubSet):
+        """Searches for CountInfo objects where the character set intersects
+        with the 'SubSet' given as arguments. 
+
+        YIELDS: [0] SubSet that intersects
+                [1] Incidence Id related to the command
+        """
+        db = defaultdict(NumberSet)
+        for ci in self.__map:
+            common = SubSet.intersection(ci.character_set)
+            if not common.is_empty:
+                db[ci.incidence_id].unite_with(common)
+
+        for incidence_id, number_set in db.iteritems():
+            yield incidence_id, number_set
+
+    def get_incidence_id_map(self):
+        """RETURNS: A list of pairs: (character_set, incidence_id) 
+             
+           All same counting actions are referred to by the same incidence id.
+
+           If BeyondIncidenceId is given, then the remaining set of characters
+           is associated with 'BeyondIncidenceId'.
+        """
+        return [ (x.character_set, x.incidence_id) for x in self.__map ]
+
     def get_column_count_per_chunk(self):
         return self.counter_db.count_command_map.get_column_number_per_chunk(self.character_set)
 
@@ -132,105 +160,6 @@ class LoopCountOpFactory:
 
     def requires_reference_p(self):
         return self.get_column_count_per_chunk() is not None
-
-    def get_incidence_id_map(self, BeyondIncidenceId=None):
-        """RETURNS: A list of pairs: (character_set, incidence_id) 
-             
-           All same counting actions are referred to by the same incidence id.
-
-           If BeyondIncidenceId is given, then the remaining set of characters
-           is associated with 'BeyondIncidenceId'.
-        """
-        result = [ (x.character_set, x.incidence_id) for x in self.__map ]
-
-        if BeyondIncidenceId is None:
-            return result
-
-        all_set    = NumberSet.from_union_of_iterable(x.character_set for x in self.__map)
-        beyond_set = all_set.get_complement(Setup.buffer_codec.source_set)
-        if not beyond_set.is_empty(): 
-            result.append((beyond_set, BeyondIncidenceId))
-        return result
-        
-    def get_terminal_list(self, OnBeyond, BeyondIncidenceId, get_appendix):
-
-        def _get_terminal(X, get_appendix):
-            cl       = self._command(X.cc_type, X.parameter) 
-            appendix = get_appendix(self, X.cc_type)
-            terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(chain(cl, appendix))), 
-                                Name="%s" % X.cc_type)
-            terminal.set_incidence_id(X.incidence_id)
-            return terminal
-
-        result = [ 
-            _get_terminal(x, get_appendix) for x in self.__map 
-        ] 
-        if BeyondIncidenceId is not None:
-            result.append(self.__get_terminal_beyond(OnBeyond, BeyondIncidenceId))
-        return result
-
-    @staticmethod
-    def __get_terminal_beyond(OnBeyond, BeyondIid):
-        """Generate Terminal to be executed upon exit from the 'loop'.
-        
-           BeyondIid  -- 'Beyond Incidence Id', that is the incidencen id if of
-                         the terminal to be generated.
-        """
-        code_on_beyond = CodeTerminal(Lng.COMMAND_LIST(OnBeyond))
-        result = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
-        result.set_incidence_id(BeyondIid)
-        return result
-
-    def _command(self, CC_Type, Parameter):
-        if self.get_column_count_per_chunk() is None:
-
-            if CC_Type == E_CharacterCountType.BAD:
-                return [ 
-                    Op.GotoDoorId(self.door_id_on_bad_indentation) 
-                ]
-            elif CC_Type == E_CharacterCountType.COLUMN:
-                return [
-                    Op.ColumnCountAdd(Parameter),
-                ]
-            elif CC_Type == E_CharacterCountType.GRID:
-                return [
-                    Op.ColumnCountGridAdd(Parameter),
-                ]
-            elif CC_Type == E_CharacterCountType.LINE:
-                return [ 
-                    Op.LineCountAdd(Parameter),
-                    Op.AssignConstant(E_R.Column, 1),
-                ]
-        else:
-
-            if CC_Type == E_CharacterCountType.BAD:
-                return [ 
-                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                  self.get_column_count_per_chunk(), 
-                                                  False),
-                    Op.ColumnCountReferencePSet(E_R.InputP),
-                    Op.GotoDoorId(self.door_id_on_bad_indentation) 
-                ]
-            elif CC_Type == E_CharacterCountType.COLUMN:
-                return [
-                ]
-            elif CC_Type == E_CharacterCountType.GRID:
-                return [
-                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                  self.get_column_count_per_chunk(),
-                                                  True),
-                    Op.ColumnCountGridAdd(Parameter),
-                    Op.ColumnCountReferencePSet(E_R.InputP)
-                ]
-            elif CC_Type == E_CharacterCountType.LINE:
-                return [ 
-                    Op.LineCountAdd(Parameter),
-                    Op.AssignConstant(E_R.Column, 1),
-                    Op.ColumnCountReferencePSet(E_R.InputP)
-                ]
-
-    def _command_on_lexeme_end(self, CC_Type):
-        return 
 
     def __prepare(self):
         """BEFORE RELOAD:

@@ -90,12 +90,13 @@ ________________________________________________________________________________
 ABSOLUTELY NO WARRANTY
 ________________________________________________________________________________
 """
-from   quex.engine.state_machine.state.single_entry import SeAccept, SeStoreInputPosition
-from   quex.engine.misc.tree_walker        import TreeWalker
-from   quex.engine.analyzer.paths_to_state import PathsToState
-from   quex.blackboard                     import E_IncidenceIDs, \
-                                                  E_PreContextIDs, \
-                                                  E_TransitionN
+from   quex.engine.operations.se_operations         import SeAccept, \
+                                                           SeStoreInputPosition
+from   quex.engine.misc.tree_walker                 import TreeWalker
+from   quex.engine.analyzer.paths_to_state          import PathsToState
+from   quex.blackboard                              import E_IncidenceIDs, \
+                                                           E_PreContextIDs, \
+                                                           E_TransitionN
 
 from   itertools   import izip
 from   copy        import copy

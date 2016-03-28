@@ -117,7 +117,7 @@ class IncidenceDB(dict):
         }[IncidenceId]
             
         txt =   'QUEX_ERROR_EXIT("\\nMode \'%s\': %s\\n"\n' % (ModeName, msg) \
-              + '                "%s");' % note_txt
+              + '                "%s\\n");' % note_txt
 
         return CodeFragment(txt, SourceRef_DEFAULT)
 
