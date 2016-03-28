@@ -16,13 +16,14 @@ import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
-from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.analyzer.engine_supply_factory         as     engine
 from   quex.engine.misc.interval_handling                 import Interval, NumberSet
 import quex.output.core.dictionary                        as     languages
 from   quex.output.core.base                              import do_analyzer
+from   quex.engine.state_machine.core                     import StateMachine
 from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator
+import quex.engine.state_machine.algorithm.beautifier     as     beautifier
 from   quex.engine.analyzer.door_id_address_label         import dial_db
 from   quex.engine.analyzer.transition_map                import TransitionMap  
 import quex.engine.state_machine.transformation.core      as     bc_factory
@@ -127,10 +128,11 @@ def get_transition_function(iid_map, Codec):
     if Codec == "UTF8": Setup.buffer_codec_set(bc_factory.do("utf8"), 1)
     else:               Setup.buffer_codec_set(bc_factory.do("unicode"), -1)
 
-    cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
-    analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)
-    tm_txt   = do_analyzer(analyzer)
-    tm_txt   = Lng.GET_PLAIN_STRINGS(tm_txt)
+    sm        = StateMachine.from_IncidenceIdMap(iid_map)
+    dummy, sm = Setup.buffer_codec.do_state_machine(sm, beautifier)
+    analyzer  = analyzer_generator.do(sm, engine.CHARACTER_COUNTER)
+    tm_txt    = do_analyzer(analyzer)
+    tm_txt    = Lng.GET_PLAIN_STRINGS(tm_txt)
     tm_txt.append("\n")
     #label   = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
 

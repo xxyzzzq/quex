@@ -61,6 +61,7 @@ from   quex.blackboard  import setup as Setup, \
                                E_TransitionN, \
                                E_PreContextIDs, \
                                E_Op, \
+                               E_R, \
                                E_StateIndices
 
 from   collections      import defaultdict
@@ -269,11 +270,17 @@ class Analyzer:
             # 'ForceInputDereferencingF'
             assert StateIndex != self.init_state_index # Empty state machine! --> impossible
 
-            if self.engine_type.is_FORWARD(): cmd_list.append(Op.InputPIncrement())
-            else:                             cmd_list.append(Op.InputPDecrement())
+            if self.engine_type.is_FORWARD(): 
+                cmd_ext = [ Op.Increment(E_R.InputP) ]
+            else:                             
+                cmd_ext = [ Op.Decrement(E_R.InputP) ]
         else:
-            if self.engine_type.is_FORWARD(): cmd_list.extend([Op.InputPIncrement(), Op.InputPDereference()])
-            else:                             cmd_list.extend([Op.InputPDecrement(), Op.InputPDereference()])
+            if self.engine_type.is_FORWARD(): 
+                cmd_ext = [ Op.Increment(E_R.InputP), Op.InputPDereference() ]
+            else:                             
+                cmd_ext = [ Op.Decrement(E_R.InputP), Op.InputPDereference() ]
+
+        cmd_list.extend(cmd_ext)
 
         ta = TransitionAction(OpList.from_iterable(cmd_list))
 

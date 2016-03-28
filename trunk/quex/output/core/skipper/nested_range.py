@@ -1,220 +1,131 @@
-from   quex.output.core.variable_db  import variable_db
-from   quex.output.core.skipper.common         import get_character_sequence, \
+from   quex.input.code.core                         import CodeTerminal
+from   quex.output.core.variable_db                 import variable_db
+from   quex.output.core.skipper.common              import get_character_sequence, \
                                                            get_on_skip_range_open, \
                                                            line_column_counter_in_loop
+import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.operations.operation_list        import Op
 import quex.engine.state_machine.index              as     sm_index
+from   quex.engine.state_machine.core               import StateMachine
+from   quex.engine.loop_counter                     import LoopCountOpFactory
+from   quex.engine.misc.interval_handling           import NumberSet_All
 from   quex.engine.analyzer.door_id_address_label   import __nice, \
                                                            dial_db
+from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.misc.string_handling             import blue_print
+import quex.output.core.loop                        as     loop
 from   quex.engine.misc.tools                       import typed
-from   quex.blackboard                              import Lng
+from   quex.blackboard                              import Lng, E_R
 
 def do(Data, TheAnalyzer):
 
-    OpeningSequence = Data["opener_sequence"]
+    CounterDb       = Data["counter_db"]
+    OpenerSequence  = Data["opener_sequence"]
     CloserSequence  = Data["closer_sequence"]
-    CloserPattern   = Data["closer_pattern"]
-    ModeName        = Data["mode_name"]
     OnSkipRangeOpen = Data["on_skip_range_open"]
     DoorIdAfter     = Data["door_id_after"]
 
-    return get_skipper(OpeningSequence, CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter) 
+    return get_skipper(TheAnalyzer, OpenerSequence, CloserSequence, OnSkipRangeOpen, DoorIdAfter, CounterDb) 
 
-#def new_skipper():
-#    #CloserSequence = transform()
-#    #OpeningSequence = transform()
-#    character_set   = NumberSet(CloserSequence[0])
-#    character_set.add(OpeningSequence[0])
-#    character_set.complement()
-#
-#    txt = "/* Assert sizeof(buffer) >= len(CloserSequence) + 2 */\n"
-#
-#    end_sequence_check_adr = index.get()
-#    end_sequence_label     = get_label("$entry", end_sequence_check_adr, U=True) 
-#
-#    implementation_type, \
-#    loop_txt,            \
-#    entry_action,        \
-#    exit_action          = LoopGenerator.do(Mode.counter_db, 
-#                             IteratorName = "me->buffer._read_p",
-#                             OnContinue   = [ 1, "continue;" ],
-#                             OnExit       = [ 1, "goto %s;" % end_sequence_label ],
-#                             CharacterSet = character_set, 
-#                             ReloadF      = True)
-#
-#    end_sequence_txt = get_end_sequence(OpeningSequence, CloserSequence)
+def get_skipper(TheAnalyzer, OpenerSequence, CloserSequence, OnSkipRangeOpen, DoorIdAfter, CounterDb):
+    """
+                                    .---<---+----------<------+------------------.
+                                    |       |                 |                  |
+                                    |       | not             | open_n += 1      |  
+                                  .------.  | Closer[0]       |                  |
+       -------------------------->| Loop +--'                 |                  |
+                                  |      |                    | yes              | 
+                                  |      |                    |                  |
+                                  |      |          .-------------.              |
+                                  |      +----->----| Opener[1-N] |              |
+                                  |      |          |      ?      |              |
+                                  |      |          '-------------'              |
+                                  |      |                                       | open_n > 0
+                                  |      |          .-------------.              | 
+                                  |      +----->----| Closer[1-N] |--------------+------> RESTART
+                                  |      |          |      ?      | open_n -= 1    else
+                                  |      |          '-------------'             
+                                  |      |                             
+                                  |  BLC +-->-.  
+                              .->-|      |     \                 Reload State 
+            .-DoorID(S, 1)--./    '------'      \            .------------------.
+         .--| after_reload  |                    \          .---------------.   |
+         |  '---------------'                     '---------| before_reload |   |
+         |                                                  '---------------'   |
+         '---------------------------------------------------|                  |
+                                                     success '------------------'     
+                                                                     | failure      
+                                                                     |            
+                                                              .---------------.       
+                                                              | SkipRangeOpen |       
+                                                              '---------------'                                                                   
 
-#def new_end_sequence():
-#    txt.append("%s:\n" % EndSequenceLabel)
-#    txt.append("/* Reload if necessary */\n")
-#    txt.append("/* If fail --> skipped until end of file. */\n")
-#    txt.append(Lng.CHARACTER_BEGIN_P_SET())
-#
-#    common_sequence = common(OpeningSequence, CloserSequence)
-#    for chunk in common_sequence:
-#        pass # Code if(chunk)
-#
-#    # 'if i == OpeningSequence[i]' --> continue with opening sequence
-#    for chunk in common_sequence:
-#        pass # Code if(chunk)
-#
-#    # 'if i == CloserSequence[i]' --> continue with closing sequence
+    """
+    psml             = _get_state_machine_vs_terminal_list(CloserSequence, 
+                                                           OpenerSequence,
+                                                           CounterDb, DoorIdAfter)
+    count_op_factory = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, 
+                                                                    NumberSet_All(), 
+                                                                    Lng.INPUT_P()) 
+    after_beyond     = [ 
+        Op.GotoDoorId(DoorIdAfter) 
+    ]
 
-template_str = """
-    Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
-    Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
-    /* text_end                           = me->buffer.input.end_p; */
-$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
+    result,          \
+    door_id_beyond   = loop.do(count_op_factory,
+                               AfterBeyond       = after_beyond,
+                               LexemeEndCheckF   = False,
+                               LexemeMaintainedF = False,
+                               EngineType        = engine.FORWARD,
+                               ReloadStateExtern = TheAnalyzer.reload_state,
+                               ParallelSmTerminalPairList = psml) 
 
-$$ENTRY$$
-    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= $$OPENER_LENGTH$$ );
+    counter_variable = Lng.REGISTER_NAME(E_R.Counter)
+    variable_db.require(counter_variable)
+    result[0:0] = "%s = 0;\n" % counter_variable
+    return result
 
-    /* NOTE: If _read_p == end of buffer, then it will drop out immediately out of the
-     *       loop below and drop into the buffer reload procedure.                      */
+def _get_state_machine_vs_terminal_list(CloserSequence, OpenerSequence, CounterDb, DoorIdAfter): 
+    """Additionally to all characters, the loop shall walk along the 'closer'.
+    If the closer matches, the range skipping exits. Characters need to be 
+    counted properly.
 
-    /* Loop eating characters: Break-out as soon as the First Character of the Delimiter
-     * (FCD) is reached. Thus, the FCD plays also the role of the Buffer Limit Code. There
-     * are two reasons for break-out:
-     *    (1) we reached a limit (end-of-file or buffer-limit)
-     *    (2) there was really the FCD in the character stream
-     * This must be distinguished after the loop was exited. But, during the 'swallowing' 
-     * we are very fast, because we do not have to check for two different characters.  */
-    while( 1 + 1 == 2 ) {
-        $$INPUT_GET$$ 
-        if( input == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-            $$GOTO_RELOAD$$
-        }
-        if( input == *Skipper$$SKIPPER_INDEX$$_Closer_it ) {
-            ++Skipper$$SKIPPER_INDEX$$_Closer_it;
-            if( Skipper$$SKIPPER_INDEX$$_Closer_it == Skipper$$SKIPPER_INDEX$$_CloserEnd ) {
-                if( counter == 0 ) {
-                    /* NOTE: The initial state does not increment the input_p. When it detects that
-                     * it is located on a buffer border, it automatically triggers a reload. No 
-                     * need here to reload the buffer. */
-                    $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-                    $$LC_COUNT_END_PROCEDURE$$
-                    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
-                    $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
-                }
-                --counter;
-                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
-                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
-                goto CONTINUE_$$SKIPPER_INDEX$$;
-            }
-        } else {
-            Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
-        }
-        if( input == *Skipper$$SKIPPER_INDEX$$_Opener_it ) {
-            ++Skipper$$SKIPPER_INDEX$$_Opener_it;
-            if( Skipper$$SKIPPER_INDEX$$_Opener_it == Skipper$$SKIPPER_INDEX$$_OpenerEnd ) {
-                ++counter;
-                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
-                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
-                goto CONTINUE_$$SKIPPER_INDEX$$;
-            }
-        } else {
-            Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
-        }
-CONTINUE_$$SKIPPER_INDEX$$:
-$$LC_COUNT_IN_LOOP$$
-        $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
-    }
+    RETURNS: list(state machine, terminal)
 
-$$RELOAD$$:
-    QUEX_BUFFER_ASSERT_pointers_in_range(&me->buffer);
-    /* -- When loading new content it is checked that the beginning of the lexeme
-     *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
-     *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
-     *    to the actual input position.                                                    */
-    $$MARK_LEXEME_START$$
+    The list contains only one single element.
+    """
+    # Opener Sequence Reaction
+    opener_op_list = [
+        Op.Increment(E_R.Counter)  
+    ]
+    # 'Goto loop entry' is added later (loop id unknown, yet).
 
-$$LC_COUNT_BEFORE_RELOAD$$
-    switch( QUEX_NAME(Buffer_load_forward)(&me->buffer, &position[0], PositionRegisterN) ) {
-    case E_LoadResult_DONE:
-        /* Recover '_read_p' from lexeme start 
-         * (inverse of what we just did before the loading) */
-        $$INPUT_P_TO_LEXEME_START$$
-        /* text_end                           = me->buffer.input.end_p; */
-        $$LC_COUNT_AFTER_RELOAD$$
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        $$GOTO_ENTRY$$ /* End of range reached.             */
-    case E_LoadResult_NO_MORE_DATA:
-        /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
-        $$INPUT_P_TO_LEXEME_START$$
-        $$ON_SKIP_RANGE_OPEN$$
-    case E_LoadResult_BAD_LEXATOM:
-        goto $$ON_BAD_LEXATOM$$;
-    case E_LoadResult_FAILURE:
-        goto $$ON_LOAD_FAILURE$$;
-    case E_LoadResult_NO_SPACE_FOR_LOAD:
-        goto $$ON_OVERFLOW$$;
-    }
-"""
+    # Closer Sequence Reaction
+    closer_op_list = [
+        Op.Decrement(E_R.Counter),
+        Op.GotoDoorIdIfCounterEqualZero(DoorIdAfter)
+    ]
+    # 'Goto loop entry' is added later (loop id unknown, yet).
 
-@typed(OpenerSequence=[int], CloserSequence=[int])
-def get_skipper(OpenerSequence, CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter):
-    assert len(OpenerSequence) >= 1
-    assert len(CloserSequence) >= 1
-    assert OpenerSequence != CloserSequence
+    return [ 
+        _get_state_machine_and_terminal(OpenerSequence, 
+                                        "<SKIP NESTED RANGE OPENER>",
+                                        opener_op_list),
+        _get_state_machine_and_terminal(CloserSequence, 
+                                        "<SKIP NESTED RANGE OPENER>",
+                                        closer_op_list)
+    ]
 
-    skipper_index   = sm_index.get()
-    skipper_door_id = dial_db.new_door_id(skipper_index)
+def _get_state_machine_and_terminal(Sequence, Name, OpList):
+    """Create state machine that detects the 'Sequence', names the terminal
+    with 'Name', and implements the 'CmdList' in the terminal.
 
-    opener_str, opener_comment_str = get_character_sequence(OpenerSequence)
-    opener_length = len(OpenerSequence)
-    closer_str, closer_comment_str = get_character_sequence(CloserSequence)
-    closer_length = len(CloserSequence)
+    RETURNS: (state machine, terminal)
+    """
+    sm = StateMachine.from_sequence(Sequence)
+    sm.set_id(dial_db.new_incidence_id())
+    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(OpList)), Name)
+    terminal.set_incidence_id(sm.get_id())
+    terminal.set_requires_goto_loop_entry_f()  # --> Goto Loop Entry
 
-    variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-    variable_db.require("counter")
-    variable_db.require_array("Skipper%i_Opener", Initial="{ %s }" % opener_str, ElementN=opener_length, Index = skipper_index)
-    variable_db.require("Skipper%i_OpenerEnd", "Skipper%i_Opener + (ptrdiff_t)%i" % (skipper_index, opener_length), Index = skipper_index) 
-    variable_db.require("Skipper%i_Opener_it", "0x0", Index = skipper_index) 
-    variable_db.require_array("Skipper%i_Closer", Initial="{ %s }" % closer_str, ElementN=closer_length, Index = skipper_index) 
-    variable_db.require("Skipper%i_CloserEnd", "Skipper%i_Closer + (ptrdiff_t)%i" % (skipper_index, closer_length), Index = skipper_index) 
-    variable_db.require("Skipper%i_Closer_it", "0x0", Index = skipper_index) 
-
-    reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);\n"
-    before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._read_p - reference_p));\n" 
-    after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);\n"
-
-    if CloserSequence[-1] == ord('\n'):
-        end_procedure  = "       __QUEX_IF_COUNT_LINES_ADD((size_t)1);\n"
-        end_procedure += "       __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n"
-    else:
-        end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._read_p - reference_p));\n" 
-
-    reload_door_id     = dial_db.new_door_id()
-    on_skip_range_open = get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=True)
-
-    code_str = blue_print(template_str, [
-                   ["$$SKIPPER_INDEX$$",   __nice(skipper_index)],
-                   #
-                   ["$$OPENER_LENGTH$$",                  "%i" % opener_length],
-                   ["$$INPUT_P_INCREMENT$$",              Lng.INPUT_P_INCREMENT()],
-                   ["$$INPUT_P_DECREMENT$$",              Lng.INPUT_P_DECREMENT()],
-                   ["$$INPUT_GET$$",                      Lng.ACCESS_INPUT()],
-                   ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     Lng.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
-                   ["$$ENDIF$$",                          Lng.END_IF()],
-                   ["$$ENTRY$$",                          Lng.LABEL(skipper_door_id)],
-                   ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
-                   ["$$GOTO_AFTER_END_OF_SKIPPING$$",     Lng.GOTO(DoorIdAfter)], 
-                   ["$$GOTO_RELOAD$$",                    Lng.GOTO(reload_door_id)],
-                   ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
-                   # When things were skipped, no change to acceptance flags or modes has
-                   # happend. One can jump immediately to the start without re-entry preparation.
-                   ["$$GOTO_ENTRY$$",                     Lng.GOTO(skipper_door_id)],
-                   ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
-                   ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open],
-                   #
-                   ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
-                   ["$$LC_COUNT_IN_LOOP$$",                     line_column_counter_in_loop()],
-                   ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
-                   ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
-                   ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
-               ])
-
-    return [ code_str ]
-
-
+    return sm, terminal

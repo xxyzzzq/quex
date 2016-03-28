@@ -139,8 +139,8 @@ class AnalyzerState(Processor):
         # (1) Door for RELOAD SUCCESS
         #
         after_cl = []
-        if TheAnalyzer.engine_type.is_FORWARD(): pass # after_cl.append(Op.InputPIncrement())
-        else:                                    pass # after_cl.append(Op.InputPDecrement())
+        if TheAnalyzer.engine_type.is_FORWARD(): pass # after_cl.append(Op.Increment(E_R.InputP))
+        else:                                    pass # after_cl.append(Op.Decrement(E_R.InputP))
         after_cl.append(Op.InputPDereference())
         if AfterReloadOpList is not None:
             after_cl.extend(AfterReloadOpList)

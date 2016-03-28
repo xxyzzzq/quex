@@ -543,7 +543,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*  me,
 
     if( ! me->filler || ! me->filler->byte_loader ) {
         QUEX_NAME(Buffer_register_eos)(me, ci_begin + (me->input.end_p - BeginP));
-        return E_LoadResult_FAILURE;  /* No filler, no loader => no loading! */
+        return E_LoadResult_NO_MORE_DATA;  /* No filler/loader => no load!   */
     }
 
     /* Move remaining content.
@@ -596,8 +596,8 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
 {
     const QUEX_TYPE_LEXATOM*  BeginP      = &me->_memory._front[1];
     QUEX_TYPE_LEXATOM*        EndP        = me->_memory._back;
-    const ptrdiff_t             ContentSize = EndP - BeginP;
-    ptrdiff_t                   move_distance;
+    const ptrdiff_t           ContentSize = EndP - BeginP;
+    ptrdiff_t                 move_distance;
     QUEX_TYPE_LEXATOM*        end_p;
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -693,7 +693,7 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
 
     /* REFUSE CASES:                                                         */
     if( ! me->filler || ! me->filler->byte_loader ) {
-        return E_LoadResult_FAILURE;  /* No filler, no loader => no loading! */
+        return E_LoadResult_NO_MORE_DATA; /* No filler/loader => no loading! */
     }
     else if( ! QUEX_NAME(ByteLoader_seek_is_enabled)(me->filler->byte_loader) ) {
         return E_LoadResult_NO_MORE_DATA; /* Stream cannot go backwards.     */

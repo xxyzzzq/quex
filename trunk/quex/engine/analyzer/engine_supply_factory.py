@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.operations.operation_list      import OpList, \
                                                          Op
-from   quex.blackboard  import E_InputActions
+from   quex.blackboard  import E_InputActions, E_R
 
 class Base:
     def is_FORWARD(self):                  return False
@@ -104,7 +104,7 @@ class Class_BACKWARD_INPUT_POSITION(Base):
             incidence_id = self.__incidence_id_of_bipd
             return OpList(
                 Op.QuexDebug('pattern %i: backward input position detected\\n' % incidence_id),
-                Op.InputPIncrement(), 
+                Op.Increment(E_R.InputP), 
                 Op.GotoDoorId(DoorID.bipd_return(incidence_id))
             )
         else:

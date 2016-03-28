@@ -413,9 +413,15 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     terminal_db             = {
         E_IncidenceIDs.MATCH_FAILURE: Terminal(on_failure, "FAILURE"),
         E_IncidenceIDs.END_OF_STREAM: Terminal(on_failure, "END_OF_STREAM"),
+        E_IncidenceIDs.BAD_LEXATOM:   Terminal(on_failure, "BAD_LEXATOM"),
+        E_IncidenceIDs.OVERFLOW:      Terminal(on_failure, "NO_SPACE_TO_LOAD"),
+        E_IncidenceIDs.LOAD_FAILURE:  Terminal(on_failure, "LOAD_FAILURE"),
     }
     terminal_db[E_IncidenceIDs.MATCH_FAILURE].set_incidence_id(E_IncidenceIDs.MATCH_FAILURE)
     terminal_db[E_IncidenceIDs.END_OF_STREAM].set_incidence_id(E_IncidenceIDs.END_OF_STREAM)
+    terminal_db[E_IncidenceIDs.BAD_LEXATOM].set_incidence_id(E_IncidenceIDs.BAD_LEXATOM)
+    terminal_db[E_IncidenceIDs.OVERFLOW].set_incidence_id(E_IncidenceIDs.OVERFLOW)
+    terminal_db[E_IncidenceIDs.LOAD_FAILURE].set_incidence_id(E_IncidenceIDs.LOAD_FAILURE)
     for pattern, action_str in pattern_action_list:
         name     = TerminalFactory.name_pattern_match_terminal(pattern.pattern_string())
         terminal = Terminal(action(pattern, action_str), name)
@@ -611,13 +617,13 @@ test_program_db = {
     int main(int argc, char** argv)
     {
         QUEX_TYPE_LEXATOM  TestString[] = "\\0$$TEST_STRING$$\\0";
-        const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
+        const size_t         MemorySize   = strlen((const char*)&TestString[1]) + 2;
 
         DEAL_WITH_COMPUTED_GOTOS();
         QUEX_NAME(from_memory)(&lexer_state, 
                                TestString, MemorySize, &TestString[MemorySize - 1]); 
         /**/
-        return run_test((const char*)(TestString + 1), "$$COMMENT$$");
+        return run_test((const char*)&TestString[1], "$$COMMENT$$");
     }\n""",
 
     "ANSI-C": """

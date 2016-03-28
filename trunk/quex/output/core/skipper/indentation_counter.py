@@ -103,9 +103,9 @@ def do(Data, TheAnalyzer):
     # 'bad'        --> goto bad character indentation handler
     # else         --> non-whitespace detected => handle indentation
     ccfactory = LoopCountOpFactory.from_ParserDataIndentation(isetup, 
-                                                          counter_db, 
-                                                          Lng.INPUT_P(), 
-                                                          DoorID.incidence(bad_indentation_iid))
+                                                              counter_db, 
+                                                              Lng.INPUT_P(), 
+                                                              DoorID.incidence(bad_indentation_iid))
 
     # (*) Generate Code
     code,          \
@@ -161,6 +161,8 @@ def _add_pair(psml, SmOriginal, Name):
 
     terminal = Terminal(CodeTerminal(code), Name)
     terminal.set_incidence_id(incidence_id)
+    # TRY:     terminal.set_requires_goto_loop_entry_f()
+    # INSTEAD: GOTO 'INDENTATION_HANDLER'
 
     psml.append((sm, terminal))
 

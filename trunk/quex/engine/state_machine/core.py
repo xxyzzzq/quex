@@ -102,6 +102,32 @@ class StateMachine(object):
         result.add_transition(result.init_state_index, CharacterSet, AcceptanceF=True)
         return result
 
+    @staticmethod
+    def from_IncidenceIdMap(IncidenceIdMap):
+        """Generates a state machine that transits to states accepting specific
+        incidence ids. That is from a list of (NumberSet, IncidenceId) pairs
+        a state machine as the following is generated:
+
+                        .----- set0 ---->( State 0: Accept Incidence0 )
+                .-------.
+                | init  |----- set1 ---->( State 1: Accept Incidence1 )
+                | state |    
+                '-------'                 ...
+
+        """
+        def add(sm, StateIndex, TriggerSet, IncidenceId):
+            if TriggerSet.is_empty(): return
+            target_state_index = sm.add_transition(StateIndex, TriggerSet)
+            target_state       = sm.states[target_state_index]
+            target_state.set_acceptance()
+            target_state.mark_acceptance_id(IncidenceId)
+
+        sm = StateMachine()
+        for character_set, incidence_id in IncidenceIdMap:
+            add(sm, sm.init_state_index, character_set, incidence_id)
+
+        return sm
+
     def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
@@ -157,22 +183,29 @@ class StateMachine(object):
                           ReplDbPreContext=pre_context_map, 
                           ReplDbAcceptance=pattern_id_map)
 
-    def access_bad_lexatom_state(self):
-        """Find or create a 'bad lexatom' state in the state machine. Such a
-        state 'accepts' the incidencen 'BAD_LEXATOM' and causes an immediate
-        transition to the 'on_bad_lexatom' handler.
+    def access_state_by_incidence_id(self, IncidenceId):
+        """Find or create a state that accepts 'IncidenceId'.
 
-        RETURNS: Index of the 'bad lexatom state'.
+        RETURNS: Index of the found or created state.
         """
         for si, state in self.states.iteritems():
-            if state.has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM):
+            if state.has_acceptance_id(IncidenceId):
                 return si
 
         si    = state_machine_index.get()
         state = State(AcceptanceF=True)
-        state.mark_acceptance_id(E_IncidenceIDs.BAD_LEXATOM)
+        state.mark_acceptance_id(IncidenceId)
         self.states[si] = state
         return si
+
+    def access_bad_lexatom_state(self):
+        """Find or create a 'bad lexatom' state in the state machine. Such a
+        state 'accepts' the incidence 'BAD_LEXATOM' and causes an immediate
+        transition to the 'on_bad_lexatom' handler.
+
+        RETURNS: Index of the 'bad lexatom state'.
+        """
+        return self.access_state_by_incidence_id(E_IncidenceIDs.BAD_LEXATOM)
 
     def get_id(self):
         assert isinstance(self.__id, long) or self.__id == E_IncidenceIDs.INDENTATION_HANDLER
@@ -361,6 +394,11 @@ class StateMachine(object):
         ##               target, trigger_set = tm.iteritems().next()
         ##               current_target_epsilon_closure = epsilon_closure_db[target]
         ##               return { tuple(sorted(current_target_epsilon_closure)): trigger_set }
+
+        ## TODO: Get the epsilon closure before the loop over history!
+        ##
+        ##       self.get_epsilon_closure_of_state_set(current_target_indices,
+        ##                                             epsilon_closure_db)
 
         # (*) Accumulate the transitions for all states in the state list.
         #     transitions to the same target state are combined by union.

@@ -117,6 +117,10 @@ class TargetMap:
             result.unite_with(trigger_set)
         return result
 
+    def get_trigger_set_union_complement(self, CompleteSet):
+        union  = state.target_map.trigger_set_union()
+        return CompleteSet.complement(trigger_set_union)
+
     def get_drop_out_trigger_set_union(self):
         """This function returns the union of all trigger sets that do not
            transit to any target.
