@@ -20,15 +20,16 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.output.core.loop                as     loop
-from   quex.input.files.parser_data.counter import ParserDataLineColumn, \
-                                                   CountInfo
-from   quex.engine.state_machine.core       import StateMachine  
-from   quex.engine.misc.interval_handling   import NumberSet, \
-                                                   NumberSet_All
-from   quex.engine.loop_counter             import LoopCountOpFactory
-from   quex.blackboard                      import E_CharacterCountType, \
-                                                   setup as Setup
+from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
+                                                         CountInfo
+from   quex.engine.state_machine.core             import StateMachine  
+from   quex.engine.misc.interval_handling         import NumberSet, \
+                                                         NumberSet_All
+from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.loop_counter                   import LoopCountOpFactory
+import quex.output.core.loop                      as     loop
+from   quex.blackboard                            import E_CharacterCountType, \
+                                                         setup as Setup
 
 if "--hwut-info" in sys.argv:
     print "Loop: Base state machine."
@@ -41,7 +42,8 @@ def test(cmap, SM_list=[]):
                                          IidBeyond   = 8888, 
                                          IidBeyondRs = 7777, 
                                          IidLoop     = 6666)
-    print sm.get_string(Option="hex")
+    print "#_____________________________________________________________"
+    print sm.get_string(Option="hex", NormalizeF=True)
 
     # print sm.get_graphviz_string(Option="hex")
 
@@ -52,7 +54,7 @@ def get_setup(L0, L1, FSM0, FSM1, FSM2):
     #               -- both first transitions 'touch' the borders of the loop.
     #               -- sm2 has only one transition.
     cmap = [
-        CountInfo(0, E_CharacterCountType.COLUMN, 0, NumberSet.from_range(L0, L1)),
+        CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.COLUMN, 0, NumberSet.from_range(L0, L1)),
     ]
 
     # Generate State Machine that does not have any intersection with 
@@ -60,18 +62,19 @@ def get_setup(L0, L1, FSM0, FSM1, FSM2):
     sm0 = StateMachine()
     si = sm0.add_transition(sm0.init_state_index, FSM0)
     si = sm0.add_transition(si, NumberSet.from_range(0xA, 0xB), AcceptanceF=True)
-    sm0.states[si].mark_acceptance_id(sm0.get_id())
+    sm0.states[si].mark_acceptance_id(dial_db.new_incidence_id())
 
     sm1 = StateMachine()
     si0 = sm1.add_transition(sm1.init_state_index, FSM1)
     si  = sm1.add_transition(si0, NumberSet.from_range(0xA, 0xB), AcceptanceF=True)
-    sm1.states[si].mark_acceptance_id(sm1.get_id())
+    iid1 = dial_db.new_incidence_id()
+    sm1.states[si].mark_acceptance_id(iid1)
     si  = sm1.add_transition(si, NumberSet.from_range(0xE, 0xF), si0)
-    sm1.states[si].mark_acceptance_id(sm1.get_id())
+    sm1.states[si].mark_acceptance_id(iid1)
 
     sm2 = StateMachine()
     si = sm2.add_transition(sm2.init_state_index, FSM2, AcceptanceF=True)
-    sm2.states[si].mark_acceptance_id(sm2.get_id())
+    sm2.states[si].mark_acceptance_id(dial_db.new_incidence_id())
 
     return cmap, [sm0, sm1, sm2]
 
@@ -118,3 +121,24 @@ elif "SML" in sys.argv:
         test(cmap, [sm])
     test(cmap, sm_list)
 
+elif "Both" in sys.argv:
+    # State machine that:
+    #   (i)  Has transitions from the init state to more than one state!
+    #   (ii) Each transition from the init state triggers on trigger sets 
+    #        that lie partly in L and partly outside L
+    L = NumberSet.from_range(0x40, 0x80)
+    cmap = [
+        CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.COLUMN, 0, L)
+    ]
+
+    sm  = StateMachine()
+    si  = sm.init_state_index
+    iid = dial_db.new_incidence_id()
+    ti0 = sm.add_transition(si, NumberSet.from_range(0x3F, 0x41))
+    ac0 = sm.add_transition(ti0, NumberSet.from_range(0xA, 0xB), AcceptanceF=True)
+    sm.states[ac0].mark_acceptance_id(iid)
+    ti1 = sm.add_transition(si, NumberSet.from_range(0x7F, 0x81))
+    ac1 = sm.add_transition(ti1, NumberSet.from_range(0xC, 0xD), AcceptanceF=True)
+    sm.states[ac1].mark_acceptance_id(iid)
+
+    test(cmap, [sm])
