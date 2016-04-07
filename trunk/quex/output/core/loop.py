@@ -116,22 +116,26 @@ PROCEDURE:
 
     -- Setup 'store input reference' upon entry in all parallel state machines.
 """
-import quex.engine.analyzer.core                          as     analyzer_generator
-from   quex.engine.operations.operation_list              import Op, \
-                                                                 OpList
-import quex.engine.state_machine.index                    as     index
-from   quex.engine.analyzer.door_id_address_label         import DoorID
-from   quex.engine.misc.tools                             import typed
-from   quex.output.core.variable_db                       import variable_db
-import quex.output.core.base                              as     generator
-import quex.output.cpp.counter_for_pattern                as     counter_coder
-from   quex.engine.analyzer.terminal.core                 import Terminal
+import quex.engine.analyzer.core                      as     analyzer_generator
+from   quex.engine.operations.operation_list          import Op, \
+                                                             OpList
+import quex.engine.state_machine.index                as     index
+import quex.engine.state_machine.algorithm.beautifier as     beautifier
+from   quex.engine.analyzer.door_id_address_label     import DoorID
+from   quex.engine.misc.tools                         import typed
+from   quex.engine.analyzer.terminal.core             import Terminal
+from   quex.engine.state_machine.core                 import StateMachine  
+from   quex.engine.analyzer.door_id_address_label     import dial_db
+from   quex.output.core.variable_db                   import variable_db
+import quex.output.core.base                          as     generator
 
 from   quex.blackboard import E_StateIndices, \
                               E_R, \
                               E_CharacterCountType, \
                               setup as Setup, \
                               Lng
+
+from   collections import namedtuple
 
 SmlInfo = namedtuple("SmlInfo", ("trigger_set", "incidence_id", "pruned_sm"))
 SmxInfo = namedtuple("SmxInfo", ("trigger_set", "pruned_sm"))
@@ -257,51 +261,102 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None,
     # None. This would mean, that the user has to make these kinds of decisions.
     # But, we are easily able to ignore meaningless ReloadStateExtern objects.
 
-    L             = CcFactory.loop_character_set()
     iid_beyond    = dial_db.new_incidence_id()
+    iid_beyond_rs = dial_db.new_incidence_id() # beyond with restoring input position
+    iid_loop      = dial_db.new_incidence_id() # return to the beginning of the loop
     event_handler = LoopEventHandlers(LexemeMaintainedF, 
                                       OnBegin        = ccfactory.on_begin, 
                                       OnEnd          = ccfactory.on_end,
                                       OnBeforeReload = ccfactory.on_before_reload,
                                       OnAfterReload  = ccfactory.on_after_reload) 
 
-    pure_L,             \
-    SML_list, SMX_list, \
-    iid_terminal_list   = _get_parallel_state_machines_and_terminals(ParallelSmTerminalPairList, L)
-
-    # (*) Generate StateMachine
+    # (*) StateMachine for Loop and Parallel State Machines
     #
-    pure_incidence_id_map = [ L.iterable_in_sub_set(in_L) ] 
-    sm                    = StateMachine.from_IncidenceIdMap(pure_incidence_id_map)
-    state_beyond          = State()
-    state_beyond.mark_acceptance_id(iid_beyond)
+    sm = _get_state_machine(CcFactory, 
+                            [sm for sm, t in ParallelSmTerminalPairList], 
+                            iid_beyond, iid_beyond_rs, iid_loop)
 
-    _mount_SML(sm, SML_List)             # Adds 'store input position' to init state.
-    _mount_SMX(sm, SMX_List, iid_beyond) # (same)
-    # Only mount the 'on_beyond' state after all state machines have 
-    # been mounted.
-    _mount_beyond(sm, sm.init_state_index, iid_beyond)
     sm = Setup.buffer_codec.transform(sm)
 
-    # (*) Generate Analyzer
+    # (*) Analyzer from StateMachine
     #
     door_id_loop, \
     analyzer      = _get_analyzer(sm, EngineType, ReloadStateExtern, event_handler)
 
-    # (*) Prepare Loop Entries
+    # (*) Terminals for Loop and Parallel State Machines
     #
-    after_beyond  = CsSm.on_end + AfterBeyond
-    terminal_list = _get_terminals_for_loop_characters(CcFactory, LexemeEndCheckF, after_beyond, 
-                                                       iid_beyond, door_id_loop)
 
-    terminal_list.extend(parallel_terminal_list)
+    terminal_list = _get_terminal_list(CcFactory, event_handler, AfterBeyond, 
+                                       LexemeEndCheckF, IidBeyond, DoorIdLoop)
 
     # (*) Generate Code _______________________________________________________
-    txt = _get_source_code(CcFactory, analyzer, terminal_list)
+    txt = _get_source_code(analyzer, ParallelSmTerminalPairList, terminal_list, 
+                           CcFactory.requires_reference_p())
     
-    return txt, DoorID.incidence(CsSm.incidence_id_beyond)
+    return txt, DoorID.incidence(iid_beyond)
 
-def _get_parallel_state_machines_and_terminals(ParallelSmTerminalPairList, L):
+def _get_terminal_list(CcFactory, ParallelSmTerminalPairList, 
+                       event_handler, AfterBeyond, 
+                       LexemeEndCheckF, IidBeyond, DoorIdLoop):
+
+    after_beyond  = event_handler.on_end + AfterBeyond
+    terminal_list = _get_loop_terminals(CcFactory, LexemeEndCheckF, after_beyond, 
+                                        iid_beyond, door_id_loop)
+    terminal_list.extend(
+        terminal for sm, terminal in ParallelSmTerminalPairList
+    )
+    terminal_list.append(
+        _get_terminal_beyond(after_beyond, IidBeyond)
+    )
+
+def _get_state_machine(CcFactory, ParallelSmList, IidBeyond, IidBeyondRs, IidLoop):
+    """Generate a state machine that implements the basic transitions for
+    looping mount the parallel state machines. The loops are not closed, yet.
+    Instead loop transitions end in terminals that return to the loop entry.
+
+    RETURNS: StateMachine
+    """
+    if ParallelSmList is None: ParallelSmList = []
+
+    pure_L,   \
+    SML_list, \
+    SMX_list  = _configure_this(ParallelSmList, CcFactory)
+
+    # (*) Single transitions on 'pure loop characters'.
+    # 
+    # Loop State ---( loop character set )----> State Accepting on Iid
+    #
+    # The 'specific Iid' identifies the terminal which implements the loop
+    # reaction to the occurrnce of a loop character.
+    #
+    sm = StateMachine.from_IncidenceIdMap(CcFactory.iterable_in_sub_set(pure_L))
+
+    # (*) First Transitions to Parallel State Machines that 
+    #     INTERSECT with the loop character set 'L'.
+    #
+    # Loop State ---( First Lexatom Set )---> Pruned State Machine
+    #
+    # Upon drop-out the position after the first lexatom is restored and 
+    # the loop CONTINUES.
+    for sub_set, incidence_id, pruned_sm in SML_list:
+        _mount_pruned_sm(sm, sub_set, pruned_sm, IidLoop)
+
+    # (*) First Transitions to Parallel State Machines that 
+    #     DO NOT INTERSECT with the loop character set 'L'.
+    #
+    # Loop State ---( First Lexatom Set )---> Pruned State Machine
+    #
+    # Upon drop-out the position after the first lexatom is restored and 
+    # the loop EXITS.
+    for sub_set, pruned_sm in SMX_list:
+        _mount_pruned_sm(sm, sub_set, pruned_sm, IidBeyondRs)
+
+    # Mount the transition to 'on_beyond, only after all state machines have 
+    # been mounted.
+    _mount_beyond_on_init_state(sm, IidBeyond)
+    return _clean_from_spurious_acceptance_beyond(beautifier.do(sm), IidBeyondRs)
+
+def _configure_this(ParallelSmList, CcFactory):
     """Considers the list of state machines which need to be mounted to the
     loop. 'L' is the complete set of lexatoms which 'loop'. 
 
@@ -315,96 +370,79 @@ def _get_parallel_state_machines_and_terminals(ParallelSmTerminalPairList, L):
     SML_list = list of 'SmlInfo' objects.
     SMX_list = list of 'SmxInfo' objects.
     """
-    if ParallelSmTerminalPairList is None:
-        return None, []
-
+    L        = CcFactory.loop_character_set()
     pure_L   = L.clone()
     sml_list = []  # information about 'SML'
     smx_list = []  # information about 'SMX'
-    for sm, terminal in ParallelSmTerminalPairList:
-        pruned_sm         = sm.clone()
-        clone_used_f      = False
-        first_trigger_set = pruned_sm.cut_first_transition()
+    for sm in ParallelSmList:
+        original_sm_id = sm.get_id() # Clones MUST have the same state machine id!
+        # Iterate of 'first transition, remaining state machine' list
+        for first_trigger_set, pruned_sm in sm.cut_first_transition():
+            pruned_sm.set_id(original_sm_id)
 
-        # First lexatom, that are also loop lexatoms.
-        in_L = first_trigger_set.intersection(L)
-        if not in_L.is_empty():
-            pure_L.subtract(in_L)
-            sml_list.extend(
-                SmlInfo(sub_set, incidence_id, pruned_sm)
-                for incidence_id, sub_set in L.iterable_in_sub_set(in_L)
-            )
-            clone_used_f = True
+            # First lexatoms, that are NOT loop lexatoms.
+            not_in_L = first_trigger_set.difference(L)
+            if not not_in_L.is_empty():
+                smx_list.append(SmxInfo(not_in_L, pruned_sm))               # use the clone
+            
+            # First lexatom, that are also loop lexatoms.
+            in_L = first_trigger_set.intersection(L)
+            if not in_L.is_empty():
+                pure_L.subtract(in_L)
+                sml_list.extend(
+                    SmlInfo(sub_set, incidence_id, 
+                            pruned_sm.clone(StateMachineId=original_sm_id)) # clone each.
+                    for sub_set, incidence_id in CcFactory.iterable_in_sub_set(in_L)
+                )
 
-        # First lexatoms, that are NOT loop lexatoms.
-        not_in_L = first_trigger_set.difference(in_L)
-        if not not_in_L.is_empty():
-            if clone_used_f: pruned_sm = pruned_sm.clone()
-            smx_list.append(SmxInfo(sub_set, pruned_sm))
-        
     return pure_L, sml_list, smx_list
 
-def _mount_SML(sm, SML_list):
-    """'SML' are state machines that trigger with their first character along 
-    something that is mentioned as 'loop character'. That is, if they fail, 
-    the result the input pointer to the first character, enter the according
-    terminal (given by an incidence id) and continue the loop.
+def _mount_pruned_sm(loop_sm, FirstTransitionTriggerSet, PrunedSm, IidOnDropOut):
+    """Mounts the 'PrunedSm' to the state machine of the loop. If the pruned
+    state machine fails, it needs to go to a specific terminal. This is done
+    by letting the first state of the pruned state machine accept the 
+    'IidOnDropOut' (if the state itself does not accept). If the state machine
+    fails, it goes to that terminal which either goes back to the loop or 
+    exits.
     """
-    init_si    = sm.init_state_index
-    source_set = Setup.buffer_codec.source_set
-    for sub_set, incidence_id, pruned_sm in SML_list:
-        # Whenever the pruned state machine drops out, 
-        # it must go to an interim terminal, that
-        # -- restores the first character position, and
-        # -- enters the terminal which corresponds to the loop character.
-        interim_terminal     = _get_interim_terminal(incidence_id)
-        interim_terminal_iid = interim_terminal.incidence_id
-        drop_out_si          = sm.access_state_by_incidence_id(interim_terminal_iid)
+    loop_sm.states.update(PrunedSm.states)
+    ti = loop_sm.add_transition(loop_sm.init_state_index, 
+                                FirstTransitionTriggerSet, 
+                                PrunedSm.init_state_index)
+    mounted_init_state = loop_sm.states[PrunedSm.init_state_index]
+    if not mounted_init_state.is_acceptance():
+        mounted_init_state.set_acceptance()
+        mounted_init_state.mark_acceptance_id(IidOnDropOut)
 
-        for state in pruned_sm.itervalues():
-            remainder = state.target_map.get_trigger_set_union_complement(source_set)
-            state.add_transition(remainder, drop_out_state_si)
-
-        # Absorb all states into the state machine
-        sm.states.update(pruned_sm.states)
-        ti = sm.add_transition(init_si, sub_set, pruned_sm.init_state_index)
-
-def _mount_SMX(sm, SMX_List, IidBeyond):
-    """'SMX' are state machines that have a first character transition that 
-    is not part of the loop.  That is, if they fail, the result the input 
-    pointer to the first character and EXIT!. 
-    """
-    # Whenever the pruned state machine drops out, 
-    # it must go to an interim terminal, that
-    # -- restores the first character position, and
-    # -- EXITS.
-    drop_out_terminal    = _get_interim_terminal(IidBeyond)
-    drop_out_termina_iid = interim_terminal.incidence_id
-    drop_out_si          = sm.access_state_by_incidence_id(drop_out_termina_iid)
-
-    source_set           = Setup.buffer_codec.source_set
-
-    init_si = sm.init_state_index
-    for sub_set, pruned_sm in SML_list:
-        for state in pruned_sm.itervalues():
-            remainder = state.target_map.get_trigger_set_union_complement(source_set)
-            state.add_transition(remainder, drop_out_state_si)
-
-        # Absorb all states into the state machine
-        sm.states.update(pruned_sm.states)
-        ti = sm.add_transition(init_si, sub_set, pruned_sm.init_state_index)
-
-def _mount_beyond(sm, IidBeyond):
+def _mount_beyond_on_init_state(sm, IidBeyond):
     """Add transitions on anything in the input that is not covered yet to the 
     state that accepts 'Beyond', i.e. loop exit.
     """
-    beyond_state_si = sm.access_state_by_incidence_id(IidBeyond)
+    # Due to '_mount_SMX()' there might be another state that accepts 
+    # 'IidBeyond', but that one restores the input position. 
+    # Here, the input position is NOT restored.
+    # => new state.
+    beyond_state_si = sm.create_new_state(MarkAcceptanceId=IidBeyond, 
+                                          RestoreInputPositionF=False)
     init_state      = sm.get_init_state()
-    remainder       = init_state.target_map.get_trigger_set_union_complement(source_set)
+    universal_set   = Setup.buffer_codec.source_set
+    remainder       = init_state.target_map.get_trigger_set_union_complement(universal_set)
     init_state.add_transition(remainder, beyond_state_si)
 
-def _get_terminals_for_loop_characters(CcFactory, LexemeEndCheckF, AfterBeyond, 
-                                       IncidenceIdBeyond, DoorIdLoop):
+def _clean_from_spurious_acceptance_beyond(sm, IidBeyondRs):
+    """It is conceivable, that the 'beyond acceptance' appears together with
+    a state machines acceptance. In that case, the 'beyond acceptance ' needs
+    to be deleted.
+    """
+    for state in sm.iterable_acceptance_states():
+        if   not state.single_entry.has_acceptance_id(IidBeyondRs):       continue
+        elif not state.single_entry.has_other_acceptance_id(IidBeyondRs): continue
+        state.single_entry.remove_acceptance_id(IidBeyondRs)
+
+    return sm
+
+def _get_loop_terminals(CcFactory, LexemeEndCheckF, AfterBeyond, 
+                        IidBeyond, DoorIdLoop):
     """Characters are grouped into sets with the same counting action. This
     function generates terminals for each particular counting action. The
     function 'get_appendix()' in order to add further commands to each 
@@ -414,12 +452,12 @@ def _get_terminals_for_loop_characters(CcFactory, LexemeEndCheckF, AfterBeyond,
     """
     def get_appendix_with_lexeme_end_check(ccfactory, CC_Type):
         """       .----------.        ,----------.   no
-              --->| Count Op |-------< LexemeEnd? >------> DoorIdOk
+              --->| Count Op |-------< LexemeEnd? >------> Loop
                   '----------'        '----+-----'
                                            | yes
                                      .-------------.
                                      |  Lexeme End |
-                                     |  Count Op   |-----> DoorIdOnLexemeEnd
+                                     |  Count Op   |-----> OnLexemeEnd
                                      '-------------'
         """  
         if ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
@@ -440,13 +478,9 @@ def _get_terminals_for_loop_characters(CcFactory, LexemeEndCheckF, AfterBeyond,
     if LexemeEndCheckF: get_appendix = get_appendix_with_lexeme_end_check
     else:               get_appendix = get_appendix_normal
 
-    result = [ 
+    return [ 
         _get_terminal(x, get_appendix) for x in CcFactory.__map 
     ] 
-    if BeyondIncidenceId is not None:
-        result.append(_get_terminal_beyond(OnBeyond, BeyondIncidenceId))
-
-    return result
 
 def _get_terminal(CcFactory, X, get_appendix):
     op_list  = X.map_CharacterCountType_to_OpList(CcFactory.get_column_count_per_chunk()) 
@@ -554,7 +588,6 @@ def _sort_by_first_character(SmList, L):
     L_without_F = L.clone()
     for sm in SmList:
         trigger_set = sm.cut_first_transition()
-        if trigger_set is None: return None, None
 
         in_L  = trigger_set.intersection(L)
         if in_L:  
@@ -608,12 +641,13 @@ def _clean_this(FirstSmList):
     ]
 
 def _get_analyzer(sm, EngineType, ReloadStateExtern, event_handler):
-    analyzer = analyzer_generator.do(sm, EngineType, ReloadStateExtern,
-                                     OnBeforeReload = copy(event_handler.on_before_reload), 
-                                     OnAfterReload  = copy(event_handler.on_after_reload))
+    analyzer     = analyzer_generator.do(sm, EngineType, ReloadStateExtern,
+                                         OnBeforeReload = copy(event_handler.on_before_reload), 
+                                         OnAfterReload  = copy(event_handler.on_after_reload))
 
-    door_id_loop  = _prepare_entry_and_reentry(analyzer, 
-                                               event_handler.on_begin, event_handler.on_step) 
+    door_id_loop = _prepare_entry_and_reentry(analyzer, 
+                                              event_handler.on_begin, 
+                                              event_handler.on_step) 
 
     return analyzer, door_id_loop
 
@@ -652,7 +686,7 @@ def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
 
     return entry.get(tid_reentry).door_id
 
-def _get_source_code(CcFactory, analyzer, terminal_list):
+def _get_source_code(analyzer, terminal_list, ReferencePRequiredF):
     """RETURNS: String containing source code for the 'loop'. 
 
        -- The source code for the (looping) state machine.
@@ -672,7 +706,7 @@ def _get_source_code(CcFactory, analyzer, terminal_list):
             generator.do_reload_procedure(analyzer)
         )
 
-    if CcFactory.requires_reference_p():   
+    if ReferencePRequiredF:   
         variable_db.require("reference_p", 
                             Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
     if Setup.buffer_codec.variable_character_sizes_f(): 
