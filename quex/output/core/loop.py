@@ -143,19 +143,21 @@ SmxInfo = namedtuple("SmxInfo", ("trigger_set", "pruned_sm"))
 class LoopEventHandlers:
     """Event handlers in terms of 'List of Operations' (objects of class 'Op'):
 
-        .on_begin:          upon entry into loop
-        .on_end:            upon exit from loop
+        .on_loop_entry:          upon entry into loop
+        .on_loop_exit:            upon exit from loop
         .on_before_reload:  before buffer reload is performed.
         .on_after_reload:   after buffer reload is performed.
-        .on_step:           upon every iteration of loop entry.
+        .on_loop_reentry:           upon every iteration of loop entry.
     """
     @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
-    def __init__(self, MaintainLexemeF, OnBegin=None, OnEnd=None, 
-                 OnBeforeReload=None, OnAfterReload=None):
-        self.__prepare_begin_and_end(OnBegin, OnEnd)
-        self.__prepare_before_and_after_reload(MaintainLexemeF, OnBeforeReload, OnAfterReload)
+    def __init__(self, MaintainLexemeF, CcFactory, UserOnLoopExit): 
+        self.__prepare_begin_and_end(CcFactory.on_loop_entry, 
+                                     CcFactory.on_loop_exit + UserOnLoopExit)
+        self.__prepare_before_and_after_reload(MaintainLexemeF, 
+                                               CcFactory.on_before_reload, 
+                                               CcFactory.on_after_reload) 
 
-    def __prepare_begin_and_end(self, OnBegin, OnEnd):
+    def __prepare_begin_and_end(self, OnLoopEntry, OnLoopExit):
         """With codecs of dynamic character sizes (UTF8), the pointer to the 
         first letter is stored in 'lexatom_begin_p'. To reset the input 
         pointer 'input_p = lexatom_begin_p' is applied.  
@@ -164,15 +166,15 @@ class LoopEventHandlers:
             # 1 character == 1 chunk
             # => reset to last character: 'input_p = input_p - 1'
             putback      = [ Op.Decrement(E_R.InputP) ]
-            self.on_step = []
+            self.on_loop_reentry = []
         else:
             # 1 character == variable number of chunks
             # => store begin of character in 'lexeme_start_p'
             # => rest to laset character: 'input_p = lexeme_start_p'
             putback      = [ Op.Assign(E_R.InputP, E_R.CharacterBeginP) ]
-            self.on_step = [ Op.Assign(E_R.CharacterBeginP, E_R.InputP) ]
-        self.on_begin = concatinate(self.on_step, OnBegin)
-        self.on_end   = concatinate(on_putback, OnEnd)
+            self.on_loop_reentry = [ Op.Assign(E_R.CharacterBeginP, E_R.InputP) ]
+        self.on_loop_entry = concatinate(self.on_loop_reentry, OnLoopEntry)
+        self.on_loop_exit  = concatinate(on_putback, OnLoopExit)
 
     def __prepare_before_and_after_reload(self, MaintainLexemeF, OnBeforeReload, OnAfterReload):
         """The 'lexeme_start_p' restricts the amount of data which is loaded 
@@ -205,8 +207,8 @@ class LoopEventHandlers:
         self.on_before_reload = concatinate(on_before_reload,OnBeforeReload)
         self.on_after_reload  = concatinate(on_after_reload, OnAfterReload)
 
-@typed(ReloadF=bool, LexemeEndCheckF=bool, AfterBeyond=list)
-def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, 
+@typed(ReloadF=bool, LexemeEndCheckF=bool, OnLoopExit=list)
+def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None, 
        ReloadStateExtern=None, LexemeMaintainedF=False,
        ParallelSmTerminalPairList=None):
     """Iterate over lexatoms given in the CcFactory, but also in paralell 
@@ -255,59 +257,118 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None,
               +------+
               |  i2  |----------> Terminal2:       OpList2
               +------+
+
+    Generates a state machine that loops on 'LoopTargetMap', i.e. executes
+    some commands as reaction to lexatoms, but also in parallel may match
+    some other patterns given the state machine list 'SmList'. Definitions:
+
+        L      = lexatoms that trigger 'looping'.
+        F      = set of first lexatoms in the 'SmList'.
+        pure L = lexatoms that only appear in L.
+        LaF    = L and F, lexatoms that are first lexatoms and loop lexatoms.
+                 If the later state machine fails the 'normal' loop terminal
+                 is executed and the loop continues.
+        FnL    = F but not L, first lexatoms which are no loop lexatoms.
+                 If the later state machine fails the loop exits.
+        ip     = input pointer to the lexatom to be treated.
+
+    As soon as a character appears that neither fits 'L' nor 'F' the loop 
+    exits. The resulting structure is shown below (reload state transition 
+    omitted).
+
+        .---------( ++ip )-----+                    Loop continues
+        |    .------.          |                    at AFTER position of 
+        '--->|      |          |                    the first lexatom 'ir'.
+             | pure |--->[ Terminals A ]<--------.  
+             |  L   |--->[ Terminals B ]<--------.
+             |      |--->[ Terminals C ]<--------.
+             +------+                            | 
+             |      |                        ( i = ir )  
+             | LaF  |                            | 
+             |      |                            | drop-out     
+             |      |--->( ir = i )----[ StateMachine ]---.
+             |      |                                      \
+             +------+                                       +--->[ Terminals Y ]
+             |      |                                      /
+             | FnL  |--->( ir = i )----[ StateMachine ]---'
+             |      |                            |
+             '------'                            | drop-out
+                                                 v
+                                           Beyond continues 
+                                           AT position of 
+                                           the first lexatom 'ir'.
+    """
     """
     assert EngineType is not None
     # NOT: assert (not EngineType.subject_to_reload()) or ReloadStateExtern is
     # None. This would mean, that the user has to make these kinds of decisions.
     # But, we are easily able to ignore meaningless ReloadStateExtern objects.
+    event_handler = LoopEventHandlers(LexemeMaintainedF, CcFactory, OnLoopExit)
 
-    iid_beyond    = dial_db.new_incidence_id()
-    iid_beyond_rs = dial_db.new_incidence_id() # beyond with restoring input position
-    iid_loop      = dial_db.new_incidence_id() # return to the beginning of the loop
-    event_handler = LoopEventHandlers(LexemeMaintainedF, 
-                                      OnBegin        = ccfactory.on_begin, 
-                                      OnEnd          = ccfactory.on_end,
-                                      OnBeforeReload = ccfactory.on_before_reload,
-                                      OnAfterReload  = ccfactory.on_after_reload) 
+    iid_loop_exit    = dial_db.new_incidence_id()
+    iid_loop_exit_rs = dial_db.new_incidence_id() # beyond with restoring input position
+    iid_loop         = dial_db.new_incidence_id() # return to the beginning of the loop
 
     # (*) StateMachine for Loop and Parallel State Machines
     #
     sm = _get_state_machine(CcFactory, 
                             [sm for sm, t in ParallelSmTerminalPairList], 
-                            iid_beyond, iid_beyond_rs, iid_loop)
+                            iid_loop_exit, iid_loop_exit_rs, iid_loop)
 
     sm = Setup.buffer_codec.transform(sm)
 
     # (*) Analyzer from StateMachine
     #
-    door_id_loop, \
-    analyzer      = _get_analyzer(sm, EngineType, ReloadStateExtern, event_handler)
+    door_id_loop_reentry, \
+    analyzer               = _get_analyzer(sm, EngineType, ReloadStateExtern, 
+                                           event_handler)
 
     # (*) Terminals for Loop and Parallel State Machines
     #
-
-    terminal_list = _get_terminal_list(CcFactory, event_handler, AfterBeyond, 
-                                       LexemeEndCheckF, IidBeyond, DoorIdLoop)
+    terminal_list = _get_terminal_list(CcFactory, 
+                                       [t for sm, t in ParallelSmTerminalPairList], 
+                                       iid_loop, door_id_loop_reentry,
+                                       iid_loop_exit, event_handler.on_loop_exit,
+                                       iid_loop_exit_with_restore) 
 
     # (*) Generate Code _______________________________________________________
-    txt = _get_source_code(analyzer, ParallelSmTerminalPairList, terminal_list, 
+    #
+    txt = _get_source_code(analyzer, terminal_list, 
                            CcFactory.requires_reference_p())
     
-    return txt, DoorID.incidence(iid_beyond)
+    return txt, DoorID.incidence(iid_loop_exit)
 
-def _get_terminal_list(CcFactory, ParallelSmTerminalPairList, 
-                       event_handler, AfterBeyond, 
-                       LexemeEndCheckF, IidBeyond, DoorIdLoop):
+def _get_terminal_list(CcFactory, ParallelTerminalList, 
+                       IidLoop, DoorIdLoopReEntry, 
+                       IidLoopExit, OnLoopExit,
+                       IidLoopExitRs):
 
-    after_beyond  = event_handler.on_end + AfterBeyond
-    terminal_list = _get_loop_terminals(CcFactory, LexemeEndCheckF, after_beyond, 
-                                        iid_beyond, door_id_loop)
+    door_id_loop                   = DoorID.incidence_id(IidLoop)
+    door_id_loop_exit              = DoorID.incidence_id(IidLoopExit)
+    door_id_loop_exit_with_restore = DoorID.incidence_id(IidLoopExitRs)
+
+    terminal_list = _get_loop_terminals(CcFactory, LexemeEndCheckF, 
+                                        DoorIdLoopReEntry, 
+                                        door_id_loop_exit)
     terminal_list.extend(
-        terminal for sm, terminal in ParallelSmTerminalPairList
+        ParallelTerminalList
     )
-    terminal_list.append(
-        _get_terminal_beyond(after_beyond, IidBeyond)
-    )
+
+    on_loop = [ 
+        Op.GotoDoorId(DoorIdLoopReEntry) 
+    ]
+    on_loop_exit_rs = [
+        Op.Restore(IidLoopExitRs),
+        Op.GotoDoorId(door_id_loop_exit) 
+    ]
+   
+    terminal_list.extend([
+        Terminal(on_loop,         "LOOP",                   IidLoop)
+        Terminal(OnLoopExit,      "LOOP EXIT",              IidLoopExit)
+        Terminal(on_loop_exit_rs, "LOOP EXIT WITH RESTORE", IidLoopExitRs)
+    ])
+
+    return terminal_list
 
 def _get_state_machine(CcFactory, ParallelSmList, IidBeyond, IidBeyondRs, IidLoop):
     """Generate a state machine that implements the basic transitions for
@@ -441,54 +502,73 @@ def _clean_from_spurious_acceptance_beyond(sm, IidBeyondRs):
 
     return sm
 
-def _get_loop_terminals(CcFactory, LexemeEndCheckF, AfterBeyond, 
-                        IidBeyond, DoorIdLoop):
+def _get_loop_terminals(CcFactory, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoopExit): 
     """Characters are grouped into sets with the same counting action. This
     function generates terminals for each particular counting action. The
     function 'get_appendix()' in order to add further commands to each 
     terminal.
 
+              .----------.        ,----------.   no
+          --->| Count Op |-------< LexemeEnd? >------> Loop
+              '----------'        '----+-----'
+                                       | yes
+                                 .-------------.
+                                 |  Lexeme End |
+                                 |  Count Op   |-----> OnLexemeEnd
+                                 '-------------'
+
+    Loop count actions are only implemented in loop
     RETURNS: List of 'Terminal' objects.
     """
-    def get_appendix_with_lexeme_end_check(ccfactory, CC_Type):
-        """       .----------.        ,----------.   no
-              --->| Count Op |-------< LexemeEnd? >------> Loop
-                  '----------'        '----+-----'
-                                           | yes
-                                     .-------------.
-                                     |  Lexeme End |
-                                     |  Count Op   |-----> OnLexemeEnd
-                                     '-------------'
-        """  
-        if ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
-            return [
-                Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd),
-                Op.ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.get_column_count_per_chunk(), False),
-            ] + AfterBeyond
+    def _op_list(CcFactory, X, get_appendix):
+        """Loop operations: (i)   Counting line and column numbers.
+                            (ii)  Lexeme end check, if required.
+                            (iii) Goto loop re-entry, or loop-exit.
+
+        Operation 'i' is determined by 'map_CharacterCountType_to_OpList()' and may be
+        an empty operation, if the counts are determined from lexeme length. Operations
+        'ii' and 'iii' are determined get 'get_appendix()' which is configured in the
+        calling function.
+        """
+        return   X.map_CharacterCountType_to_OpList(CcFactory.get_column_count_per_chunk()) \
+               + get_appendix(X.cc_type)
+
+    def _lexeme_end_check_with_delta_add(CC_Type):
+        if CC_Type != E_CharacterCountType.COLUMN: 
+            return _lexeme_end_check(CC_Type)
         else:
             return [
                 Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd),
-            ] + AfterBeyond
+                Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                                                 CcFactory.get_column_count_per_chunk(), 
+                                                 False),
+                Op.GotoDoorId(DoorIdLoopExit) 
+            ]
 
-    def get_appendix_normal(ccfactory, CC_Type):
-        return [ Op.GotoDoorId(DoorIdLoop) ]
+    def _lexeme_end_check(CC_Type):
+        return [
+            Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd),
+            Op.GotoDoorId(DoorIdLoopExit) 
+        ] 
 
-    # Choose the function that generates appendix code to terminal code 
-    # depending on lexeme end check being accomplished or not.
-    if LexemeEndCheckF: get_appendix = get_appendix_with_lexeme_end_check
-    else:               get_appendix = get_appendix_normal
+    def _no_lexeme_end_check(CC_Type):
+        return [ 
+            Op.GotoDoorId(DoorIdLoopReEntry) 
+        ]
+
+    # Choose the function that generates the 'appendix' operations.
+    if not LexemeEndCheckF: 
+        get_appendix = _no_lexeme_end_check
+    elif CcFactory.requires_reference_p():
+        get_appendix = _lexeme_end_check_with_delta_add
+    else:
+        get_appendix = _lexeme_end_check
 
     return [ 
-        _get_terminal(x, get_appendix) for x in CcFactory.__map 
+        Terminal(_op_list(x, get_appendix), 
+                 "LOOP TERMINAL %i" % i, x.incidence_id())
+        for i, x in enumerate(CcFactory.__map)
     ] 
-
-def _get_terminal(CcFactory, X, get_appendix):
-    op_list  = X.map_CharacterCountType_to_OpList(CcFactory.get_column_count_per_chunk()) 
-    appendix = get_appendix(CcFactory, X.cc_type)
-    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(chain(op_list, appendix))), 
-                        Name="%s" % X.cc_type)
-    terminal.set_incidence_id(X.incidence_id)
-    return terminal
 
 def _get_terminal_beyond(OnBeyond, BeyondIid):
     """Generate Terminal to be executed upon exit from the 'loop'.
@@ -497,161 +577,22 @@ def _get_terminal_beyond(OnBeyond, BeyondIid):
                      the terminal to be generated.
     """
     code_on_beyond = CodeTerminal(Lng.COMMAND_LIST(OnBeyond))
-    result = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
-    result.set_incidence_id(BeyondIid)
+    result = Terminal(code_on_beyond, "<BEYOND>", BeyondIid) # Put last considered character back
     return result
 
-def _get_loop_with_state_machines(LoopTargetMap, SmList):
-    """Generates a state machine that loops on 'LoopTargetMap', i.e. executes
-    some commands as reaction to lexatoms, but also in parallel may match
-    some other patterns given the state machine list 'SmList'. Definitions:
+def _get_analyzer(sm, EngineType, ReloadStateExtern, CcFactory):
 
-        L      = lexatoms that trigger 'looping'.
-        F      = set of first lexatoms in the 'SmList'.
-        pure L = lexatoms that only appear in L.
-        LaF    = L and F, lexatoms that are first lexatoms and loop lexatoms.
-                 If the later state machine fails the 'normal' loop terminal
-                 is executed and the loop continues.
-        FnL    = F but not L, first lexatoms which are no loop lexatoms.
-                 If the later state machine fails the loop exits.
-        ip     = input pointer to the lexatom to be treated.
+    analyzer = analyzer_generator.do(sm, EngineType, ReloadStateExtern,
+                                     OnBeforeReload = event_handler.on_before_reload, 
+                                     OnAfterReload  = event_handler.on_after_reload)
 
-    As soon as a character appears that neither fits 'L' nor 'F' the loop 
-    exits. The resulting structure is shown below (reload state transition 
-    omitted).
+    door_id_loop_reentry = _prepare_entry_and_reentry(analyzer, 
+                                                      event_handler.on_loop_entry, 
+                                                      event_handler.on_loop_reentry) 
 
-        .---------( ++ip )-----+                    Loop continues
-        |    .------.          |                    at AFTER position of 
-        '--->|      |          |                    the first lexatom 'ir'.
-             | pure |--->[ Terminals A ]<--------.  
-             |  L   |--->[ Terminals B ]<--------.
-             |      |--->[ Terminals C ]<--------.
-             +------+                            | 
-             |      |                        ( i = ir )  
-             | LaF  |                            | 
-             |      |                            | drop-out     
-             |      |--->( ir = i )----[ StateMachine ]---.
-             |      |                                      \
-             +------+                                       +--->[ Terminals Y ]
-             |      |                                      /
-             | FnL  |--->( ir = i )----[ StateMachine ]---'
-             |      |                            |
-             '------'                            | drop-out
-                                                 v
-                                           Beyond continues 
-                                           AT position of 
-                                           the first lexatom 'ir'.
-    """
-    L = NumberSet.from_union_of_iterable(
-        number_set for number_set in LoopTargetMap
-    )
-    # Sort State Machines
-    LnF, \
-    loop_list, \
-    no_loop_list = _sort_by_first_character(SmList, L)
-    
-    # LnF:          Loop lexatoms, that are not first lexatoms.
-    # loop_list:    Tuples of (first lexatom set, sm_list) where the first 
-    #               lexatom set is completely IN 'L'.
-    # no_loop_list: Tuples of (first lexatom set, sm_list) where the first 
-    #               lexatom set is completely OUTSIDE 'L'.
-    for number_set, incidence_id in LoopTargetMap:
-        pure = number_set.intersection(LnF)
-        ti = sm.add(sm.init_state_index, pure)
-        sm.states[ti].mark_acceptance_id(incidence_id)
-        
-    def mount_sub_state_machine(sm, LexatomSet, sub_sm, IidOnDropOut):
-        combined_sm.get_init_state().set_read_position_store_f()  # 'ir = i'
-        combined_sm.fill_gaps(IidOnDropOut)
-        ti = sm.add(sm.init_state_index, LexatomSet, 
-                    sub_sm.init_state_index)
-        sm.absorb(combined_sm)
+    return analyzer, door_id_loop_reentry
 
-    for lexatom_set, original_iid, combined_sm in loop_list:
-        iid_continue = get_continue_iid(original_iid)
-        mount_sub_state_machine(sm, lexatom_set, combined_sm, iid_continue)
-        # IidLoopContinue --> Terminal: "i = ir + 1; goto Terminal(lexatom_set);" 
-
-    for lexatom_set, combined_sm in no_loop_list:
-        mount_sub_state_machine(sm, lexatom_set, combined_sm, IidLoopExit)
-        # IidLoopExit --> Terminal: "goto exit-of-loop;"
-    
-    return sm
-
-def _sort_by_first_character(SmList, L):
-    """RETURNS: [0] L without any first lexatom.
-                [1] List of tuples (NSet, CombinedSm) where NSet IN L.
-                [2] List of tuples (NSet, CombinedSm) where NSet NOT IN L.
-
-                3x None, in case of error.
-    """
-    L_without_F = L.clone()
-    for sm in SmList:
-        trigger_set = sm.cut_first_transition()
-
-        in_L  = trigger_set.intersection(L)
-        if in_L:  
-            in_list.append((in_L, sm))
-            L_without_F.subtract(in_L)
-
-        out_L = trigger_set.difference(L)
-        if out_L: 
-            in_list.append((out_L, sm))
-
-    return L_without_F, _clean_this(in_list), _clean_this(out_list)
-
-def _clean_this(FirstSmList):
-    """Takes a list of tuples (NSet, state machine) where the number sets NSet
-    may possibly intersect. If the number sets of two tuples intersect the
-    intersection is associated with the list of their state machines.
-    
-    RETURNS: List of tuples (NSet, state machine list)
-     
-    where no two number sets in the tuples intersect. The result therefore is
-    a mapping:
-
-         Number Set ------> combined state machine buildt from a list of 
-                            state machines that trigger on Number set as 
-                            first lexatom.
-    """
-    result = []
-    for i, i_entry in enumerate(FirstSmList):
-        i_trigger_set, i_sm = candidate
-        i_remainder         = i_trigger_set.clone()
-        for k, k_entry in enumerate(FirstSmList):
-            if k == i: continue
-            k_trigger_set, k_sm = candidate
-            common = i_trigger_set.intersection(k_trigger_set)
-            if common.is_empty(): continue
-            result.append((common, [i_sm, k_sm]))
-            i_remainder.subtract(common)
-        result.append((i_remainder, [i_sm]))
-
-    for i in reversed(range(len(result))):
-        i_trigger_set, i_sm_list = result[i]
-        for i in range(i):
-            k_trigger_set, k_sm_list = result[k]
-            if i_trigger_set.is_equal(k_trigger_set):
-                result[k].extend(i_sm_list)
-                del result[i]
-
-    return [
-        (trigger_set, get_combined_state_machine(sm_list))
-        for trigger_set, sm_list in result
-    ]
-
-def _get_analyzer(sm, EngineType, ReloadStateExtern, event_handler):
-    analyzer     = analyzer_generator.do(sm, EngineType, ReloadStateExtern,
-                                         OnBeforeReload = copy(event_handler.on_before_reload), 
-                                         OnAfterReload  = copy(event_handler.on_after_reload))
-
-    door_id_loop = _prepare_entry_and_reentry(analyzer, 
-                                              event_handler.on_begin, 
-                                              event_handler.on_step) 
-
-    return analyzer, door_id_loop
-
-def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
+def _prepare_entry_and_reentry(analyzer, OnLoopEntry, OnLoopReEntry):
     """Prepare the entry and re-entry doors into the initial state
     of the loop-implementing initial state.
 
@@ -677,11 +618,11 @@ def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     ta_on_entry              = entry.get_action(init_state_index, 
                                                 E_StateIndices.BEFORE_ENTRY)
     ta_on_entry.command_list = OpList.concatinate(ta_on_entry.command_list, 
-                                                  OnBegin)
+                                                  OnLoopEntry)
 
     # OnReEntry
     tid_reentry = entry.enter_OpList(init_state_index, index.get(), 
-                                     OpList.from_iterable(OnStep))
+                                     OpList.from_iterable(OnLoopReEntry))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id

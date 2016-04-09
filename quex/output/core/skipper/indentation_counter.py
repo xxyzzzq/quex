@@ -83,7 +83,7 @@ def do(Data, TheAnalyzer):
 
     # -- 'on_indentation' == 'on_beyond': 
     #     A handler is called as soon as an indentation has been detected.
-    after_beyond = [
+    on_loop_exit = [
         Op.IndentationHandlerCall(default_ih_f, mode_name),
         Op.GotoDoorId(DoorID.continue_without_on_after_match())
     ]
@@ -110,7 +110,7 @@ def do(Data, TheAnalyzer):
     # (*) Generate Code
     code,          \
     door_id_beyond = loop.do(ccfactory, 
-                             AfterBeyond       = after_beyond,
+                             OnLoopExit        = on_loop_exit,
                              EngineType        = TheAnalyzer.engine_type,
                              ReloadStateExtern = reload_state,
                              LexemeMaintainedF = True,
@@ -159,8 +159,7 @@ def _add_pair(psml, SmOriginal, Name):
         Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)) 
     ]
 
-    terminal = Terminal(CodeTerminal(code), Name)
-    terminal.set_incidence_id(incidence_id)
+    terminal = Terminal(CodeTerminal(code), Name, incidence_id)
     # TRY:     terminal.set_requires_goto_loop_entry_f()
     # INSTEAD: GOTO 'INDENTATION_HANDLER'
 

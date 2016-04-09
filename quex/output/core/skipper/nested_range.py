@@ -67,13 +67,9 @@ def get_skipper(TheAnalyzer, OpenerSequence, CloserSequence, OnSkipRangeOpen, Do
     count_op_factory = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, 
                                                                     NumberSet_All(), 
                                                                     Lng.INPUT_P()) 
-    after_beyond     = [ 
-        Op.GotoDoorId(DoorIdAfter) 
-    ]
-
     result,          \
     door_id_beyond   = loop.do(count_op_factory,
-                               AfterBeyond       = after_beyond,
+                               OnLoopExit        = [ Op.GotoDoorId(DoorIdAfter) ],
                                LexemeEndCheckF   = False,
                                LexemeMaintainedF = False,
                                EngineType        = engine.FORWARD,
@@ -124,8 +120,7 @@ def _get_state_machine_and_terminal(Sequence, Name, OpList):
     """
     sm = StateMachine.from_sequence(Sequence)
     sm.set_id(dial_db.new_incidence_id())
-    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(OpList)), Name)
-    terminal.set_incidence_id(sm.get_id())
+    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(OpList)), Name, sm.get_id())
     terminal.set_requires_goto_loop_entry_f()  # --> Goto Loop Entry
 
     return sm, terminal
