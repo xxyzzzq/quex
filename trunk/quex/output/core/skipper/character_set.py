@@ -73,7 +73,7 @@ def do(Data, TheAnalyzer):
         
     result,        \
     door_id_beyond = loop.do(ccfactory,
-                             AfterBeyond       = [ Op.GotoDoorId(DoorID.continue_without_on_after_match()) ],
+                             OnLoopExit        = [ Op.GotoDoorId(DoorID.continue_without_on_after_match()) ],
                              LexemeEndCheckF   = False,
                              LexemeMaintainedF = False,
                              EngineType        = engine.FORWARD,

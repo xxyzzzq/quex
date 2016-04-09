@@ -190,11 +190,11 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     on_failure              = CodeTerminal(["return false;\n"])
     support_begin_of_line_f = False
     terminal_db             = {
-        E_IncidenceIDs.MATCH_FAILURE: Terminal(on_failure, "FAILURE"),
-        E_IncidenceIDs.END_OF_STREAM: Terminal(on_failure, "END_OF_STREAM"),
+        E_IncidenceIDs.MATCH_FAILURE: Terminal(on_failure, "FAILURE",
+                                               E_IncidenceIDs.MATCH_FAILURE),
+        E_IncidenceIDs.END_OF_STREAM: Terminal(on_failure, "END_OF_STREAM",
+                                               E_IncidenceIDs.END_OF_STREAM),
     }
-    terminal_db[E_IncidenceIDs.MATCH_FAILURE].set_incidence_id(E_IncidenceIDs.MATCH_FAILURE)
-    terminal_db[E_IncidenceIDs.END_OF_STREAM].set_incidence_id(E_IncidenceIDs.END_OF_STREAM)
     for pattern, action_str in pattern_action_list:
         name     = TerminalFactory.name_pattern_match_terminal(pattern.pattern_string())
         terminal = Terminal(action(pattern, action_str), name)
