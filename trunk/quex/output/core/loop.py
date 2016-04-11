@@ -253,7 +253,7 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
               +------+
               |  i1  |----------> Terminal1:       OpList1   
               +------+
-              |  X2  |----------> Terminal Beyond: --input_p; goto TerminalExit;
+              |  X2  |----------> Terminal LoopExit: --input_p; goto TerminalExit;
               +------+
               |  i2  |----------> Terminal2:       OpList2
               +------+
@@ -294,10 +294,9 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
              |      |                            |
              '------'                            | drop-out
                                                  v
-                                           Beyond continues 
+                                           LoopExit continues 
                                            AT position of 
                                            the first lexatom 'ir'.
-    """
     """
     assert EngineType is not None
     # NOT: assert (not EngineType.subject_to_reload()) or ReloadStateExtern is
@@ -306,7 +305,7 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     event_handler = LoopEventHandlers(LexemeMaintainedF, CcFactory, OnLoopExit)
 
     iid_loop_exit    = dial_db.new_incidence_id()
-    iid_loop_exit_rs = dial_db.new_incidence_id() # beyond with restoring input position
+    iid_loop_exit_rs = dial_db.new_incidence_id() # loop_exit with restoring input position
     iid_loop         = dial_db.new_incidence_id() # return to the beginning of the loop
 
     # (*) StateMachine for Loop and Parallel State Machines
@@ -338,39 +337,7 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     
     return txt, DoorID.incidence(iid_loop_exit)
 
-def _get_terminal_list(CcFactory, ParallelTerminalList, 
-                       IidLoop, DoorIdLoopReEntry, 
-                       IidLoopExit, OnLoopExit,
-                       IidLoopExitRs):
-
-    door_id_loop                   = DoorID.incidence_id(IidLoop)
-    door_id_loop_exit              = DoorID.incidence_id(IidLoopExit)
-    door_id_loop_exit_with_restore = DoorID.incidence_id(IidLoopExitRs)
-
-    terminal_list = _get_loop_terminals(CcFactory, LexemeEndCheckF, 
-                                        DoorIdLoopReEntry, 
-                                        door_id_loop_exit)
-    terminal_list.extend(
-        ParallelTerminalList
-    )
-
-    on_loop = [ 
-        Op.GotoDoorId(DoorIdLoopReEntry) 
-    ]
-    on_loop_exit_rs = [
-        Op.Restore(IidLoopExitRs),
-        Op.GotoDoorId(door_id_loop_exit) 
-    ]
-   
-    terminal_list.extend([
-        Terminal(on_loop,         "LOOP",                   IidLoop)
-        Terminal(OnLoopExit,      "LOOP EXIT",              IidLoopExit)
-        Terminal(on_loop_exit_rs, "LOOP EXIT WITH RESTORE", IidLoopExitRs)
-    ])
-
-    return terminal_list
-
-def _get_state_machine(CcFactory, ParallelSmList, IidBeyond, IidBeyondRs, IidLoop):
+def _get_state_machine(CcFactory, ParallelSmList, IidLoopExit, IidLoopExitRs, IidLoop):
     """Generate a state machine that implements the basic transitions for
     looping mount the parallel state machines. The loops are not closed, yet.
     Instead loop transitions end in terminals that return to the loop entry.
@@ -410,12 +377,12 @@ def _get_state_machine(CcFactory, ParallelSmList, IidBeyond, IidBeyondRs, IidLoo
     # Upon drop-out the position after the first lexatom is restored and 
     # the loop EXITS.
     for sub_set, pruned_sm in SMX_list:
-        _mount_pruned_sm(sm, sub_set, pruned_sm, IidBeyondRs)
+        _mount_pruned_sm(sm, sub_set, pruned_sm, IidLoopExitRs)
 
-    # Mount the transition to 'on_beyond, only after all state machines have 
+    # Mount the transition to 'on_loop_exit, only after all state machines have 
     # been mounted.
-    _mount_beyond_on_init_state(sm, IidBeyond)
-    return _clean_from_spurious_acceptance_beyond(beautifier.do(sm), IidBeyondRs)
+    _mount_loop_exit_on_init_state(sm, IidLoopExit)
+    return _clean_from_spurious_acceptance_of_loop_exit(beautifier.do(sm), IidLoopExitRs)
 
 def _configure_this(ParallelSmList, CcFactory):
     """Considers the list of state machines which need to be mounted to the
@@ -475,32 +442,74 @@ def _mount_pruned_sm(loop_sm, FirstTransitionTriggerSet, PrunedSm, IidOnDropOut)
         mounted_init_state.set_acceptance()
         mounted_init_state.mark_acceptance_id(IidOnDropOut)
 
-def _mount_beyond_on_init_state(sm, IidBeyond):
+def _mount_loop_exit_on_init_state(sm, IidLoopExit):
     """Add transitions on anything in the input that is not covered yet to the 
-    state that accepts 'Beyond', i.e. loop exit.
+    state that accepts 'LoopExit', i.e. loop exit.
     """
     # Due to '_mount_SMX()' there might be another state that accepts 
-    # 'IidBeyond', but that one restores the input position. 
+    # 'IidLoopExit', but that one restores the input position. 
     # Here, the input position is NOT restored.
     # => new state.
-    beyond_state_si = sm.create_new_state(MarkAcceptanceId=IidBeyond, 
-                                          RestoreInputPositionF=False)
+    loop_exit_state_si = sm.create_new_state(MarkAcceptanceId=IidLoopExit, 
+                                             RestoreInputPositionF=False)
     init_state      = sm.get_init_state()
     universal_set   = Setup.buffer_codec.source_set
     remainder       = init_state.target_map.get_trigger_set_union_complement(universal_set)
-    init_state.add_transition(remainder, beyond_state_si)
+    init_state.add_transition(remainder, loop_exit_state_si)
 
-def _clean_from_spurious_acceptance_beyond(sm, IidBeyondRs):
-    """It is conceivable, that the 'beyond acceptance' appears together with
-    a state machines acceptance. In that case, the 'beyond acceptance ' needs
+def _clean_from_spurious_acceptance_of_loop_exit(sm, IidLoopExitRs):
+    """It is conceivable, that the 'loop_exit acceptance' appears together with
+    a state machines acceptance. In that case, the 'loop_exit acceptance ' needs
     to be deleted.
     """
     for state in sm.iterable_acceptance_states():
-        if   not state.single_entry.has_acceptance_id(IidBeyondRs):       continue
-        elif not state.single_entry.has_other_acceptance_id(IidBeyondRs): continue
-        state.single_entry.remove_acceptance_id(IidBeyondRs)
+        if   not state.single_entry.has_acceptance_id(IidLoopExitRs):       continue
+        elif not state.single_entry.has_other_acceptance_id(IidLoopExitRs): continue
+        state.single_entry.remove_acceptance_id(IidLoopExitRs)
 
     return sm
+
+def _get_terminal_list(CcFactory, ParallelTerminalList, 
+                       IidLoop, DoorIdLoopReEntry, 
+                       IidLoopExit, OnLoopExit,
+                       IidLoopExitRs):
+    """Collect all terminals:
+    -- Terminals performing counting operations according to
+       the loop-lexatoms (those are the 'loop terminals').
+    -- Terminals that go to: loop re-entry, 
+                             loop exit, and 
+                             loop-exit after resetting the input pointer.
+    -- Terminals related to the parallel state machines.
+
+    RETURNS: list of Terminal-s.
+    """
+
+    door_id_loop                   = DoorID.incidence_id(IidLoop)
+    door_id_loop_exit              = DoorID.incidence_id(IidLoopExit)
+    door_id_loop_exit_with_restore = DoorID.incidence_id(IidLoopExitRs)
+
+    terminal_list = _get_loop_terminals(CcFactory, LexemeEndCheckF, 
+                                        DoorIdLoopReEntry, 
+                                        door_id_loop_exit)
+    terminal_list.extend(
+        ParallelTerminalList
+    )
+
+    on_loop = [ 
+        Op.GotoDoorId(DoorIdLoopReEntry) 
+    ]
+    on_loop_exit_rs = [
+        Op.RestoreInputPosition(IidLoopExitRs),
+        Op.GotoDoorId(door_id_loop_exit) 
+    ]
+   
+    terminal_list.extend([
+        Terminal(on_loop,         "<LOOP>",                   IidLoop)
+        Terminal(OnLoopExit,      "<LOOP EXIT>",              IidLoopExit)
+        Terminal(on_loop_exit_rs, "<LOOP EXIT WITH RESTORE>", IidLoopExitRs)
+    ])
+
+    return terminal_list
 
 def _get_loop_terminals(CcFactory, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoopExit): 
     """Characters are grouped into sets with the same counting action. This
@@ -566,18 +575,19 @@ def _get_loop_terminals(CcFactory, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoo
 
     return [ 
         Terminal(_op_list(x, get_appendix), 
-                 "LOOP TERMINAL %i" % i, x.incidence_id())
+                 "<LOOP TERMINAL %i>" % i, x.incidence_id())
         for i, x in enumerate(CcFactory.__map)
     ] 
 
-def _get_terminal_beyond(OnBeyond, BeyondIid):
+def _get_terminal_loop_exit(OnLoopExit, IidLoopExit):
     """Generate Terminal to be executed upon exit from the 'loop'.
     
-       BeyondIid  -- 'Beyond Incidence Id', that is the incidencen id if of
+       IidLoopExit  -- 'LoopExit Incidence Id', that is the incidencen id if of
                      the terminal to be generated.
     """
-    code_on_beyond = CodeTerminal(Lng.COMMAND_LIST(OnBeyond))
-    result = Terminal(code_on_beyond, "<BEYOND>", BeyondIid) # Put last considered character back
+    code_on_loop_exit = CodeTerminal(Lng.COMMAND_LIST(OnLoopExit))
+    result = Terminal(code_on_loop_exit, "<LOOP EXIT>", 
+                      IidLoopExit) # Put last considered character back
     return result
 
 def _get_analyzer(sm, EngineType, ReloadStateExtern, CcFactory):

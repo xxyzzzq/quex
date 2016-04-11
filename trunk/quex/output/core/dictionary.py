@@ -393,6 +393,10 @@ class Lng_Cpp(dict):
                 return "    position[%i] = me->buffer._read_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
                        % (Op.content.position_register, Op.content.offset, Op.content.position_register, Op.content.offset)
 
+        elif Op.id == E_Op.RestoreInputPosition:
+            return "    me->buffer._read_p = position[%i]; __quex_debug(\"input_p = position[%i];\\n\");\n" \
+                   % (Op.content.position_register, Op.content.position_register)
+
         elif Op.id == E_Op.PreContextOK:
             return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
                    % Op.content.pre_context_id                                      \
