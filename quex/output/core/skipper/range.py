@@ -10,7 +10,6 @@ from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.state_machine.core              import StateMachine
 from   quex.engine.misc.interval_handling          import NumberSet_All
 from   quex.engine.misc.string_handling            import blue_print
-import quex.output.cpp.counter_for_pattern         as     counter_coder
 from   quex.engine.misc.tools                      import r_enumerate, \
                                                           typed, \
                                                           flatten_list_of_lists
@@ -20,7 +19,6 @@ from   quex.output.core.skipper.common             import line_counter_in_loop, 
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
-import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, Lng
 from   copy                                        import copy

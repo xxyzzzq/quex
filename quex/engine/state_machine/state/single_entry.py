@@ -2,7 +2,8 @@ from quex.engine.misc.tools               import typed
 from quex.engine.operations.se_operations import SeOp, \
                                                  SeAccept, \
                                                  SeStoreInputPosition
-from quex.blackboard import E_PreContextIDs
+from quex.blackboard import E_PreContextIDs, \
+                            E_IncidenceIDs
 
 class SingleEntry(object):
     __slots__ = ('__list')
@@ -68,11 +69,20 @@ class SingleEntry(object):
             cmd = self.__list[i]
             if cmd.__class__ == OpClass: del self.__list[i]
 
+    def remove_acceptance_id(self, AcceptanceID):
+        L = len(self.__list)
+        for i in xrange(L-1, -1, -1):
+            cmd = self.__list[i]
+            if cmd.acceptance_id() == AcceptanceID: del self.__list[i]
+
     def has_acceptance_id(self, AcceptanceID):
-        for cmd in self.get_iterable(SeAccept):
-            if cmd.acceptance_id() == AcceptanceID:
-                return True
-        return False
+        return any(cmd.acceptance_id() == AcceptanceID
+                   for cmd in self.get_iterable(SeAccept))
+
+    def has_other_acceptance_id(self, AcceptanceID):
+        return any(    cmd.acceptance_id() != E_IncidenceIDs.MATCH_FAILURE
+                   and cmd.acceptance_id() != AcceptanceID
+                   for cmd in self.get_iterable(SeAccept))
 
     def has_begin_of_line_pre_context(self):
         for cmd in self.get_iterable(SeAccept):

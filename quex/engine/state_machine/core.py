@@ -4,6 +4,7 @@ from   quex.engine.misc.interval_handling           import NumberSet, Interval
 import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
 from   quex.engine.state_machine.state.single_entry import SeAccept
+import quex.engine.misc.error                       as     error
 
 from   quex.engine.misc.tools  import flatten_list_of_lists, typed
 from   quex.blackboard         import E_IncidenceIDs, \
@@ -114,6 +115,9 @@ class StateMachine(object):
                 | state |    
                 '-------'                 ...
 
+        IncidenceIdMap: 
+                           incidence_id --> number set
+
         """
         def add(sm, StateIndex, TriggerSet, IncidenceId):
             if TriggerSet.is_empty(): return
@@ -123,12 +127,14 @@ class StateMachine(object):
             target_state.mark_acceptance_id(IncidenceId)
 
         sm = StateMachine()
-        for character_set, incidence_id in IncidenceIdMap:
-            add(sm, sm.init_state_index, character_set, incidence_id)
+        if IncidenceIdMap:
+            for character_set, incidence_id in IncidenceIdMap:
+                add(sm, sm.init_state_index, character_set, incidence_id)
 
         return sm
 
-    def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
+    def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None, 
+              StateMachineId=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
         state machines are to be created that combine the behavior of more
@@ -172,8 +178,10 @@ class StateMachine(object):
             for si, state in self.states.iteritems()
         )
         
-        return StateMachine.from_iterable(ReplDbStateIndex[self.init_state_index], 
-                                          iterable)
+        result = StateMachine.from_iterable(ReplDbStateIndex[self.init_state_index], 
+                                            iterable)
+        if StateMachineId is not None: result.set_id(StateMachineId)
+        return result
 
     def normalized_clone(self, ReplDbPreContext=None):
         index_map, dummy, dummy         = self.get_state_index_normalization()
@@ -182,6 +190,27 @@ class StateMachine(object):
         return self.clone(index_map, 
                           ReplDbPreContext=pre_context_map, 
                           ReplDbAcceptance=pattern_id_map)
+
+    def clone_from_state_subset(self, InitStateIndex, StateIndexSet):
+        # Find for all states a replacement index
+        replacement_db = dict(
+            (si, state_machine_index.get()) for si in StateIndexSet
+        )
+
+        # Iterable over all states together with the new state index for 
+        # the cloned state.
+        iterable = [
+            (replacement_db[si], self.states[si].clone())
+            for si in StateIndexSet
+        ]
+
+        # Generate state machine consisting of the cloned successor states
+        # of 'target_si'.
+        result = StateMachine.from_iterable(replacement_db[InitStateIndex], iterable)
+        for state in result.states.itervalues():
+            state.target_map.replace_target_indices(replacement_db)
+
+        return result
 
     def access_state_by_incidence_id(self, IncidenceId):
         """Find or create a state that accepts 'IncidenceId'.
@@ -542,7 +571,7 @@ class StateMachine(object):
 
         return predecessor_db
 
-    def get_successor_db(self, HintPredecessorDb):
+    def get_successor_db(self, HintPredecessorDb=None):
         """RETURNS:
 
             map:   state index ---> set of states on the path from init state to this state.
@@ -769,38 +798,44 @@ class StateMachine(object):
 
         return result
 
-    def cut_first_transition(self):
+    def cut_first_transition(self, CloneStateMachineId=False):
         """Cuts the first transition and leaves the remaining states in place. 
+        This solution is general(!) and it covers the case that there are 
+        transitions to the init state!
+        
+        EXAMPLE:
+            
+            .-- z -->(( 1 ))          z with: (( 1c ))
+          .'                   ---\
+        ( 0 )--- a -->( 2 )    ---/   a with: ( 2c )-- b ->( 0c )-- z -->(( 1c ))
+          \             /                       \           / 
+           '-<-- b ----'                         '-<- a ---'
 
-        ASSUMPTIONS: (1) The state machine is a DFA.
-                     (2) There is NO transition to the init state.
-                     (3) There is ONLY ONE subsequent state to the init state.
+        where '0c', '1c', and '2c' are the cloned states of '0', '1', and '2'.
 
-        RETURNS: Trigger set that performs the first transition.
-                 None, in case of failure.
+        RETURNS: list of pairs: (trigger set, pruned state machine)
+                 
+        trigger set = NumberSet that triggers on the initial state to
+                      the remaining state machine.
+
+        pruned state machine = pruned cloned version of this state machine
+                               consisting of states that come behind the 
+                               state which is reached by 'trigger set'.
 
         ADAPTS:  Makes the init state's success state the new init state.
         """
-        # (1) DFA?
-        assert self.is_DFA_compliant()
+        successor_db = self.get_successor_db()
 
-        # (2) No transition to init state
-        init_state_index = self.init_state_index
-        if any(init_state_index in state.target_map.get_map()
-               for state in self.states.iteritems()):
-            return None
+        if CloneStateMachineId: cloned_sm_id = self.get_id()
+        else:                   cloned_sm_id = None
 
-        # (3) Only one successor state?
-        tm = self.get_init_state().target_map.get_map()
-        if tm.size() != 1: return None
-        successor_i, trigger_set = tm.iteritems().next()
-
-        # Successor of init state becomes new init state.
-        del self.states[self.init_state_index]
-        self.init_state_index = successor_i
-
-        return trigger_set
-
+        return [
+            (trigger_set, self.clone_from_state_subset(target_si, 
+                                                       list(successor_db[target_si]) + [target_si]),
+                                                       cloned_sm_id)
+            for target_si, trigger_set in self.get_init_state().target_map.get_map().iteritems()
+        ]
+            
     def clean_up(self):
         # Delete states which are not connected from the init state.
         self.delete_orphaned_states()
@@ -884,6 +919,14 @@ class StateMachine(object):
             if state.is_acceptance(): return True
         return False
 
+    def iterable_acceptance_states(self):
+        for state in self.states.itervalues():
+            if state.is_acceptance(): yield state
+
+    def iterable_non_acceptance_states(self):
+        for state in self.states.itervalues():
+            if not state.is_acceptance(): yield state
+
     def has_origins(self):
         for state in self.states.values():
             if len(state.single_entry) > 1: return True
@@ -893,12 +936,21 @@ class StateMachine(object):
         self.init_state_index = self.create_new_state()
         return self.init_state_index
 
-    def create_new_state(self, AcceptanceF=False, StateIdx=None):
-        if StateIdx is None: new_state_index = state_machine_index.get()
-        else:                new_state_index = StateIdx
+    def create_new_state(self, AcceptanceF=False, StateIdx=None, RestoreInputPositionF=False, 
+                         MarkAcceptanceId=None):
+        """RETURNS: State index of the new state.
+        """
+        if StateIdx is None: new_si = state_machine_index.get()
+        else:                new_si = StateIdx
 
-        self.states[new_state_index] = State(AcceptanceF)
-        return new_state_index
+        new_state = State(AcceptanceF or MarkAcceptanceId is not None)
+        if MarkAcceptanceId is not None:
+            new_state.mark_acceptance_id(MarkAcceptanceId)
+            if RestoreInputPositionF:
+                new_state.set_read_position_restore_f()
+
+        self.states[new_si] = new_state
+        return new_si
         
     @typed(StartStateIdx=long, AcceptanceF=bool)
     def add_transition(self, StartStateIdx, TriggerSet, TargetStateIdx = None, AcceptanceF = False):

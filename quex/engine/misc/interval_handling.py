@@ -9,7 +9,7 @@
 #
 # DATE: May 26, 2006
 #
-# (C) 2006-2014 Frank-Rene Schaefer
+# (C) 2006-2016 Frank-Rene Schaefer
 #
 # ABSOLUTELY NO WARRANTY
 ################################################################################

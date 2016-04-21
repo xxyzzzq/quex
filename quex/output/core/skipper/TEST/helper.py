@@ -12,7 +12,7 @@ from   quex.input.code.base                        import CodeFragment
 from   quex.output.core.base                       import do_state_router
 from   quex.engine.state_machine.core              import StateMachine
 from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
-from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
+from   quex.input.files.parser_data.counter        import LineColumnCount_Default
 from   quex.input.regular_expression.construct     import Pattern
 import quex.engine.analyzer.engine_supply_factory  as     engine
 import quex.engine.state_machine.transformation.core             as     bc_factory
@@ -56,7 +56,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
 
     data = { 
         "character_set":        TriggerSet, 
-        "counter_db":           CounterSetupLineColumn_Default(),
+        "counter_db":           LineColumnCount_Default(),
         "require_label_SKIP_f": False, 
     }
     skipper_code = character_set_skipper.do(data, Analyzer)
@@ -89,7 +89,7 @@ def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=
         "mode_name":          "MrUnitTest",
         "on_skip_range_open": CodeFragment([end_str]),
         "door_id_after":      DoorID.continue_without_on_after_match(),
-        "counter_db":         CounterSetupLineColumn_Default(),
+        "counter_db":         LineColumnCount_Default(),
     }
 
     skipper_code = range_skipper.do(data, Analyzer)
@@ -116,7 +116,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
         "mode_name":          "MrUnitTest",
         "on_skip_range_open": CodeFragment([end_str]),
         "door_id_after":      DoorID.continue_without_on_after_match(),
-        "counter_db":         CounterSetupLineColumn_Default(),
+        "counter_db":         LineColumnCount_Default(),
     }
 
     skipper_code = nested_range_skipper.do(data, Analyzer)
@@ -133,7 +133,7 @@ def create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, Token
 
     data = {
         "indentation_setup":             ISetup,
-        "counter_db":                    CounterSetupLineColumn_Default(),
+        "counter_db":                    LineColumnCount_Default(),
         "incidence_db":                  {E_IncidenceIDs.INDENTATION_BAD: ""},
         "default_indentation_handler_f": True,
         "mode_name":                     "Test",

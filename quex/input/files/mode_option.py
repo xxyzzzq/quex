@@ -1,6 +1,6 @@
 import quex.input.files.counter             as     counter
 import quex.input.regular_expression.core   as     regular_expression
-from   quex.input.files.parser_data.counter import CounterSetupLineColumn_Default
+from   quex.input.files.parser_data.counter import LineColumnCount_Default
 from   quex.input.code.base                 import SourceRef
 from   quex.engine.misc.tools               import all_isinstance
 from   quex.engine.misc.tools               import typed, \
@@ -85,7 +85,7 @@ mode_option_info_db = {
    # -- indentation setup information
    "indentation":       ModeOptionInfo(False, False),
    # --line/column counter information
-   "counter":           ModeOptionInfo(False, False, Default=CounterSetupLineColumn_Default),
+   "counter":           ModeOptionInfo(False, False, Default=LineColumnCount_Default),
 }
 
 class OptionDB(dict):
@@ -260,12 +260,11 @@ def parse(fh, new_mode):
         value = __parse_range_skipper_option(fh, identifier, new_mode)
         
     elif identifier == "indentation":
-        value = counter.parse_indentation(fh)
-        value.set_containing_mode_name(new_mode.name)
+        value = IndentationCount.from_FileHandle(fh)
         blackboard.required_support_indentation_count_set()
 
     elif identifier == "counter":
-        value = counter.parse_line_column_counter(fh)
+        value = LineColumnCount.from_FileHandle(fh)
 
     elif identifier in ("entry", "exit"):
         value = read_option_value(fh, ListF=True) # A 'list' of strings
@@ -299,6 +298,7 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
     """
 
     # Range state machines only accept 'strings' not state machines
+    # Pattern: opener 'white space' closer 'white space' '>'
     skip_whitespace(fh)
     opener_pattern, opener_sequence = regular_expression.parse_character_string(fh, ">")
     skip_whitespace(fh)
@@ -355,5 +355,4 @@ def read_option_value(fh, ListF=False):
 
     if not ListF: return value.strip()
     else:         return [ x.strip() for x in value.split() ]
-
 

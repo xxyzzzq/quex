@@ -1,8 +1,8 @@
 # (C) 2012 Frank-Rene Schaefer
-from   quex.engine.misc.tree_walker                  import TreeWalker
-from   quex.blackboard                               import E_Count
+from   quex.engine.misc.tree_walker import TreeWalker
+from   quex.blackboard              import E_Count
 
-class CountInfo:
+class LineColumnCount:
     """Information on character counting characteristics of lexeme that match a 
     given state machine.
     
@@ -22,33 +22,36 @@ class CountInfo:
       .column_index
       
          If the column index after match has a specific value, then this 
-         member variable contains its value. If it has not, it contains
-         E_Count.VOID.
+         member variable contains its value. 
+
+         E_Count.VOID => No specific value for '.column_index'.
 
          (This makes sense for pattern that have a 'begin-of-line' pre-
          context. Or, when it contains a newline such as "\\notto".)
 
       .column_n_increment 
       
-         The number of columns that appear in the pattern It is E_Count.VOID if
-         it cannot be determined from the pattern off-line.
+         The number of columns that appear in the pattern 
+         
+         E_Count.VOID => it cannot be determined from the pattern off-line.
 
       .column_n_increment_by_lexeme_length 
 
          If the column number increment is proportional to the length of the
-         lexeme which is matched, then this variable contains the factor. It
-         is E_Count.VOID if there is no relation between lexeme length and
-         column number increment.
+         lexeme which is matched, then this variable contains the factor. 
+
+         E_Count.VOID => if there is no relation between lexeme length and
+                         column number increment.
     """
     def __init__(self, Result, CodecTrafoInfo, SM):
-        self.column_n_increment                  = CountInfo.get_real(Result.column_n_increment)
-        self.line_n_increment                    = CountInfo.get_real(Result.line_n_increment)
-        self.column_index                        = CountInfo.get_real(Result.column_index, 
+        self.column_n_increment                  = LineColumnCount.get_real(Result.column_n_increment)
+        self.line_n_increment                    = LineColumnCount.get_real(Result.line_n_increment)
+        self.column_index                        = LineColumnCount.get_real(Result.column_index, 
                                                                       ValueOfVirginity=E_Count.VOID)
-        self.grid_step_n                         = CountInfo.get_real(Result.grid_step_n)
-        self.column_n_increment_by_lexeme_length = CountInfo.get_real(Count.column_n_increment_by_lexeme_length)
-        self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
-        self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
+        self.grid_step_n                         = LineColumnCount.get_real(Result.grid_step_n)
+        self.column_n_increment_by_lexeme_length = LineColumnCount.get_real(Count.column_n_increment_by_lexeme_length)
+        self.line_n_increment_by_lexeme_length   = LineColumnCount.get_real(Count.line_n_increment_by_lexeme_length)
+        self.grid_step_size_by_lexeme_length     = LineColumnCount.get_real(Count.grid_step_size_by_lexeme_length)
 
         if CodecTrafoInfo is not None and CodecTrafoInfo.variable_character_sizes_f():
             self._consider_variable_character_sizes(SM, CodecTrafoInfo)
@@ -60,7 +63,7 @@ class CountInfo:
         Given a pattern as a state machine 'SM' this function analyses the 
         increments of line and column numbers. Depending on whether those 
         values can be determined from the state machine or only during run-
-        time, a CountInfo object is provided.
+        time, a LineColumnCount object is provided.
         
         NOTES _____________________________________________________________________
 
@@ -126,7 +129,7 @@ class CountInfo:
             Count.grid_step_size_by_lexeme_length <<= \
                     _get_grid_step_size_by_lexeme_length(SM, CounterDB)
 
-        return CountInfo(tracer.result, CodecTrafoInfo, SM)
+        return LineColumnCount(tracer.result, CodecTrafoInfo, SM)
 
     @staticmethod
     def get_real(Object, ValueOfVirginity=0):

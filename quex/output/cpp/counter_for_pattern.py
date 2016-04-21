@@ -45,7 +45,7 @@ def get(ThePattern, ShiftF=True):
     depending on how many '\n' it matches at runtime. These considerations
     where done by means of 
 
-      quex.engine.state_machine.character_counter.CountInfo.from_StateMachine(...)
+      quex.engine.state_machine.character_counter.LineColumnCount.from_StateMachine(...)
 
     It is called inside the 'prepare_count_info()' member function of the
     pattern at the time when it is communicated to the 'Mode' object from the
@@ -58,6 +58,9 @@ def get(ThePattern, ShiftF=True):
     that the 'prepare_count_info()' function has not been called for it.  
     ---------------------------------------------------------------------------
     """
+    if ThePattern is None:
+        default_counter_f = True
+        text              = Lng.DEFAULT_COUNTER_CALL()
     
     assert type(ShiftF) == bool
 
@@ -73,14 +76,14 @@ def get(ThePattern, ShiftF=True):
     return do_CountInfo(ThePattern.count_info(), ShiftF)
 
 def do_CountInfo_from_StateMachine(SM, CounterDb, BeginOfLinePreContextF=False):
-    count_info = character_counter.CountInfo.from_StateMachine(SM, CounterDb, 
+    count_info = character_counter.LineColumnCount.from_StateMachine(SM, CounterDb, 
                                                                BeginOfLinePreContextF, 
                                                                Setup.buffer_codec)
     default_counting_f, \
     counter_code        = do_CountInfo(count_info, ShiftF=True)
     return counter_code
 
-@typed(counter=character_counter.CountInfo)
+@typed(counter=character_counter.LineColumnCount)
 def do_CountInfo(counter, ShiftF=True):
     """RETURN: [0] Verdict
                [1] CounterCode

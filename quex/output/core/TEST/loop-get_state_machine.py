@@ -20,13 +20,14 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
-                                                         CountInfo
+from   quex.input.files.parser_data.counter       import LineColumnCount, \
+                                                         CountAction
 from   quex.engine.state_machine.core             import StateMachine  
 from   quex.engine.misc.interval_handling         import NumberSet, \
                                                          NumberSet_All
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.loop_counter                   import LoopCountOpFactory
+from   quex.engine.loop_counter                   import LoopCountOpFactory, \
+                                                         CountInfo
 import quex.output.core.loop                      as     loop
 from   quex.blackboard                            import E_CharacterCountType, \
                                                          setup as Setup
@@ -54,7 +55,8 @@ def get_setup(L0, L1, FSM0, FSM1, FSM2):
     #               -- both first transitions 'touch' the borders of the loop.
     #               -- sm2 has only one transition.
     cmap = [
-        CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.COLUMN, 0, NumberSet.from_range(L0, L1)),
+        CountInfo(dial_db.new_incidence_id(), NumberSet.from_range(L0, L1), 
+                  CountAction(E_CharacterCountType.COLUMN, 0)),
     ]
 
     # Generate State Machine that does not have any intersection with 
@@ -81,10 +83,10 @@ def get_setup(L0, L1, FSM0, FSM1, FSM2):
 if "Plain" in sys.argv:
     # No parallel state machines
     test([
-        CountInfo(0, E_CharacterCountType.COLUMN,     0, NumberSet.from_range(0,    0x10)),
-        CountInfo(1, E_CharacterCountType.LINE,       1, NumberSet.from_range(0x20, 0x30)),
-        CountInfo(2, E_CharacterCountType.GRID,       2, NumberSet.from_range(0x40, 0x50)),
-        CountInfo(3, E_CharacterCountType.WHITESPACE, 3, NumberSet.from_range(0x60, 0x70)),
+        CountInfo(0, NumberSet.from_range(0,    0x10), CountAction(E_CharacterCountType.COLUMN,     0)),
+        CountInfo(1, NumberSet.from_range(0x20, 0x30), CountAction(E_CharacterCountType.LINE,       1)),
+        CountInfo(2, NumberSet.from_range(0x40, 0x50), CountAction(E_CharacterCountType.GRID,       2)),
+        CountInfo(3, NumberSet.from_range(0x60, 0x70), CountAction(E_CharacterCountType.WHITESPACE, 3)),
     ])
 
 elif "SMX" in sys.argv:
@@ -128,7 +130,7 @@ elif "Both" in sys.argv:
     #        that lie partly in L and partly outside L
     L = NumberSet.from_range(0x40, 0x80)
     cmap = [
-        CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.COLUMN, 0, L)
+        CountInfo(dial_db.new_incidence_id(), L, CountAction(E_CharacterCountType.COLUMN, 0))
     ]
 
     sm  = StateMachine()

@@ -34,10 +34,8 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    # descr = counter.parse_line_column_counter(sh)
     try:    
-        descr = counter.parse_line_column_counter(sh)
-        pass
+        descr = LineColumnCount.from_FileHandle(sh)
 
     except EndOfStreamException:
         error.log("End of file reached while parsing 'counter' section.", sh, DontExitF=True)

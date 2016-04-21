@@ -5,7 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.regular_expression.construct     import Pattern
 from   quex.input.code.base                        import SourceRef_VOID
 from   quex.engine.misc.interval_handling          import NumberSet, Interval
-from   quex.engine.loop_counter                    import ParserDataIndentation
+from   quex.engine.loop_counter                    import IndentationCount
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.misc.interval_handling          import NumberSet, Interval
 from   quex.output.core.variable_db                import variable_db
@@ -31,7 +31,7 @@ def test(TestStr, ISetup, BufferSize=1024):
     txt = create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, TokenQueueF=True)
     compile_and_run(Language, txt)
 
-indent_setup = ParserDataIndentation(SourceRef_VOID)
+indent_setup = IndentationCount(SourceRef_VOID)
 
 def get_Pattern(ValueList):
     return Pattern.from_character_set(NumberSet([ Interval(ord(x)) for x in ValueList ]))

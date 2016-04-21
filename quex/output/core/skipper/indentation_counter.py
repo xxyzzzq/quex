@@ -4,7 +4,6 @@ from   quex.engine.operations.operation_list        import Op
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.loop_counter                     import LoopCountOpFactory
-from   quex.engine.state_machine.character_counter  import CountInfo
 import quex.output.core.loop                        as     loop
 from   quex.blackboard                              import Lng, \
                                                            E_IncidenceIDs, \
@@ -152,8 +151,7 @@ def _add_pair(psml, SmOriginal, Name):
     incidence_id = dial_db.new_incidence_id()
 
     # Disconnect from machines being used elsewhere.
-    sm = SmOriginal.clone()
-    sm.set_id(incidence_id)
+    sm = SmOriginal.clone(StateMachineId=incidence_id)
 
     code = [ 
         Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)) 

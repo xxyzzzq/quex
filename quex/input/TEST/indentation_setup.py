@@ -29,9 +29,8 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    #descr = counter.parse_indentation(sh)
     try:    
-        descr = counter.parse_indentation(sh)
+        descr = IndentationCount.from_FileHandle(sh)
     except EndOfStreamException:
         error.log("End of file reached while parsing 'indentation' section.", sh, DontExitF=True)
 
