@@ -6,23 +6,23 @@ from StringIO import StringIO
 from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
-from   quex.input.files.parser_data.counter        import LineColumnCount_Default
 from   quex.input.files.mode                       import PatternActionInfo, IncidenceDB
 from   quex.input.regular_expression.auxiliary     import PatternShorthand
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.regular_expression.exception     import RegularExpressionException
 from   quex.input.code.core                        import CodeTerminal
+from   quex.engine.counter                         import LineColumnCount_Default
 import quex.engine.state_machine.transformation.core  as     bc_factory
-from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.analyzer.door_id_address_label  import dial_db
+from   quex.engine.analyzer.door_id_address_label  import DoorID, \
+                                                          dial_db
 from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.analyzer.terminal.factory       import TerminalFactory
+from   quex.engine.misc.string_handling            import blue_print
+from   quex.engine.misc.tools                      import all_isinstance
 import quex.output.core.variable_db                as     variable_db
 from   quex.output.core.variable_db                import VariableDB
 from   quex.output.core.dictionary                 import db
 import quex.output.core.state_router               as     state_router_generator
-from   quex.engine.misc.string_handling            import blue_print
-from   quex.engine.misc.tools                      import all_isinstance
 import quex.output.cpp.core                        as     cpp_generator
 #
 import quex.blackboard as blackboard
