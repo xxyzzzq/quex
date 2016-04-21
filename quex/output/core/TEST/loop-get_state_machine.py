@@ -20,7 +20,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.input.files.parser_data.counter       import LineColumnCount, \
+from   quex.engine.counter                        import LineColumnCount, \
                                                          CountAction
 from   quex.engine.state_machine.core             import StateMachine  
 from   quex.engine.misc.interval_handling         import NumberSet, \

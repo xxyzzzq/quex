@@ -12,7 +12,7 @@ from   quex.input.code.base                        import CodeFragment
 from   quex.output.core.base                       import do_state_router
 from   quex.engine.state_machine.core              import StateMachine
 from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
-from   quex.input.files.parser_data.counter        import LineColumnCount_Default
+from   quex.engine.counter                         import LineColumnCount_Default
 from   quex.input.regular_expression.construct     import Pattern
 import quex.engine.analyzer.engine_supply_factory  as     engine
 import quex.engine.state_machine.transformation.core             as     bc_factory

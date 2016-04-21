@@ -1,5 +1,5 @@
 from   quex.input.code.core                       import CodeTerminal
-from   quex.input.files.parser_data.counter       import LineColumnCount, \
+from   quex.engine.counter                        import LineColumnCount, \
                                                          IndentationCount, \
                                                          CountAction, \
                                                          count_operation_db_without_reference, \
