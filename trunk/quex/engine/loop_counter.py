@@ -1,7 +1,9 @@
 from   quex.input.code.core                       import CodeTerminal
-from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
-                                                         ParserDataIndentation, \
-                                                         CountInfo
+from   quex.input.files.parser_data.counter       import LineColumnCount, \
+                                                         IndentationCount, \
+                                                         CountAction, \
+                                                         count_operation_db_without_reference, \
+                                                         count_operation_db_with_reference
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools                     import typed
@@ -14,19 +16,35 @@ from   quex.blackboard import E_CharacterCountType, \
 from   itertools   import izip, chain
 from   collections import defaultdict
 
+from   copy import copy
 
-def _get_all_character_set(*DbList):
-    result = NumberSet()
-    for db in DbList:
-        for character_set in db.itervalues():
-            result.unite_with(character_set)
-    return result
+class CountInfo(object):
+    __slots__ = ("incidence_id", "character_set", "count_op_info")
 
-def _is_admissible(db, DefaultChar, AllCharSet, Bad):
-    if   len(db) != 0:                                  return False
-    elif Bad is not None and Bad.contains(DefaultChar): return False
-    elif AllCharSet.contains(DefaultChar):              return False
-    else:                                               return True
+    @typed(CountOpInfo=CountAction, CharacterSet=NumberSet)
+    def __init__(self, IncidenceId, CharacterSet, CountOpInfo):
+        self.incidence_id  = IncidenceId
+        self.character_set = CharacterSet 
+        self.count_op_info = CountOpInfo
+
+    @property
+    def cc_type(self):
+        return self.count_op_info.cc_type
+
+    @property
+    def parameter(self):
+        return self.count_op_info.value
+
+    def get_OpList(self, ColumnCountPerChunk):
+        if ColumnCountPerChunk is None:
+            return count_operation_db_without_reference[self.cc_type](self.parameter)
+        else:
+            return count_operation_db_with_reference[self.cc_type](self.parameter, 
+                                                                   ColumnCountPerChunk)
+
+    def _get_OpList_with_reference_pointer(self):
+        CC_Type   = self.count_op_info.cc_type
+        Parameter = self.count_op_info.value
 
 class LoopCountOpFactory:
     """________________________________________________________________________
@@ -37,10 +55,10 @@ class LoopCountOpFactory:
 
     ___________________________________________________________________________
     """
-    def __init__(self, CounterDb, CMap, InputPName, CharacterSet):
-        self.counter_db      = CounterDb
+    def __init__(self, CMap, CharacterSet):
+        ## self.counter_db   = CounterDb # is LineColumnCount/IndentationCount
         self.__map           = CMap
-        self.input_p_name    = InputPName
+        ## self.input_p_name = InputPName
         self.__character_set = CharacterSet
 
         self.__on_begin         = None
@@ -52,32 +70,30 @@ class LoopCountOpFactory:
         self.door_id_on_bad_indentation = None
 
     @staticmethod
-    @typed(CounterDb=ParserDataLineColumn, CharacterSet=NumberSet)
-    def from_ParserDataLineColumn(CounterDb, CharacterSet, InputPName):
+    @typed(CounterDb=LineColumnCount, CharacterSet=NumberSet)
+    def from_LineColumnCount(CounterDb, CharacterSet, InputPName):
         """Use NumberSet_All() if all characters shall be used.
         """
         cmap = [
-            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
+            CountInfo(dial_db.new_incidence_id(), intersection, info)
             for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
 
-        return LoopCountOpFactory(CounterDb, cmap, InputPName, CharacterSet) 
+        return LoopCountOpFactory(cmap, CharacterSet) 
 
     @staticmethod
-    @typed(ISetup=ParserDataIndentation, CounterDb=ParserDataLineColumn)
-    def from_ParserDataIndentation(ISetup, CounterDb, InputPName, DoorIdBad):
+    @typed(ISetup=IndentationCount, CounterDb=LineColumnCount)
+    def from_IndentationCount(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        result = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, 
-                                                              ISetup.whitespace_character_set.get(), 
-                                                              InputPName)
+        result = LoopCountOpFactory.from_LineColumnCount(ISetup.whitespace_character_set.get())
         # Up to now, the '__map' contains only character sets which intersect with the 
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()
         if bad_character_set is not None:
             result.__map.append(
-                CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.BAD, None, 
-                          bad_character_set)
+                CountInfo(dial_db.new_incidence_id(), bad_character_set,
+                          CountAction(E_CharacterCountType.BAD, None))
             )
         result.door_id_on_bad_indentation = DoorIdBad
         return result
@@ -89,17 +105,23 @@ class LoopCountOpFactory:
         """Searches for CountInfo objects where the character set intersects
         with the 'SubSet' given as arguments. 
 
-        YIELDS: [0] SubSet that intersects
-                [1] Incidence Id related to the command
+        YIELDS: CountInfo where the trigger set intersects with SubSet
         """
-        db = defaultdict(NumberSet)
         for ci in self.__map:
-            common = SubSet.intersection(ci.character_set)
-            if not common.is_empty:
-                db[ci.incidence_id].unite_with(common)
+            if not SubSet.has_intersection(ci.character_set): continue
+            yield ci
 
-        for incidence_id, number_set in db.iteritems():
-            yield incidence_id, number_set
+    def op_list_for_sub_set(self, SubSet):
+        """Searches for 'SubSet' in the counting map and returns the operation
+        list that relates to it.
+
+        RETURNS: list of Op-s.
+                 None, if SubSet is not a subset of any.
+        """
+        for ci in self.__map:
+            if ci.character_set.is_superset(SubSet): 
+                return copy(ci.get_OpList())
+        return None
 
     def get_incidence_id_map(self):
         """RETURNS: A list of pairs: (character_set, incidence_id) 
@@ -209,4 +231,16 @@ class LoopCountOpFactory:
                 Op.ColumnCountReferencePSet(pointer) 
             ]
 
+def _get_all_character_set(*DbList):
+    result = NumberSet()
+    for db in DbList:
+        for character_set in db.itervalues():
+            result.unite_with(character_set)
+    return result
+
+def _is_admissible(db, DefaultChar, AllCharSet, Bad):
+    if   len(db) != 0:                                  return False
+    elif Bad is not None and Bad.contains(DefaultChar): return False
+    elif AllCharSet.contains(DefaultChar):              return False
+    else:                                               return True
 

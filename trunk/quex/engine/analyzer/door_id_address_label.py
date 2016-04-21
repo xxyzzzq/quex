@@ -74,7 +74,8 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def transition_block(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
     @staticmethod                        
-    def incidence(IncidenceId):            return DoorID(dial_db.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.ACCEPTANCE)
+    def incidence(IncidenceId):            return DoorID(dial_db.map_incidence_id_to_state_index(IncidenceId), 
+                                                         E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                        
     def bipd_return(IncidenceId):     return DoorID(dial_db.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.BIPD_RETURN)
     @staticmethod                        

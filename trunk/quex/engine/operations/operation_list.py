@@ -151,6 +151,10 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         return Op(E_Op.StoreInputPosition, PreContextID, PositionRegister, Offset)
     
     @staticmethod
+    def RestoreInputPosition(PositionRegister):
+        return Op(E_Op.RestoreInputPosition, PositionRegister)
+    
+    @staticmethod
     def PreContextOK(PreContextID):
         return Op(E_Op.PreContextOK, PreContextID)
     
@@ -456,6 +460,8 @@ def __configure():
     #
     c(E_Op.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
                                               (E_R.InputP,r), (E_R.PreContextFlags,r), (E_R.PositionRegister,w,1)) # Argument '1' --> sub_id_reference
+    c(E_Op.RestoreInputPosition,             (               "position_register"),
+                                              (E_R.InputP,w), (E_R.PositionRegister,r,1)) # Argument '1' --> sub_id_reference
     c(E_Op.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_element"),
                                               (E_R.PreContextFlags, r), (E_R.PositionRegister, r), (E_R.ThreadOfControl, w), 
                                               (E_R.InputP, r+w))
@@ -483,6 +489,7 @@ def __configure():
                                               (E_R.PathIterator,w))
     c(E_Op.RouterByLastAcceptance,           RouterContent, 
                                               (E_R.AcceptanceRegister,r), (E_R.InputP,w), (E_R.ThreadOfControl,w))
+                                             # TODO: Add "(E_R.PositionRegister,w,*)"
     c(E_Op.RouterOnStateKey,                 RouterOnStateKeyContent, 
                                               (E_R.TemplateStateKey,r), (E_R.PathIterator,r), (E_R.ThreadOfControl,w))
     c(E_Op.TemplateStateKeySet,              ("state_key",),

@@ -1,6 +1,6 @@
-from   quex.input.code.base import SourceRef, CodeFragment, SourceRef_VOID
-from   quex.blackboard import Lng
+from   quex.input.code.base   import SourceRef, CodeFragment, SourceRef_VOID
 from   quex.engine.misc.tools import typed
+from   quex.blackboard        import Lng
 
 from   copy import deepcopy
 

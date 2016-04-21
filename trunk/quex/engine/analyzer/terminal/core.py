@@ -31,9 +31,9 @@ from   copy  import copy
 #__________________________________________________________________________
 class Terminal(Processor):
     @typed(Name=(str,unicode), Code=CodeTerminal)
-    def __init__(self, Code, Name=""):
+    def __init__(self, Code, Name, IncidenceId=None):
         Processor.__init__(self, index.get(), Entry())
-        self.__incidence_id = None
+        self.__incidence_id = IncidenceId
         self.__code         = Code
         self.__name         = Name
         self.__requires_goto_loop_entry_f = False

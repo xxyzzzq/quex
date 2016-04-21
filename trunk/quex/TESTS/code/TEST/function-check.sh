@@ -1,14 +1,43 @@
 # Find all function definitions 
-function_list=$(mktemp)
-grep -shoe "^ *def *[a-zA-Z_0-9]*(" /home/fschaef/prj/quex/trunk/quex -r --include "*.py" \
+function_list=tmp0.txt # $(mktemp)
+function_mentioned=tmp1.txt # $(mktemp)
+# | awk '{ print "\"\\b" $2 "\""; }' \
+
+grep -sHoe "^ *def *[a-zA-Z_0-9]*(" $QUEX_PATH -r --include "*.py" \
 | awk '{ print $2; }' \
 | sort -u \
-| tr -d "(" > $function_list
+| tr -d "(" \
+> $function_list
 
-function_mentioned=$(mktemp)
-grep -sHIne "\b[a-zA-Z_0-9]*(" /home/fschaef/prj/quex/trunk/quex -r --include "*.py" \
-| tr -d "(" > $function_mentioned
+wc -w $function_list
 
+grep -she "\\b[a-zA-Z_0-9]*(" $QUEX_PATH -r --include "*.py" \
+| grep -ve  "^ *def *" \
+| sort -u \
+> $function_mentioned
+# | tr -d "(" \
+# | awk '{ print "^" $0 "\\b"; }' \
+
+wc -w $function_mentioned
+
+function_unused=$(mktemp)
+# grep -v -f $function_mentioned $function_list 
+# > $function_unused
+# | sort -u \
+# | awk '{ print "^ *def *" $0 " *("; }' 
+
+wc -w $function_unused
+cat $function_unused
+
+echo "Functions defined but never used (no output is good output): {"
+grep -sHIne -f $function_unused   
+echo "}"
+
+# rm $function_unused
+# rm $function_mentioned
+# rm $function_list
+
+function unused {
 # 1: Print function names which only appear once (in their definition)
 #    --> 'U function name'
 # 2: Print function names which are only used in the file itself.
@@ -44,14 +73,15 @@ gawk 'BEGIN {                                                         \
       }' > $issues
 
 while read array; do
-    if [[ "${array:0}" = "U" ]]; then
-        grep -shoe ${array:1} $QUEX_PATH -r --include "*.py" \
+    if [[ "${array[0]}" = "U" ]]; then
+        grep -shoe ${array[1]} $QUEX_PATH -r --include "*.py" \
         | awk '{ print $0 " function defined but not used."; }'
     else
-        grep -shoe ${array:1} $QUEX_PATH -r --include "*.py" \
+        grep -shoe ${array[1]} $QUEX_PATH -r --include "*.py" \
         | awk '{ print $0 " solely locally used function does not begin with '_'"; }'
     fi
 
 done < $issue
+}
 
 

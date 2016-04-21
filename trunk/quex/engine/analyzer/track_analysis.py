@@ -312,11 +312,11 @@ class _Trace(object):
             self.__acceptance_trace = [] 
         else:
             self.__acceptance_trace = [ 
-                  _AcceptInfo(PreContextID        = E_PreContextIDs.NONE, 
-                             AcceptanceID         = E_IncidenceIDs.MATCH_FAILURE, 
-                             AcceptingStateIndex  = InitStateIndex, 
-                             PathSincePositioning = [InitStateIndex], 
-                             TransitionNSincePositioning = 0)              
+                  _AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
+                              AcceptanceID         = E_IncidenceIDs.MATCH_FAILURE, 
+                              AcceptingStateIndex  = InitStateIndex, 
+                              PathSincePositioning = [InitStateIndex], 
+                              TransitionNSincePositioning = 0)              
             ]
         self.__storage_db       = {}
         self.__state_index      = InitStateIndex

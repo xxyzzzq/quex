@@ -6,7 +6,7 @@ from StringIO import StringIO
 from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
-from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
+from   quex.input.files.parser_data.counter        import LineColumnCount_Default
 from   quex.input.files.mode                       import PatternActionInfo, IncidenceDB
 from   quex.input.regular_expression.auxiliary     import PatternShorthand
 import quex.input.regular_expression.engine        as     regex
@@ -400,7 +400,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         support_begin_of_line_f |= pattern.pre_context_trivial_begin_of_line_f
 
     for pattern, action_str in pattern_action_list:
-        pattern.prepare_count_info(CounterSetupLineColumn_Default(), CodecTrafoInfo=None)
+        pattern.prepare_count_info(LineColumnCount_Default(), CodecTrafoInfo=None)
         pattern.mount_post_context_sm()
         pattern.mount_pre_context_sm()
         pattern.cut_character_list(signal_character_list(Setup))

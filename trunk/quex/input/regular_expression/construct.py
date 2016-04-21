@@ -2,7 +2,7 @@
 from   quex.input.code.base                                      import SourceRef_VOID, \
                                                                         SourceRef
 from   quex.engine.state_machine.core                            import StateMachine
-from   quex.engine.state_machine.character_counter               import CountInfo
+from   quex.engine.state_machine.character_counter               import LineColumnCount
 import quex.engine.state_machine.construction.setup_post_context as     setup_post_context
 import quex.engine.state_machine.construction.setup_pre_context  as     setup_pre_context
 import quex.engine.state_machine.algorithm.beautifier            as     beautifier
@@ -118,9 +118,9 @@ class Pattern(object):
         # If the pre-context is 'trivial begin of line', then the column number
         # starts counting at '1' and the column number may actually be set
         # instead of being added.
-        self.__count_info = CountInfo.from_StateMachine(self.__sm, CounterDb, 
-                                                        self.pre_context_trivial_begin_of_line_f, 
-                                                        CodecTrafoInfo)
+        self.__count_info = LineColumnCount.from_StateMachine(self.__sm, CounterDb, 
+                                                              self.pre_context_trivial_begin_of_line_f, 
+                                                              CodecTrafoInfo)
         return self.__count_info
 
     def count_info(self):                          

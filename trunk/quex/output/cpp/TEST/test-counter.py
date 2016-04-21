@@ -36,7 +36,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine                       as     core
 import quex.input.files.counter                                   as     counter_parser
-from   quex.input.files.parser_data.counter                       import CounterSetupLineColumn_Default
+from   quex.input.files.parser_data.counter                       import LineColumnCount_Default
 from   quex.engine.loop_counter                                   import LoopCountOpFactory
 from   quex.engine.misc.interval_handling                         import NumberSet, Interval, NumberSet_All
 import quex.engine.state_machine.transformation.core              as     bc_factory
@@ -147,7 +147,7 @@ def get_test_application(counter_db, ReferenceP, CT):
         Setup.buffer_codec_set(bc_factory.do(codec), LexatomSizeInBytes=1)
 
     # (*) Generate Code 
-    ccfactory = LoopCountOpFactory.from_ParserDataLineColumn(counter_db, 
+    ccfactory = LoopCountOpFactory.from_LineColumnCount(counter_db, 
                                                          Setup.buffer_codec.source_set,
                                                          Lng.INPUT_P())
     counter_function_name, \
@@ -206,7 +206,7 @@ def counter_db_wo_reference_p():
     """
     fh = StringIO(spec_txt)
     fh.name        = "<string>"
-    return counter_parser.parse_line_column_counter(fh)
+    return LineColumnCount.from_FileHandle(fh)
 
 fields  = sys.argv[1].split("-")
 codec   = fields[0]
@@ -217,7 +217,7 @@ if without_reference_p_f:
     counter_db  = counter_db_wo_reference_p()
     reference_p = False
 else:
-    counter_db = CounterSetupLineColumn_Default()
+    counter_db = LineColumnCount_Default()
     # UTF16 and UTF8 are dynamic length codecs. reference pointer based 
     # is impossible.
     if codec in ("utf_8", "utf_16_le"): reference_p = False

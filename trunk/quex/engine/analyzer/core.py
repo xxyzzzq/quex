@@ -32,7 +32,7 @@ analyzer. In particular, acceptance and input position storages may be spared
 depending on the constitution of the state machine.
 
 _______________________________________________________________________________
-(C) 2010-2013 Frank-Rene Schaefer
+(C) 2010-2016 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
 _______________________________________________________________________________
 """
@@ -163,7 +163,7 @@ class Analyzer:
                 if not self.state_db[state_index].transition_map.has_drop_out(): continue
                 cl = EngineType.create_DropOut(state)
                 self.drop_out.entry.enter_OpList(E_StateIndices.DROP_OUT, 
-                                                      state_index, cl)
+                                                 state_index, cl)
                                                       
             self.__position_register_map = None
 

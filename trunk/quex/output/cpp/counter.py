@@ -52,7 +52,7 @@ def get(CCFactory, Name):
     door_id_return = dial_db.new_door_id()
     code,          \
     door_id_beyond = loop.do(CCFactory, 
-                             AfterBeyond     = [ Op.GotoDoorId(door_id_return) ],
+                             OnLoopExit      = [ Op.GotoDoorId(door_id_return) ],
                              LexemeEndCheckF = True,
                              EngineType      = engine.CHARACTER_COUNTER)
 
