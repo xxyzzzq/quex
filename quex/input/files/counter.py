@@ -3,12 +3,22 @@ import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.input.regular_expression.core             as     regular_expression
 from   quex.input.code.base                           import SourceRef, \
                                                              SourceRef_DEFAULT
+from   quex.engine.misc.tools                         import typed
+from   quex.engine.misc.interval_handling             import NumberSet
+from   quex.engine.counter                            import LineColumnCount, \
+                                                             IndentationCount, \
+                                                             CountAction, \
+                                                             CountActionMap, \
+                                                             cc_type_name_db, \
+                                                             cc_type_db
 import quex.engine.misc.error                         as     error
 from   quex.engine.misc.file_in                       import check, \
                                                              check_or_die, \
                                                              skip_whitespace, \
                                                              read_identifier, \
                                                              read_integer
+from   quex.blackboard import E_CharacterCountType, \
+                              setup as Setup
 
 class Receiver:
     @typed(sr=SourceRef)
@@ -60,10 +70,10 @@ class ReceiverLineColumnCount(Receiver):
     an instance of SpecifierCountActionMap.
     ____________________________________________________________________________
     """
-    @typed(sr=SourceRef, result=LineColumnCount)
+    @typed(sr=SourceRef)
     def __init__(self, sr, result):
         Receiver.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountOpMap)
-        self.result = result
+        self.result = LineColumnCount()
 
     def parse(self, fh, IndentationSetupF=False):
         return self._base_parse(fh, IndentationSetupF=False)
@@ -112,9 +122,9 @@ class ReceiverIndentationCount(Receiver):
     specified as 'newline suppressor'.
     ____________________________________________________________________________
     """
-    @typed(sr=SourceRef, result=IndentationCount)
+    @typed(sr=SourceRef)
     def __init__(self, sr, result):
-        self.result = result
+        self.result = IndentationCount()
 
         Receiver.__init__(self, sr, "Indentation counter", 
                           ("whitespace", "comment", "newline", "suppressor", "bad"))
@@ -249,6 +259,7 @@ class ReceiverIndentationCount(Receiver):
                       "Characters are occupied by other elements.", self.sr)
         return result
 
+
 class SpecifierCountActionMap(object):
     """Association of character sets with triggered count commands.
     ___________________________________________________________________________
@@ -269,7 +280,7 @@ class SpecifierCountActionMap(object):
         character sets and the count command entry. The '__else' contains the 
         count command which waits to be applied to the remaining set of characters.
         """
-        self.__map  = []
+        self.__map  = CountActionMap()
         self.__else = None
 
     def finalize(self, GlobalMin, GlobalMax, SourceReference):
@@ -311,41 +322,6 @@ class SpecifierCountActionMap(object):
         cc_type = cc_type_db[Identifier]
         self.check_intersection(cc_type, CharSet, sr)
         self.__map.append((CharSet, CountAction(cc_type, Value, sr)))
-
-    def get_count_commands(self, CharacterSet):
-        """Finds the count command for column, grid, and newline. This does NOT
-        consider 'chunk number per character'. The consideration is on pure 
-        character (unicode) level.
-        
-        RETURNS: [0] column increment (None, if none, -1 if undetermined)
-                 [1] grid step size   (None, if none, -1 if undetermined)
-                 [2] line increment   (None, if none, -1 if undetermined)
-
-            None --> no influence from CharacterSet on setting.
-            '-1' --> no distinct influence from CharacterSet on setting.
-                     (more than one possible).
-
-        NOTE: If one value not in (None, -1), then all others must be None.
-        """
-
-        db = {
-            E_CharacterCountType.COLUMN: None,
-            E_CharacterCountType.GRID:   None,
-            E_CharacterCountType.LINE:   None,
-        }
-
-        for character_set, entry in self.__map:
-            if entry.cc_type not in db: 
-                continue
-            elif character_set.is_superset(CharacterSet):
-                db[entry.cc_type] = entry.value
-                break
-            elif character_set.has_intersection(CharacterSet): 
-                db[entry.cc_type] = -1     
-
-        return db[E_CharacterCountType.COLUMN], \
-               db[E_CharacterCountType.GRID], \
-               db[E_CharacterCountType.LINE]
 
     def check_intersection(self, CcType, CharSet, sr):
         """Check whether the given character set 'CharSet' intersects with 
@@ -596,4 +572,23 @@ def _read_value_specifier(fh, Keyword, Default=None):
     elif Default is not None: return Default
 
     error.log("Missing integer or variable name after keyword '%s'." % Keyword, fh) 
+
+_LineColumnCount_Default = None
+def LineColumnCount_Default():
+    global _LineColumnCount_Default
+
+    if _LineColumnCount_Default is None:
+        specifier = SpecifierCountActionMap()
+        specifier.add(NumberSet(ord('\n')), "newline", 1, SourceRef_DEFAULT)
+        specifier.add(NumberSet(ord('\t')), "grid",    4, SourceRef_DEFAULT)
+        specifier.define_else("space",   1, SourceRef_DEFAULT)    # Define: "\else"
+        count_command_map = specifier.finalize(
+            Setup.buffer_codec.source_set.minimum(), 
+            Setup.buffer_codec.source_set.supremum(),             # Apply:  "\else"
+            SourceRef_DEFAULT) 
+
+        _LineColumnCount_Default = LineColumnCount(SourceRef_DEFAULT, 
+                                                   count_command_map)
+
+    return _LineColumnCount_Default
 
