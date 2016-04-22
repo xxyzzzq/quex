@@ -35,8 +35,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine                       as     core
-import quex.input.files.counter                                   as     counter_parser
-from   quex.engine.counter                                        import LineColumnCount_Default
+import quex.input.files.counter                                   as     counter_parser, \
+                                                                         LineColumnCount_Default
 from   quex.engine.loop_counter                                   import LoopCountOpFactory
 from   quex.engine.misc.interval_handling                         import NumberSet, Interval, NumberSet_All
 import quex.engine.state_machine.transformation.core              as     bc_factory

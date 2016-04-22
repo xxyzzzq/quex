@@ -19,21 +19,21 @@ from   collections import defaultdict
 from   copy import copy
 
 class CountInfo(object):
-    __slots__ = ("incidence_id", "character_set", "count_op_info")
+    __slots__ = ("incidence_id", "character_set", "count_action")
 
     @typed(CountOpInfo=CountAction, CharacterSet=NumberSet)
     def __init__(self, IncidenceId, CharacterSet, CountOpInfo):
         self.incidence_id  = IncidenceId
         self.character_set = CharacterSet 
-        self.count_op_info = CountOpInfo
+        self.count_action  = CountOpInfo
 
     @property
     def cc_type(self):
-        return self.count_op_info.cc_type
+        return self.count_action.cc_type
 
     @property
     def parameter(self):
-        return self.count_op_info.value
+        return self.count_action.value
 
     def get_OpList(self, ColumnCountPerChunk):
         if ColumnCountPerChunk is None:
@@ -42,17 +42,12 @@ class CountInfo(object):
             return count_operation_db_with_reference[self.cc_type](self.parameter, 
                                                                    ColumnCountPerChunk)
 
-    def _get_OpList_with_reference_pointer(self):
-        CC_Type   = self.count_op_info.cc_type
-        Parameter = self.count_op_info.value
-
 class LoopCountOpFactory:
     """________________________________________________________________________
     Produces Count Commands
 
     The factory is setup with basic parameters which are used later to produce
     count commands. 
-
     ___________________________________________________________________________
     """
     def __init__(self, CMap, CharacterSet):

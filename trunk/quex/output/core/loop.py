@@ -568,7 +568,7 @@ def _get_couple_terminals(SML_List):
         return op_list
 
     return [ 
-        Terminal(_op_list(info)
+        Terminal(_op_list(info),
                  "<LOOP COUPLE TERMINAL %i>" % info.couple_incidence_id, 
                  info.couple_incidence_id)
         for info in SML_list
