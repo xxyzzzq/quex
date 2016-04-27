@@ -85,6 +85,15 @@ class CountAction(namedtuple("CountAction", ("cc_type", "value", "sr"))):
     def __new__(self, CCType, Value, sr=None):
         return super(CountAction, self).__new__(self, CCType, Value, sr)
 
+    incidence_id_db = {}
+    def get_incidence_id(self):
+        key = (self.cc_type, self.value)
+        incidence_id = self.incidence_id_db.get(key)
+        if incidence_id is None:
+            incidence_id = dial_db.new_incidence_id()
+            self.incidence_id_db[key] = incidence_id
+        return incidence_id
+
 class CountActionMap(list):
     """Map: NumberSet --> CountAction
     """
@@ -123,7 +132,73 @@ class CountActionMap(list):
                db[E_CharacterCountType.GRID], \
                db[E_CharacterCountType.LINE]
 
-class LineColumnCount:
+    def column_grid_line_iterable_pruned(self, CharacterSet):
+        """Iterate over count command map. It is assumed that anything in the map
+        is 'valid'. 
+        """
+        considered_set = (E_CharacterCountType.COLUMN, 
+                          E_CharacterCountType.GRID, 
+                          E_CharacterCountType.LINE)
+        for character_set, info in self.__map:
+            if character_set.has_intersection(CharacterSet):
+                if info.cc_type not in considered_set: continue
+                yield character_set.intersection(CharacterSet), info
+
+    @typed(CharacterSet=NumberSet)
+    def get_column_number_per_chunk(self, CharacterSet):
+        """Considers the counter database which tells what character causes
+        what increment in line and column numbers. However, only those characters
+        are considered which appear in the CharacterSet. 
+
+        RETURNS: None -- If there is NO distinct column increment.
+                 >= 0 -- The increment of column number for every character
+                         from CharacterSet.
+        """
+        column_incr_per_character = None
+        number_set                = None
+        for character_set, info in self.column_grid_line_iterable_pruned(CharacterSet):
+            if info.cc_type != E_CharacterCountType.COLUMN: 
+                continue
+            elif column_incr_per_character is None:       
+                column_incr_per_character = info.value
+                number_set                = character_set
+            elif column_incr_per_character == info.value: 
+                number_set.unite_with(character_set)
+            else:
+                return None
+
+        if column_incr_per_character is None:
+            return None                       # TODO: return 0
+
+        # HERE: There is only ONE 'column_n_increment' command. It appears on
+        # the character set 'number_set'. If the character set is represented
+        # by the same number of chunks, than the column number per chunk is
+        # found.
+        if not Setup.buffer_codec.variable_character_sizes_f():
+            return column_incr_per_character
+
+        chunk_n_per_character = \
+            Setup.buffer_codec.lexatom_n_per_character(number_set) 
+        if chunk_n_per_character is None:
+            return None
+        else:
+            return float(column_incr_per_character) / chunk_n_per_character
+
+    def iterable_in_sub_set(self, SubSet):
+        """Searches for CountInfo objects where the character set intersects
+        with the 'SubSet' given as arguments. 
+
+        YIELDS: [0] NumberSet where the trigger set intersects with SubSet
+                [1] Related 'CountAction' object.
+        """
+        for character_set, count_action in self:
+            if not SubSet.has_intersection(character_set): continue
+            yield character_set, count_action
+
+class CountBase:
+    def get_state_machines(self): assert False
+         
+class LineColumnCount(CountBase):
     def __init__(self, SourceReference, CountActionMap=None):
         self.sr = SourceReference
         # During Parsing: The 'count_command_map' is specified later.
@@ -133,6 +208,9 @@ class LineColumnCount:
     def from_FileHandle(fh):
         container = LineColumnCount(SourceRef.from_FileHandle(fh))
         return ReceiverLineColumnCount(container).parse(fh)
+
+    def get_state_machines(self):
+        return []
 
     def consistency_check(self):
         self.count_command_map.check_grid_values_integer_multiples()
@@ -155,6 +233,13 @@ class IndentationCount(LineColumnCount):
     def from_FileHandle(fh):
         container = IndentationCount(SourceRef.from_FileHandle(fh))
         return ReceiverIndentationCount(container).parse(fh)
+
+    def get_state_machines(self):
+        return [ 
+            self.sm_newline.get(),
+            self.sm_newline_suppressor.get(),
+            self.sm_comment.get()
+        ]
 
     def consistency_check(self):
         LineColumnCount.consistency_check()

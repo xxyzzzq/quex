@@ -39,7 +39,7 @@ if "--hwut-info" in sys.argv:
 def test(cmap, SM_list=[]):
     Setup.buffer_codec.source_set = NumberSet_All()
     cc_factory = LoopCountOpFactory(cmap, NumberSet.from_range(0, 100))
-    sm         = loop._get_state_machine(cc_factory, SM_list, 
+    sm         = loop._get_state_machines(cc_factory, SM_list, 
                                          IidBeyond   = 8888, 
                                          IidBeyondRs = 7777, 
                                          IidLoop     = 6666)

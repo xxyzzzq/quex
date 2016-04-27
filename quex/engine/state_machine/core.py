@@ -798,6 +798,10 @@ class StateMachine(object):
 
         return result
 
+    def iterable_init_state_transitions(self):
+        for target_si, trigger_set in self.get_init_state().target_map.get_map().iteritems()
+            yield target_si, trigger_set
+
     def cut_first_transition(self, CloneStateMachineId=False):
         """Cuts the first transition and leaves the remaining states in place. 
         This solution is general(!) and it covers the case that there are 
@@ -833,7 +837,7 @@ class StateMachine(object):
             (trigger_set, self.clone_from_state_subset(target_si, 
                                                        list(successor_db[target_si]) + [target_si]),
                                                        cloned_sm_id)
-            for target_si, trigger_set in self.get_init_state().target_map.get_map().iteritems()
+            for target_si, trigger_set in self.iterable_init_state_transitions()
         ]
             
     def clean_up(self):
