@@ -101,7 +101,8 @@ from   quex.engine.operations.operation_list          import Op, \
 import quex.engine.state_machine.index                as     index
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 from   quex.engine.analyzer.door_id_address_label     import DoorID
-from   quex.engine.misc.tools                         import typed
+from   quex.engine.misc.tools                         import typed, \
+                                                             flatten_list_of_lists
 from   quex.engine.analyzer.terminal.core             import Terminal
 from   quex.engine.state_machine.core                 import StateMachine  
 from   quex.engine.analyzer.door_id_address_label     import dial_db
@@ -116,10 +117,9 @@ from   quex.blackboard import E_StateIndices, \
 
 from   collections import namedtuple
 
-class SmlInfo:
-    def __init__(self, TriggerSet, CountOpList, CoupleIncidenceId, PrunedSm):
-        self.trigger_set         = TriggerSet
-        self.count_op_list       = CountOpList
+class TailInfo:
+    def __init__(self, TheCountAction, CoupleIncidenceId, PrunedSm):
+        self.count_action        = CountAction
         self.couple_incidence_id = CoupleIncidenceId
         self.pruned_sm           = PrunedSm 
 
@@ -252,7 +252,7 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     
     return txt, DoorID.incidence(iid_loop_exit)
 
-def _get_state_machines(CcFactory, ParallelSmList, IidLoop):
+def _get_state_machines(TheCountBase, IidLoop):
     """Generate a state machine that implements the basic transitions for
     looping mount the parallel state machines. The loops are not closed, yet.
     Instead loop transitions end in terminals that return to the loop entry.
@@ -279,11 +279,25 @@ def _get_state_machines(CcFactory, ParallelSmList, IidLoop):
     input position, performs the loop action (given by CcFactory) and goes to
     the pruned state machine.
     """
-    if ParallelSmList is None: ParallelSmList = []
+    loop_sm,         \
+    loop_terminals,  \
+    appendix_sm_list = _prepare_basic_loop(TheCountBase, SmList, IidLoop) 
 
-    pure_L,  \
-    sml_list = _configure_parallel_state_machines(ParallelSmList, CcFactory, 
-                                                  IidLoop)
+    L = NumberSet.from_union_of_iterable(
+        x.character_set for x in TheCountBase.count_command_map
+    )
+
+    # (1) Get a state machine that contains all parallel state machines.
+    #
+    loop_map = _get_loop_map(L, SmList)
+
+    loop_sm, \
+    loop_terminals = _get_loop(loop_map)
+
+    appendix_sm_list, \
+    appendix_terminal_list = _get_appendices(loop_map, SmTerminalList)
+
+
     # All parallel state machines are pruned of the first transition and 
     # they accept by default 'IidLoop'.
     #
@@ -294,12 +308,6 @@ def _get_state_machines(CcFactory, ParallelSmList, IidLoop):
     #        '-----------'
     #
 
-    # (*) Transitions on 'PURE LOOP characters'.
-    # 
-    loop_sm = StateMachine.from_IncidenceIdMap(
-        (ci.trigger_set, ci.incidence_id)
-        for ci in CcFactory.iterable_in_sub_set(pure_L)
-    )
     #            .------.
     #       ---->| Loop |
     #            |      |-------> accept A
@@ -309,13 +317,6 @@ def _get_state_machines(CcFactory, ParallelSmList, IidLoop):
 
     # (*) Transitions to Parallel State Machines.
     #
-    # Upon drop-out the position after the first lexatom is restored and 
-    # the loop CONTINUES.
-    init_si = loop_sm.init_state_index
-    for first_trigger_set, couple_incidence_id, pruned_sm in sml_list:
-        ti = loop_sm.add_transition(init_si, first_trigger_set, 
-                                    AcceptanceF=True)
-        loop_sm.states[i].mark_acceptance_id(couple_incidence_id)
 
     #           .------.
     #      ---->| Loop |
@@ -330,55 +331,178 @@ def _get_state_machines(CcFactory, ParallelSmList, IidLoop):
 
     # (*) Loop Exit on unconcerned characters/lexatoms.
     #
-    _mount_loop_exit_on_init_state(sm, IidLoopExit)
 
-    #           .------.
-    #      ---->| Loop |
-    #           |      |-------> accept A
-    #           |      |-------> accept B
-    #           |      |-------> accept C
-    #           :      :            :
-    #           |      |-------> accept CoupleIncidenceA
-    #           |      |-------> accept CoupleIncidenceB
-    #           |      |-------> accept CoupleIncidenceC
-    #           :______:            :
-    #           | else |-------> accept IidLoopExit
-    #           '------'
     return sm, sml_list
 
-def _configure_parallel_state_machines(ParallelSmList, CcFactory, IidLoop):
+def _get_loop_map(L, SmList):
+    """The loop map tells about the behavior of the loop itself in terms
+    of a list of tuples:
+
+           [0] Character set that triggers to terminal.
+           [1] Incidence Id of terminal that is triggered by character set.
+           [2] CountAction
+           [3] Couple state index, 'None' if there is no couple state.
+
+    A 'couple state' is a state in the appendix state machine which is 
+    entered when the first transition triggers.
+    """
+    # A loop works on single characters. Thus, a cut needs to happen that
+    # separates the first transition from the rest of the state machines.
+    # The connection between the loop and the remaining state machine is
+    # established by 'couple terminals'. Those terminals perform the count
+    # action and transit to the cut of state.
+
+    # First Transition Characters: 
+    #     [0] Character set to trigger to a couple terminal.
+    #     [1] CountAction
+    #     [2] IncidenceId of the couple terminal.
+    #     [3] appendix state machine
+    result = flatten_list_of_lists(
+        (character_set, ca, dial_db.new_incidence_id(), appendix_sm)
+        for character_set, ca in TheCountBase.iterable_in_sub_set(trigger_set)
+        for trigger_set, pruned_sm in sm.cut_first_transition(CloneStateMachineId=True)
+        for sm in SmList
+    )
+
+    pure_L = L.clone()
+    for character_set, ca, couple_incidence_id, appendix_sm in couple_incidence_id_map:
+        pure_L.subtract(character_set)
+
+    # Normal Loop Characters: 
+    #     [0] Character set to trigger to a terminal.
+    #     [1] CountAction.
+    #     [2] IncidenceId of the terminal.
+    #     [3] 'None' indicating: no appendix sm, no 'goto couple state'.
+    result.extend(
+        (character_set, ca, ca.get_incidence_id(), None)
+        for character_set, ca in TheCountBase.iterable_in_sub_set(pure_L)
+    )
+
+    return result
+
+@typed(TheCountBase=CountBase)
+def _prepare_basic_loop(TheCountBase, IidLoop):
     """Considers the list of state machines which need to be mounted to the
     loop. 'L' is the complete set of lexatoms which 'loop'. 
 
-    RETURNS: [0] Pure L,   the subset of 'L' which are NOT first lexatoms of 
-                           any state machine.
-             [1] SML_list, list of SmlInfo-s.
+    RETURNS: [0] Loop state machine, matches on one character.
+             [1] List of appendix state machine, i.e. those state machines
+                 that match on patterns, but are mounted on the loop.
+             [2] List of loop terminals:
+                 -- performing count actions
+                 -- goto loop re-entry or to appendix state machines.
+
+    Loop state machine
     """
-    L        = CcFactory.loop_character_set()
-    sml_list = []  # information about 'SML'
-    for sm in ParallelSmList:
-        original_sm_id = sm.get_id() # Clones MUST have the same state machine id!
-        # Iterate of 'first transition, remaining state machine' list
-        for first_trigger_set, cloned_pruned_sm in sm.cut_first_transition(CloneStateMachineId=True):
-            assert_covered_by_L(first_trigger_set, L)
-            # [AIRL] Accept at init state: IidLoop.
-            # => Upon drop-out input position is restored (position where 
-            #    'IidLoop' was accepted) and loop continues. 
-            pruned_sm.get_init_state().set_acceptance()
-            pruned_sm.get_init_state().mark_acceptance_id(IidLoop)
-            sml_list.extend(
-                SmlInfo(TriggerSet        = ci.character_set, 
-                        CountOpList       = ci.get_OpList(),
-                        CoupleIncidenceId = dial_db.new_incidence_id(),
-                        PrunedSm          = cloned_pruned_sm)
-                for ci in CcFactory.iterable_in_sub_set(first_trigger_set)
-            )
 
-    pure_L = L.clone()
-    for sml in sml_list:
-        pure_L.subtract(sml.trigger_set)
 
-    return pure_L, sml_list
+
+def _get_loop_state_machine(LoopMap, IidLoopExit):
+    """Construct a state machine that triggers only on one character. Actions
+    according the the triggered character are implemented using terminals which
+    are entered upon acceptance.
+
+                       .------.
+                  ---->| Loop |
+                       |      |-------> accept A
+                       |      |-------> accept B
+                       |      |-------> accept C
+                       :      :            :
+                       |      |-------> accept CoupleIncidenceA
+                       |      |-------> accept CoupleIncidenceB
+                       |      |-------> accept CoupleIncidenceC
+                       :______:            :
+                       | else |-------> accept IidLoopExit
+                       '------'
+
+    The loop terminals increase line and column counts according to the 
+    TheCountBase and the currently detected character. If no appendix state
+    machine is to be entered, the terminal directly re-enters the loop. Else,
+    the terminal gotos to the initial state of an appendix state machine.
+
+    RETURNS: [0] Loop state machine
+             [1] List of terminals directly related to loop
+    """
+    loop_sm = StateMachine.from_IncidenceIdMap(
+        (character_set, incidence_id)
+        for character_set, ca, incidence_id, appendix_sm in loop_map
+    )
+    universal_set = Setup.buffer_codec.source_set
+    remainder     = init_state.target_map.get_trigger_set_union_complement(universal_set)
+    init_state    = loop_sm.get_init_state()
+    init_state.add_transition(remainder, AcceptanceF=True)
+    init_state.mark_acceptance_id(IidLoopExit)
+
+    loop_terminal_list = [
+        _get_terminal(incidence_id, ca, couple_si)
+        for character_set, ca, incidence_id, appendix_sm in loop_map
+    ]
+
+    return loop_sm, loop_terminal_list
+
+def _get_appendix_state_machines(LoopMap, SmTerminalList, IidLoop):
+    """Parallel state machines are mounted to the loop by cutting the first
+    transition and implementing it in the loop. Upon acceptance of the first
+    character the according tail (appendix) of the state machine is entered.
+
+    RETURNS: [0] List of appendix state machines.
+             [1] Appendix terminals.
+    """
+    appendix_sm_list = [
+        appendix_sm
+        for character_set, ca, incidence_id, appendix_sm in loop_map
+    ]
+
+    # When an appendix state machine drops out, the position of the last loop
+    # character must be restored and the loop continues. This behavior is
+    # implemented using the usual 'acceptance mechanism': The init state of
+    # accepts 'incidence loop re-entry'. If at a later state the state machine
+    # drops out, the position of the last acceptance is restored and the 
+    # terminal 'loop re-entry' is entered. The loop continues after the last
+    # loop character.
+    for init_state in (sm.get_init_state() for sm in appendix_sm_list):
+        init_state.set_acceptance()
+        init_state.mark_acceptance_id(IidLoop)
+
+    appendix_terminal_list = [
+        terminal
+        for sm, terminal in SmTerminalList
+    ]
+
+    return appendix_sm_list, appendix_terminal_list
+
+def _prepare_appendix_sm(SmList, IidLoop):
+    """The parallel state machines are cut of their first transitions. The
+    first transitions are implemented in the loop state machine.
+    """
+    sm = _get_combined_state_machine(TheCountBase.get_state_machines())
+
+    for couple_state in sm.iterable_states_after_first_transition():
+        couple_state.set_acceptance()
+        couple_state.mark_acceptance_id(IidLoop)
+
+    return sm
+
+
+
+def _get_terminal(CountAction, TerminalIncidenceId, CoupleSi):
+    code = CountAction.get_OpList(ColumnNPerChunk) 
+
+    if CoupleSi is None:
+        # Terminal that just counts and goes back to the loop entry.
+        assert TerminalIncidenceId == CountAction.get_incidence_id()
+        code.append(
+            _get_loop_code(CountAction.cc_type, ColumnNPerChunk, 
+                           LexemeEndCheckF, IidLoop, IidLoopExit)
+        )
+    else:
+        # Terminal that transits to an appendix state machine.
+        code.append(
+             Op.GotoDoorId(DoorID.state_index(CoupleSi)) 
+        )
+
+    return Terminal(code, "<LOOP TERMINAL %i>" % TerminalIncidenceId,
+                    TerminalIncidenceId)
 
 def assert_covered_by_L(first_trigger_set, L):
     # First lexatoms, that are NOT loop lexatoms.
@@ -438,7 +562,6 @@ def _get_terminal_list(CcFactory, ParallelTerminalList,
 
     RETURNS: list of Terminal-s.
     """
-
     door_id_loop      = DoorID.incidence_id(IidLoop)
     door_id_loop_exit = DoorID.incidence_id(IidLoopExit)
 
@@ -470,28 +593,7 @@ def _get_terminal_list(CcFactory, ParallelTerminalList,
 
     return terminal_list
 
-def _get_loop_terminals(CcFactory, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoopExit): 
-    """CcFactory associates counting actions with NumberSet-s on which they
-    are triggered. This function implements the counting actions in Terminal-s.
-    Additionally, to the counting action the 'lexeme end check' operations may 
-    have to be appended. The incidence ids of the Terminals correspond to the
-    incidence ids mentioned in the CcFactory.
-
-    RETURNS: List of 'Terminal' objects.
-    """
-    def _op_list(CcFactory, X, get_appendix):
-        """Loop operations: (i)   Counting line and column numbers.
-                            (ii)  Lexeme end check, if required.
-                            (iii) Goto loop re-entry, or loop-exit.
-
-        Operation 'i' is determined by 'map_CharacterCountType_to_OpList()' and may be
-        an empty operation, if the counts are determined from lexeme length. Operations
-        'ii' and 'iii' are determined get 'get_appendix()' which is configured in the
-        calling function.
-        """
-        return   X.map_CharacterCountType_to_OpList(CcFactory.get_column_count_per_chunk()) \
-               + get_appendix(X.cc_type)
-
+def _get_loop_code(CC_Type, ColumnNPerChunk, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoopExit): 
     def _lexeme_end_check_with_delta_add(CC_Type):
         if CC_Type != E_CharacterCountType.COLUMN: 
             #   input_p != LexemeEnd ? --yes--> DoorIdLoopReEntry
@@ -503,9 +605,7 @@ def _get_loop_terminals(CcFactory, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoo
             #   --> DoorIdLoopExit
             return [
                 Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd),
-                Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                 CcFactory.get_column_count_per_chunk(), 
-                                                 False),
+                Op.ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerChunk, False),
                 Op.GotoDoorId(DoorIdLoopExit) 
             ]
 
@@ -525,18 +625,11 @@ def _get_loop_terminals(CcFactory, LexemeEndCheckF, DoorIdLoopReEntry, DoorIdLoo
 
     # Choose the function that generates the 'appendix' operations.
     if not LexemeEndCheckF: 
-        get_appendix = _no_lexeme_end_check
-    elif CcFactory.requires_reference_p():
-        get_appendix = _lexeme_end_check_with_delta_add
+        return _no_lexeme_end_check(CcType)
+    elif ColumnNPerChunk is not None:
+        return _lexeme_end_check_with_delta_add(CcType)
     else:
-        get_appendix = _lexeme_end_check
-
-    return [ 
-        Terminal(_op_list(x, get_appendix), 
-                 "<LOOP TERMINAL %i>" % i, 
-                 x.incidence_id())
-        for i, x in enumerate(CcFactory.__map)
-    ] 
+        return _lexeme_end_check(CcType)
 
 def _get_couple_terminals(SML_List):
     """A 'couple terminal' connects the loop state machine to the pruned state

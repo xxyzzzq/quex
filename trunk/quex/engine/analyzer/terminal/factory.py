@@ -77,7 +77,7 @@ class TerminalFactory:
         #            coding negligence.
         text = []
         if ThePattern.bipd_sm is not None:
-            TerminalFactory.__bipd_entry_and_return(text, ThePattern)
+            TerminalFactory.do_bipd_entry_and_return(text, ThePattern)
 
         text.extend([
             self.__counter_code(ThePattern),
@@ -185,7 +185,7 @@ class TerminalFactory:
         return lexeme_begin_f, terminating_zero_f
 
     @staticmethod
-    def __bipd_entry_and_return(txt, ThePattern):
+    def do_bipd_entry_and_return(txt, ThePattern):
         """(This is a very seldom case) After the pattern has matched, one needs 
         to determine the end of the lexeme by 'backward input position detection' 
         (bipd). Thus,

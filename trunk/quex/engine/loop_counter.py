@@ -22,10 +22,10 @@ class CountInfo(object):
     __slots__ = ("incidence_id", "character_set", "count_action")
 
     @typed(CountOpInfo=CountAction, CharacterSet=NumberSet)
-    def __init__(self, IncidenceId, CharacterSet, CountOpInfo):
+    def __init__(self, IncidenceId, CharacterSet, TheCountAction):
         self.incidence_id  = IncidenceId
         self.character_set = CharacterSet 
-        self.count_action  = CountOpInfo
+        self.count_action  = TheCountAction
 
     @property
     def cc_type(self):
@@ -41,6 +41,7 @@ class CountInfo(object):
         else:
             return count_operation_db_with_reference[self.cc_type](self.parameter, 
                                                                    ColumnCountPerChunk)
+
 
 class LoopCountOpFactory:
     """________________________________________________________________________
