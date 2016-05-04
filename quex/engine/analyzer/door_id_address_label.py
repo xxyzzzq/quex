@@ -152,7 +152,6 @@ class DialDB(object):
         print "#Gotoed Address: %s" % Address
         print_callstack()
 
-
     def clear(self):
         # Database: [DoorID] [Address] [Label] 
         # 
