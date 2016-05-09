@@ -3,7 +3,7 @@ from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.operations.operation_list        import Op
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
-from   quex.engine.loop_counter                     import LoopCountOpFactory
+from   quex.engine.loop_counter                     import CountInfoMap
 import quex.output.core.loop                        as     loop
 from   quex.blackboard                              import Lng, \
                                                            E_IncidenceIDs, \
@@ -101,7 +101,7 @@ def do(Data, TheAnalyzer):
     # 'whitespace' --> normal counting
     # 'bad'        --> goto bad character indentation handler
     # else         --> non-whitespace detected => handle indentation
-    ccfactory = LoopCountOpFactory.from_ParserDataIndentation(isetup, 
+    ccfactory = CountInfoMap.from_ParserDataIndentation(isetup, 
                                                               counter_db, 
                                                               Lng.INPUT_P(), 
                                                               DoorID.incidence(bad_indentation_iid))

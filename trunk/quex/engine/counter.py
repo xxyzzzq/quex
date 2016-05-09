@@ -19,6 +19,7 @@
 #______________________________________________________________________________                      
 
 from   quex.input.setup                           import NotificationDB
+from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.input.code.base                       import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT

@@ -101,6 +101,7 @@ from   quex.engine.operations.operation_list          import Op, \
 import quex.engine.state_machine.index                as     index
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 from   quex.engine.analyzer.door_id_address_label     import DoorID
+from   quex.engine.misc.interval_handling             import NumberSet
 from   quex.engine.misc.tools                         import typed, \
                                                              flatten_list_of_lists
 from   quex.engine.analyzer.terminal.core             import Terminal
@@ -116,13 +117,14 @@ from   quex.blackboard import E_StateIndices, \
                               Lng
 
 from   collections import namedtuple
+from   itertools   import chain
 
 class LoopElementInfo:
-    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmList):
-        self.character_set    = CharacterSet
-        self.count_action     = CountAction
-        self.incidence_id     = CoupleIncidenceId
-        self.appendix_sm_list = AppendixSmList 
+    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSm):
+        self.character_set = CharacterSet
+        self.count_action  = TheCountAction
+        self.incidence_id  = CoupleIncidenceId
+        self.appendix_sm   = AppendixSm 
 
     def add_appendix_sm(self, SM):
         if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
@@ -169,9 +171,12 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     During the 'loop' possible line/column count commands may be applied. 
     """
     assert EngineType is not None
+    iid_loop      = dial_db.new_incidence_id() # continue loop
+    iid_loop_exit = dial_db.new_incidence_id()
+
     event_handler = LoopEventHandlers(LexemeMaintainedF, CcFactory, OnLoopExit)
 
-    loop_map = _get_loop_map(L, SmList)
+    loop_map = _get_loop_map(TheCountMap, SmList, iid_loop_exit)
 
     loop_analyzer,      \
     loop_terminal_list, \
@@ -191,7 +196,7 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     
     return txt, DoorID.incidence(iid_loop_exit)
 
-def _get_loop_map(L, SmList):
+def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     """A loop map tells about the behavior of the core loop. It tells what
     needs to happen as a consequence to an incoming character. Two options:
 
@@ -202,27 +207,51 @@ def _get_loop_map(L, SmList):
 
     A LoopElementInfo consists of:
 
-       .character_set: Character set that triggers to terminal.
+       .character_set: Character set that triggers.
        .count_action:  Count action related to the character set.
+                       == None, if the character set causes 'loop exit'.
        .incidence_id:  Incidence Id of terminal that is triggered by character set.
-       .appendix_sm:   Combined list of appendix state machines
-                       --> single state machine.
-
+                       -- incidence id of count action terminal, or
+                       -- incidence id of couple terminal.
+       .appendix_sm:   Appendix state machine
+                       -- combined appendix state machines, or
+                       -- None, indicating that there is none.
     """
-    result = _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, 
-                                                               SmList)
+    L = TheCountMap.loop_character_set()
 
-    pure_L = L.clone()
-    for lei in result:
-        pure_L.subtract(lei.character_set)
+    # 'couple_list': Transitions to 'couple terminals' 
+    #                => connect to appendix state machines
+    couple_list = _get_LoopElementInfo_list_parallel_state_machines(TheCountMap, 
+                                                                    SmList)
 
-    result.extend(
-        _get_LoopElementInfo_list_plain(TheCountBase, pure_L)
+    L_couple = NumberSet.from_union_of_iterable(
+        lei.trigger_set for lei in couple_list
     )
 
+    # 'plain_list': Transitions to 'normal terminals' 
+    #               => perform count action and loop.
+    L_plain    = L.difference(L_couple)
+    plain_list = _get_LoopElementInfo_list_plain(TheCountMap, L_plain)
+
+    # 'L_exit': Transition to exit
+    #           => remaining characters cause exit.
+    L_loop = NumberSet.from_union_of_iterable(
+        x.character_set for x in chain(couple_list, plain_list)
+    )
+    universal_set = Setup.buffer_codec.source_set
+    L_exit        = L_loop.get_complement(universal_set)
+    exit_list     = [
+        LoopElementInfo(L_exit, None, IidLoopExit, None)
+    ]
+
+    result = couple_list + plain_list + exit_list
+
+    assert not any(lei is None for lei in result)
+    assert not any(lei.character_set is None for lei in result)
+    assert not any(lei.incidence_id is None for lei in result)
     return result
 
-def _get_LoopElementInfo_list_plain(TheCountBase, pure_L):
+def _get_LoopElementInfo_list_plain(TheCountBase, L_pure):
     """RETURNS: list of LoopElementInfo-s.
 
     The list defines the loop behavior for characters which are not transits
@@ -233,9 +262,10 @@ def _get_LoopElementInfo_list_plain(TheCountBase, pure_L):
          [2] IncidenceId of the CountAction.
          [3] 'None' indicating: no appendix sm, no 'goto couple state'.
     """
+    assert L_pure is not None
     return [
         LoopElementInfo(character_set, ca, ca.get_incidence_id(), None)
-        for character_set, ca in TheCountBase.iterable_in_sub_set(pure_L)
+        for character_set, ca in TheCountBase.iterable_in_sub_set(L_pure)
     ]
 
 def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
@@ -246,7 +276,7 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
     The 'first transition' is mounted on the loop state machine triggering an
     acceptance that causes a transit to the appendix state machine. 
 
-    RETURNS: list of LoopElementInfo elements for the first transition.
+    RETURNS: list of LoopElementInfo-s 
     """
     def iterable(SmList):
         """YIELDS: [0] Character Set
@@ -261,17 +291,29 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
                 for character_set, ca in TheCountBase.iterable_in_sub_set(trigger_set):
                     yield character_set, ca, appendix_sm
 
+    def unique(SmList):
+        """RETURNS: list of state machines, where no state machine appears
+                    more than once.
+        """
+        result   = []
+        done_set = set()
+        for sm in SmList:
+            if sm.get_id() in done_set: continue
+            done_set.add(sm.get_id())
+            result.append(sm)
+        return result
+
     # The tuples reported by 'iterable()' may contain overlapping character
     # sets. That is, their may be multiple parallel state machines that trigger
-    # on the same characters in a first transition. The related appendix state
-    # machines are combined to a single state machine.
+    # on the same characters in a first transition. 
     #
-    # 'pre_result' = list of non-overlapping character sets associated with a
-    # list of related appendix state machines.
-    pre_result = []
+    distinct = [] # list of [0] Character Set
+    #                       [1] Count Action related to [0]
+    #                       [2] List of appendix state machines related [0]
+    # All character sets [0] in the distinct list are NON-OVERLAPPING.
     for character_set, ca, appendix_sm in iterable(SmList):
         remainder = character_set
-        for previous in pre_result:
+        for previous in distinct:
             intersection = character_set.intersection(previous.character_set)
             if intersection.is_empty(): 
                 continue
@@ -279,14 +321,14 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
                 previous.add_appendix_sm(appendix_sm)
             else:
                 previous.character_set.subtract(intersection)
-                pre_result.append(
+                distinct.append(
                     (intersection, ca, previous.appendix_sm_list + [appendix_sm])
                 )
             remainder.subtract(intersection)
             if remainder.is_empty(): break
 
         if not remainder.is_empty():
-            pre_result.append(
+            distinct.append(
                 (remainder, ca, [appendix_sm])
             )
 
@@ -294,8 +336,8 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
     # sets into a single combined appendix state machine.
     return [
         LoopElementInfo(lei.character_set, ca, dial_db.new_incidence_id(), 
-                        _get_combined_state_machine(appendix_sm_list))
-        for character_set, ca, appendix_sm_list in pre_result
+                        _get_combined_state_machine(unique(appendix_sm_list)))
+        for character_set, ca, appendix_sm_list in distinct
     ]
 
 def _get_loop(LoopMap, ColumnNPerChunk, LexemeEndCheckF, EngineType, 
@@ -322,19 +364,10 @@ def _get_loop(LoopMap, ColumnNPerChunk, LexemeEndCheckF, EngineType,
              [2] Incidence id of terminal that goes back to loop rentry.
              [3] Incidence id of terminal that exits loop rentry.
     """
-    iid_loop      = dial_db.new_incidence_id() # continue loop
-    iid_loop_exit = dial_db.new_incidence_id()
-
     # Loop StateMachine
     loop_sm = StateMachine.from_IncidenceIdMap(
-        (lei.character_set, lei.incidence_id)
-        for lei in loop_map
+        (lei.character_set, lei.incidence_id) for lei in loop_map
     )
-    universal_set = Setup.buffer_codec.source_set
-    remainder     = init_state.target_map.get_trigger_set_union_complement(universal_set)
-    init_state    = loop_sm.get_init_state()
-    init_state.add_transition(remainder, AcceptanceF=True)
-    init_state.mark_acceptance_id(iid_loop_exit)
 
     # Code Transformation
     loop_sm = Setup.buffer_codec.transform(loop_sm)

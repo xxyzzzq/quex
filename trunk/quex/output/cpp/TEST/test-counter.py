@@ -37,7 +37,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine                       as     core
 import quex.input.files.counter                                   as     counter_parser, \
                                                                          LineColumnCount_Default
-from   quex.engine.loop_counter                                   import LoopCountOpFactory
+from   quex.engine.loop_counter                                   import CountInfoMap
 from   quex.engine.misc.interval_handling                         import NumberSet, Interval, NumberSet_All
 import quex.engine.state_machine.transformation.core              as     bc_factory
 import quex.engine.state_machine.transformation.utf16_state_split as     utf16_state_split
@@ -147,7 +147,7 @@ def get_test_application(counter_db, ReferenceP, CT):
         Setup.buffer_codec_set(bc_factory.do(codec), LexatomSizeInBytes=1)
 
     # (*) Generate Code 
-    ccfactory = LoopCountOpFactory.from_LineColumnCount(counter_db, 
+    ccfactory = CountInfoMap.from_LineColumnCount(counter_db, 
                                                          Setup.buffer_codec.source_set,
                                                          Lng.INPUT_P())
     counter_function_name, \

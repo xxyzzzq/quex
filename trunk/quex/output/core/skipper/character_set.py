@@ -1,4 +1,4 @@
-from   quex.engine.loop_counter                   import LoopCountOpFactory
+from   quex.engine.loop_counter                   import CountInfoMap
 from   quex.engine.operations.operation_list      import Op
 
 import quex.output.core.loop                      as     loop
@@ -69,7 +69,7 @@ def do(Data, TheAnalyzer):
 
     reload_state = TheAnalyzer.reload_state
 
-    ccfactory    = LoopCountOpFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()) 
+    ccfactory    = CountInfoMap.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()) 
         
     result,        \
     door_id_beyond = loop.do(ccfactory,
