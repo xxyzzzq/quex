@@ -42,8 +42,11 @@ class CountInfo(object):
             return count_operation_db_with_reference[self.cc_type](self.parameter, 
                                                                    ColumnCountPerChunk)
 
+    def __str__(self):
+        return "(incidence_id: %s; character_set: %s; count_action: %s)" \
+               % (self.incidence_id, self.character_set, self.count_action)
 
-class LoopCountOpFactory:
+class CountInfoMap:
     """________________________________________________________________________
     Produces Count Commands
 
@@ -75,14 +78,14 @@ class LoopCountOpFactory:
             for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
 
-        return LoopCountOpFactory(cmap, CharacterSet) 
+        return CountInfoMap(cmap, CharacterSet) 
 
     @staticmethod
     @typed(ISetup=IndentationCount, CounterDb=LineColumnCount)
     def from_IndentationCount(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        result = LoopCountOpFactory.from_LineColumnCount(ISetup.whitespace_character_set.get())
+        result = CountInfoMap.from_LineColumnCount(ISetup.whitespace_character_set.get())
         # Up to now, the '__map' contains only character sets which intersect with the 
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()
@@ -105,7 +108,7 @@ class LoopCountOpFactory:
         """
         for ci in self.__map:
             if not SubSet.has_intersection(ci.character_set): continue
-            yield ci
+            yield SubSet.intersection(ci.character_set), ci.count_action
 
     def op_list_for_sub_set(self, SubSet):
         """Searches for 'SubSet' in the counting map and returns the operation

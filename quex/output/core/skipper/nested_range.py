@@ -7,7 +7,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.operations.operation_list        import Op
 import quex.engine.state_machine.index              as     sm_index
 from   quex.engine.state_machine.core               import StateMachine
-from   quex.engine.loop_counter                     import LoopCountOpFactory
+from   quex.engine.loop_counter                     import CountInfoMap
 from   quex.engine.misc.interval_handling           import NumberSet_All
 from   quex.engine.analyzer.door_id_address_label   import __nice, \
                                                            dial_db
@@ -64,7 +64,7 @@ def get_skipper(TheAnalyzer, OpenerSequence, CloserSequence, OnSkipRangeOpen, Do
     psml             = _get_state_machine_vs_terminal_list(CloserSequence, 
                                                            OpenerSequence,
                                                            CounterDb, DoorIdAfter)
-    count_op_factory = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, 
+    count_op_factory = CountInfoMap.from_ParserDataLineColumn(CounterDb, 
                                                                     NumberSet_All(), 
                                                                     Lng.INPUT_P()) 
     result,          \

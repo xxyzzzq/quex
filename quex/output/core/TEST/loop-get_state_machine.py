@@ -26,7 +26,7 @@ from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.misc.interval_handling         import NumberSet, \
                                                          NumberSet_All
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.loop_counter                   import LoopCountOpFactory, \
+from   quex.engine.loop_counter                   import CountInfoMap, \
                                                          CountInfo
 import quex.output.core.loop                      as     loop
 from   quex.blackboard                            import E_CharacterCountType, \
@@ -34,19 +34,51 @@ from   quex.blackboard                            import E_CharacterCountType, \
 
 if "--hwut-info" in sys.argv:
     print "Loop: Base state machine."
-    print "CHOICES: Plain, SMX, SML, Both;"
+    print "CHOICES: Plain, OnlyAppendix, Both, None;"
 
-def test(cmap, SM_list=[]):
+def test(ci_list, SM_list=[]):
     Setup.buffer_codec.source_set = NumberSet_All()
-    cc_factory = LoopCountOpFactory(cmap, NumberSet.from_range(0, 100))
-    sm         = loop._get_state_machines(cc_factory, SM_list, 
-                                         IidBeyond   = 8888, 
-                                         IidBeyondRs = 7777, 
-                                         IidLoop     = 6666)
-    print "#_____________________________________________________________"
-    print sm.get_string(Option="hex", NormalizeF=True)
+    ci_map   = CountInfoMap(ci_list, NumberSet.from_range(0, 100))
+    iid_loop_exit = dial_db.new_incidence_id()
+    loop_map = loop._get_loop_map(ci_map, SM_list, iid_loop_exit) 
 
-    # print sm.get_graphviz_string(Option="hex")
+    general_checks(loop_map)
+    print_this(loop_map)
+
+def general_checks(loop_map):
+    print "#_[ Checks ]__________________________________________________"
+    print
+    print "character sets do not intersect",
+    all_set = NumberSet()
+    for lei in loop_map:
+        assert lei.character_set is not None
+        assert not lei.character_set.has_intersection(all_set)
+        all_set.unite_with(lei.character_set)
+    print "[ok]"
+
+    print "count actions do not appear more than once",
+    count_action_couple_set = set()
+    count_action_plain_set  = set()
+    exit_exists_f           = False
+    for lei in loop_map:
+        if lei.count_action is None: 
+            assert lei.appendix_sm is None
+            exit_exists_f = True
+        elif lei.appendix_sm is None:
+            assert lei.incidence_id not in count_action_plain_set
+            count_action_plain_set.add(lei.incidence_id)
+        else:
+            assert lei.incidence_id not in count_action_couple_set
+            count_action_couple_set.add(lei.incidence_id)
+    print "[ok]"
+    print "exit character set exits: [%s]" % exit_exists_f
+    print
+
+def print_this(loop_map):
+    print "#_[ Print ]___________________________________________________"
+    print
+    for lei in sorted(loop_map, key=lambda x: x.character_set.minimum()):
+        print lei.character_set.get_string(Option="hex"), lei.incidence_id, lei.count_action
 
 def get_setup(L0, L1, FSM0, FSM1, FSM2):
     # SPECIALITIES: -- sm0 and sm1 have an intersection between their first 
@@ -54,7 +86,7 @@ def get_setup(L0, L1, FSM0, FSM1, FSM2):
     #               -- sm1 transits further upon acceptance.
     #               -- both first transitions 'touch' the borders of the loop.
     #               -- sm2 has only one transition.
-    cmap = [
+    ci_list = [
         CountInfo(dial_db.new_incidence_id(), NumberSet.from_range(L0, L1), 
                   CountAction(E_CharacterCountType.COLUMN, 0)),
     ]
@@ -78,7 +110,7 @@ def get_setup(L0, L1, FSM0, FSM1, FSM2):
     si = sm2.add_transition(sm2.init_state_index, FSM2, AcceptanceF=True)
     sm2.states[si].mark_acceptance_id(dial_db.new_incidence_id())
 
-    return cmap, [sm0, sm1, sm2]
+    return ci_list, [sm0, sm1, sm2]
 
 if "Plain" in sys.argv:
     # No parallel state machines
@@ -97,14 +129,14 @@ elif "SMX" in sys.argv:
     # First Trans. sm1:              0x1A-0x1F
     # First Trans. sm2:                         0x20
     #
-    cmap, sm_list = get_setup(0x0F, 0x10, 
-                              NumberSet.from_range(0x10, 0x1B), 
-                              NumberSet.from_range(0x1A, 0x20), 
-                              NumberSet.from_range(0x20, 0x21))
+    ci_list, sm_list = get_setup(0x0F, 0x10, 
+                                 NumberSet.from_range(0x10, 0x1B), 
+                                 NumberSet.from_range(0x1A, 0x20), 
+                                 NumberSet.from_range(0x20, 0x21))
 
     for sm in sm_list:
-        test(cmap, [sm])
-    test(cmap, sm_list)
+        test(ci_list, [sm])
+    test(ci_list, sm_list)
 
 elif "SML" in sys.argv:
     # Three state machines (intersect completely on first transition with loop):
@@ -114,14 +146,14 @@ elif "SML" in sys.argv:
     # First Trans. sm1:              0x1A-0x1F
     # First Trans. sm2:                         0x20
     #
-    cmap, sm_list = get_setup(0x00, 0x21, 
+    ci_list, sm_list = get_setup(0x00, 0x21, 
                               NumberSet.from_range(0x10, 0x1B), 
                               NumberSet.from_range(0x1A, 0x20), 
                               NumberSet.from_range(0x20, 0x21))
 
     for sm in sm_list:
-        test(cmap, [sm])
-    test(cmap, sm_list)
+        test(ci_list, [sm])
+    test(ci_list, sm_list)
 
 elif "Both" in sys.argv:
     # State machine that:
@@ -129,7 +161,7 @@ elif "Both" in sys.argv:
     #   (ii) Each transition from the init state triggers on trigger sets 
     #        that lie partly in L and partly outside L
     L = NumberSet.from_range(0x40, 0x80)
-    cmap = [
+    ci_list = [
         CountInfo(dial_db.new_incidence_id(), L, CountAction(E_CharacterCountType.COLUMN, 0))
     ]
 
@@ -143,4 +175,4 @@ elif "Both" in sys.argv:
     ac1 = sm.add_transition(ti1, NumberSet.from_range(0xC, 0xD), AcceptanceF=True)
     sm.states[ac1].mark_acceptance_id(iid)
 
-    test(cmap, [sm])
+    test(ci_list, [sm])

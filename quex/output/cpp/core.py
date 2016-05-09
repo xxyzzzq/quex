@@ -6,7 +6,7 @@ from   quex.engine.analyzer.terminal.core                 import Terminal
 from   quex.output.core.variable_db                       import variable_db
 import quex.output.core.base                              as     generator
 from   quex.engine.state_machine.engine_state_machine_set import EngineStateMachineSet
-from   quex.engine.loop_counter                           import LoopCountOpFactory
+from   quex.engine.loop_counter                           import CountInfoMap
 from   quex.engine.misc.tools                             import all_isinstance, \
                                                                  typed
 import quex.output.cpp.counter                            as     counter
@@ -117,7 +117,7 @@ def do_default_counter(Mode):
         return []
 
     dial_db.clear()
-    ccfactory = LoopCountOpFactory.from_ParserDataLineColumn(Mode.counter_db, 
+    ccfactory = CountInfoMap.from_ParserDataLineColumn(Mode.counter_db, 
                                                              Setup.buffer_codec.source_set, 
                                                              Lng.INPUT_P())
 

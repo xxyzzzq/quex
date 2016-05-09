@@ -799,7 +799,7 @@ class StateMachine(object):
         return result
 
     def iterable_init_state_transitions(self):
-        for target_si, trigger_set in self.get_init_state().target_map.get_map().iteritems()
+        for target_si, trigger_set in self.get_init_state().target_map.get_map().iteritems():
             yield target_si, trigger_set
 
     def cut_first_transition(self, CloneStateMachineId=False):

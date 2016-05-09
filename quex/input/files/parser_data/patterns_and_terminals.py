@@ -4,7 +4,7 @@ from   quex.input.code.core                              import CodeTerminal, \
                                                                 CodeTerminalOnMatch, \
                                                                 CodeGeneratedBlock, \
                                                                 CodeGenerated
-from   quex.engine.loop_counter                          import LoopCountOpFactory
+from   quex.engine.loop_counter                          import CountInfoMap
 from   quex.engine.incidence_db                          import IncidenceDB
 from   quex.engine.analyzer.terminal.core                import Terminal
 from   quex.engine.analyzer.terminal.factory             import TerminalFactory
@@ -452,7 +452,7 @@ def _prepare_skip_character_set(ModeName, OptionsDb, CounterDb, IncidenceDb, MHI
     # Counting actions are added to the terminal automatically by the
     # terminal_factory. The only thing that remains for each sub-terminal:
     # 'goto skipper'.
-    ccfactory = LoopCountOpFactory.from_ParserDataLineColumn(CounterDb, total_set, 
+    ccfactory = CountInfoMap.from_ParserDataLineColumn(CounterDb, total_set, 
                                                              Lng.INPUT_P())
 
     new_ppt_list = [
