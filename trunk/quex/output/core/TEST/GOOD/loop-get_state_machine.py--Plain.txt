@@ -1,20 +1,18 @@
-#_____________________________________________________________
-init-state = 0L
-00000 
-     == [-oo, -001] [0010, 001F] [0030, 003F] [0050, 005F] [0070, oo]  ==> 00001
-     == [0000, 000F]  ==> 00002
-     == [0020, 002F]  ==> 00003
-     == [0040, 004F]  ==> 00004
-     == [0060, 006F]  ==> 00005
-    
-00001 A(8888)
-    
-00002 A(0)
-    
-00003 A(1)
-    
-00004 A(2)
-    
-00005 A(3)
-    
+
+
+
+#_[ Checks ]__________________________________________________
+
+character sets do not intersect [ok]
+count actions do not appear more than once [ok]
+appendix sm-ids are the same in loop map and sm list: [ok]
+exit character set exits: [True]
+#_[ Print ]___________________________________________________
+
+[-oo, -001] [0010, 001F] [0030, 003F] [0050, 005F] [0070, oo]  0 None
+
+[0000, 000F]  1 CountAction(cc_type=COLUMN, value=0, sr=None)
+[0020, 002F]  2 CountAction(cc_type=LINE, value=1, sr=None)
+[0040, 004F]  3 CountAction(cc_type=GRID, value=2, sr=None)
+[0060, 006F]  4 CountAction(cc_type=WHITESPACE, value=3, sr=None)
 

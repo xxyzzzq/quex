@@ -104,11 +104,18 @@ class CountInfoMap:
         """Searches for CountInfo objects where the character set intersects
         with the 'SubSet' given as arguments. 
 
-        YIELDS: CountInfo where the trigger set intersects with SubSet
+        YIELDS: [0] Character Set
+                [1] Count Action for character set
+                    = None, if no count action has been specified.
         """
+        remainder = SubSet.clone()
         for ci in self.__map:
             if not SubSet.has_intersection(ci.character_set): continue
             yield SubSet.intersection(ci.character_set), ci.count_action
+            remainder.subtract(ci.character_set)
+
+        if not remainder.is_empty():
+            yield remainder, None
 
     def op_list_for_sub_set(self, SubSet):
         """Searches for 'SubSet' in the counting map and returns the operation

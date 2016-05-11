@@ -191,7 +191,7 @@ class StateMachine(object):
                           ReplDbPreContext=pre_context_map, 
                           ReplDbAcceptance=pattern_id_map)
 
-    def clone_from_state_subset(self, InitStateIndex, StateIndexSet):
+    def clone_from_state_subset(self, InitStateIndex, StateIndexSet, StateMachineId=None):
         # Find for all states a replacement index
         replacement_db = dict(
             (si, state_machine_index.get()) for si in StateIndexSet
@@ -210,6 +210,7 @@ class StateMachine(object):
         for state in result.states.itervalues():
             state.target_map.replace_target_indices(replacement_db)
 
+        result.__id = StateMachineId
         return result
 
     def access_state_by_incidence_id(self, IncidenceId):
@@ -835,8 +836,8 @@ class StateMachine(object):
 
         return [
             (trigger_set, self.clone_from_state_subset(target_si, 
-                                                       list(successor_db[target_si]) + [target_si]),
-                                                       cloned_sm_id)
+                                                       list(successor_db[target_si]) + [target_si],
+                                                       cloned_sm_id))
             for target_si, trigger_set in self.iterable_init_state_transitions()
         ]
             

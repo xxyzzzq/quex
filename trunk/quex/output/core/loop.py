@@ -95,20 +95,21 @@ PROCEDURE:
 
     -- Setup 'store input reference' upon entry in all parallel state machines.
 """
-import quex.engine.analyzer.core                      as     analyzer_generator
-from   quex.engine.operations.operation_list          import Op, \
-                                                             OpList
-import quex.engine.state_machine.index                as     index
-import quex.engine.state_machine.algorithm.beautifier as     beautifier
-from   quex.engine.analyzer.door_id_address_label     import DoorID
-from   quex.engine.misc.interval_handling             import NumberSet
-from   quex.engine.misc.tools                         import typed, \
-                                                             flatten_list_of_lists
-from   quex.engine.analyzer.terminal.core             import Terminal
-from   quex.engine.state_machine.core                 import StateMachine  
-from   quex.engine.analyzer.door_id_address_label     import dial_db
-from   quex.output.core.variable_db                   import variable_db
-import quex.output.core.base                          as     generator
+import quex.engine.analyzer.core                          as     analyzer_generator
+from   quex.engine.state_machine.engine_state_machine_set import get_combined_state_machine
+from   quex.engine.operations.operation_list              import Op, \
+                                                                 OpList
+import quex.engine.state_machine.index                    as     index
+import quex.engine.state_machine.algorithm.beautifier     as     beautifier
+from   quex.engine.analyzer.door_id_address_label         import DoorID
+from   quex.engine.misc.interval_handling                 import NumberSet
+from   quex.engine.misc.tools                             import typed, \
+                                                                 flatten_list_of_lists
+from   quex.engine.analyzer.terminal.core                 import Terminal
+from   quex.engine.state_machine.core                     import StateMachine  
+from   quex.engine.analyzer.door_id_address_label         import dial_db
+from   quex.output.core.variable_db                       import variable_db
+import quex.output.core.base                              as     generator
 
 from   quex.blackboard import E_StateIndices, \
                               E_R, \
@@ -120,16 +121,20 @@ from   collections import namedtuple
 from   itertools   import chain
 
 class LoopElementInfo:
-    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSm):
-        self.character_set = CharacterSet
-        self.count_action  = TheCountAction
-        self.incidence_id  = CoupleIncidenceId
-        self.appendix_sm   = AppendixSm 
+    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId):
+        self.character_set  = CharacterSet
+        self.count_action   = TheCountAction
+        self.incidence_id   = CoupleIncidenceId
+        self.appendix_sm_id = AppendixSmId
 
     def add_appendix_sm(self, SM):
         if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
             return
         self.appendix_sm_list.append(SM)
+
+    def __repr__(self):
+        return "(%s, %s, %s, %s)" % \
+               (self.character_set, self.count_action, self.incidence_id, self.appendix_sm)
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, OnLoopExit=list)
 def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None, 
@@ -221,11 +226,12 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
 
     # 'couple_list': Transitions to 'couple terminals' 
     #                => connect to appendix state machines
-    couple_list = _get_LoopElementInfo_list_parallel_state_machines(TheCountMap, 
-                                                                    SmList)
+    couple_list,     \
+    appendix_sm_list = _get_LoopElementInfo_list_parallel_state_machines(TheCountMap, 
+                                                                         SmList)
 
     L_couple = NumberSet.from_union_of_iterable(
-        lei.trigger_set for lei in couple_list
+        lei.character_set for lei in couple_list
     )
 
     # 'plain_list': Transitions to 'normal terminals' 
@@ -249,7 +255,7 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     assert not any(lei is None for lei in result)
     assert not any(lei.character_set is None for lei in result)
     assert not any(lei.incidence_id is None for lei in result)
-    return result
+    return result, appendix_sm_list
 
 def _get_LoopElementInfo_list_plain(TheCountBase, L_pure):
     """RETURNS: list of LoopElementInfo-s.
@@ -303,6 +309,16 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
             result.append(sm)
         return result
 
+    def combined(appendix_sm_db, SmList):
+        sm_ulist = unique(SmList)
+        id_key   = tuple(sorted(list(set(sm.get_id() for sm in sm_ulist))))
+        entry = appendix_sm_db.get(id_key)
+        if entry is None:
+            entry = get_combined_state_machine(sm_ulist,
+                                               AlllowInitStateAcceptF=True)
+            appendix_sm_db[id_key] = entry
+        return entry.get_id()
+
     # The tuples reported by 'iterable()' may contain overlapping character
     # sets. That is, their may be multiple parallel state machines that trigger
     # on the same characters in a first transition. 
@@ -313,16 +329,16 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
     # All character sets [0] in the distinct list are NON-OVERLAPPING.
     for character_set, ca, appendix_sm in iterable(SmList):
         remainder = character_set
-        for previous in distinct:
-            intersection = character_set.intersection(previous.character_set)
+        for prev_character_set, prev_ca, prev_appendix_sm_list in distinct:
+            intersection = character_set.intersection(prev_character_set)
             if intersection.is_empty(): 
                 continue
-            elif intersection.is_equal(previous.character_set):
-                previous.add_appendix_sm(appendix_sm)
+            elif intersection.is_equal(prev_character_set):
+                prev_appendix_sm_list.append(appendix_sm)
             else:
-                previous.character_set.subtract(intersection)
+                prev_character_set.subtract(intersection)
                 distinct.append(
-                    (intersection, ca, previous.appendix_sm_list + [appendix_sm])
+                    (intersection, ca, prev_appendix_sm_list + [appendix_sm])
                 )
             remainder.subtract(intersection)
             if remainder.is_empty(): break
@@ -334,11 +350,13 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
 
     # Combine the appendix state machine lists which are related to character
     # sets into a single combined appendix state machine.
-    return [
-        LoopElementInfo(lei.character_set, ca, dial_db.new_incidence_id(), 
-                        _get_combined_state_machine(unique(appendix_sm_list)))
+    appendix_sm_db = {}
+    loop_map       = [
+        LoopElementInfo(character_set, ca, dial_db.new_incidence_id(), 
+                        combined(appendix_sm_db, appendix_sm_list))
         for character_set, ca, appendix_sm_list in distinct
     ]
+    return loop_map, appendix_sm_db.values()
 
 def _get_loop(LoopMap, ColumnNPerChunk, LexemeEndCheckF, EngineType, 
               ReloadStateExtern, EventHandler):

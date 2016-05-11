@@ -59,7 +59,7 @@ class EngineStateMachineSet:
         return state_machine_list, pre_context_sm_list, bipd_sm_list
 
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
-                               MarkNotSet=set()):
+                               MarkNotSet=set(), AlllowInitStateAcceptF=False):
     """Creates a DFA state machine that incorporates the paralell
        process of all pattern passed as state machines in 
        the StateMachine_List. Each origins of each state machine
@@ -80,9 +80,10 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
     if len(StateMachine_List) == 0:
         return None
 
-    def __check(Place, sm):
+    def __check(Place, sm, AlllowInitStateAcceptF):
         __check_on_orphan_states(Place, sm)
-        __check_on_init_state_not_acceptance(Place, sm)
+        if not AlllowInitStateAcceptF:
+            __check_on_init_state_not_acceptance(Place, sm)
 
     def __check_on_orphan_states(Place, sm):
         orphan_state_list = sm.get_orphaned_state_index_list()
@@ -111,16 +112,16 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
 
     # (2) setup all patterns in paralell 
     sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False) #, CloneF=False)
-    __check("Parallelization", sm)
+    __check("Parallelization", sm, AlllowInitStateAcceptF)
 
     # (4) determine for each state in the DFA what is the dominating original 
     #     state
     if FilterDominatedOriginsF: sm.filter_dominated_origins()
-    __check("Filter Dominated Origins", sm)
+    __check("Filter Dominated Origins", sm, AlllowInitStateAcceptF)
 
     # (3) convert the state machine to an DFA (paralellization created an NFA)
     sm = beautifier.do(sm)
-    __check("NFA to DFA, Hopcroft Minimization", sm)
+    __check("NFA to DFA, Hopcroft Minimization", sm, AlllowInitStateAcceptF)
     
     return sm
 

@@ -1,0 +1,123 @@
+
+
+
+#_[ Checks ]__________________________________________________
+
+character sets do not intersect [ok]
+count actions do not appear more than once [ok]
+appendix sm-ids are the same in loop map and sm list: [ok]
+exit character set exits: [True]
+
+#_[ Print ]___________________________________________________
+
+[-oo, 000F] [0040, oo]  4 None
+[0010, 001F]  5 CountAction(cc_type=COLUMN, value=0, sr=None) <appendix: 7>
+[0020, 003F]  6 CountAction(cc_type=COLUMN, value=0, sr=None)
+
+#_[ Appendix State Machines ]________________________________
+
+IncidenceId: 7
+init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 A(0)
+    
+
+
+
+
+
+#_[ Checks ]__________________________________________________
+
+character sets do not intersect [ok]
+count actions do not appear more than once [ok]
+appendix sm-ids are the same in loop map and sm list: [ok]
+exit character set exits: [True]
+
+#_[ Print ]___________________________________________________
+
+[-oo, 000F] [0040, oo]  7 None
+[0010, 001F] [0030, 003F]  6 CountAction(cc_type=COLUMN, value=0, sr=None)
+[0020, 002F]  8 CountAction(cc_type=COLUMN, value=0, sr=None) <appendix: 12>
+
+#_[ Appendix State Machines ]________________________________
+
+IncidenceId: 12
+init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 A(1)
+     == 'B' ==> 00000
+    
+
+
+
+
+
+#_[ Checks ]__________________________________________________
+
+character sets do not intersect [ok]
+count actions do not appear more than once [ok]
+appendix sm-ids are the same in loop map and sm list: [ok]
+exit character set exits: [True]
+
+#_[ Print ]___________________________________________________
+
+[-oo, 000F] [0040, oo]  9 None
+[0010, 002F]  6 CountAction(cc_type=COLUMN, value=0, sr=None)
+[0030, 003F]  10 CountAction(cc_type=COLUMN, value=0, sr=None) <appendix: 15>
+
+#_[ Appendix State Machines ]________________________________
+
+IncidenceId: 15
+init-state = 0L
+00000 A(2)
+    
+
+
+
+
+
+#_[ Checks ]__________________________________________________
+
+character sets do not intersect [ok]
+count actions do not appear more than once [ok]
+appendix sm-ids are the same in loop map and sm list: [ok]
+exit character set exits: [True]
+
+#_[ Print ]___________________________________________________
+
+[-oo, 000F] [0040, oo]  11 None
+[0010, 001F]  12 CountAction(cc_type=COLUMN, value=0, sr=None) <appendix: 22>
+[0020, 002F]  13 CountAction(cc_type=COLUMN, value=0, sr=None) <appendix: 26>
+[0030, 003F]  14 CountAction(cc_type=COLUMN, value=0, sr=None) <appendix: 28>
+
+#_[ Appendix State Machines ]________________________________
+
+IncidenceId: 22
+init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 A(0)
+    
+
+
+IncidenceId: 26
+init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 A(1)
+     == 'B' ==> 00000
+    
+
+
+IncidenceId: 28
+init-state = 0L
+00000 A(2)
+    
+
+
