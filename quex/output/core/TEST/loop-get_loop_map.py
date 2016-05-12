@@ -1,10 +1,6 @@
-# TEST: Generation of state machine based on a loop.
+# TEST: Generation of Loop Map
 #
-# The generation of a loop state machine happens based on a loop lexatom
-# set 'L' and optionally parallel state machines. As long as lexatoms in from 
-# the set 'L' appear, the loop continues. Lexatoms may also trigger a walk
-# along the parallel state machines, that may match and cause specific 
-# actions in the according terminals.
+# A 'loop map' associates characters with what has to happen when they occurr.
 #
 # This test investigates the generation of the state machines only under three
 # circumstances expressed as CHOICES:
@@ -41,7 +37,7 @@ NS_C = NumberSet.from_range(ord('C'), ord('C') + 1)
 NS_D = NumberSet.from_range(ord('D'), ord('D') + 1)
 
 if "--hwut-info" in sys.argv:
-    print "Loop: Base state machine."
+    print "Loop: Get Loop Map."
     print "CHOICES: Plain, AppendixNoI, AppendixI, Split;"
 
 def test(ci_list, SM_list=[]):
