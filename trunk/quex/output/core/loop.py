@@ -184,14 +184,12 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     loop_map = _get_loop_map(TheCountMap, SmList, iid_loop_exit)
 
     loop_analyzer,      \
-    loop_terminal_list, \
-    iid_loop,           \
-    iid_loop_exit       = _get_loop(loop_map, ColumnNPerChunk, 
-                                    LexemeEndCheckF, EngineType, 
-                                    ReloadStateExtern, EventHandler)
+    loop_terminal_list  = _get_loop_core(loop_map, iid_loop, iid_loop_exit, 
+                                         ColumnNPerChunk, LexemeEndCheckF, EngineType, 
+                                         ReloadStateExtern, EventHandler)
 
     appendix_analyzer_list, \
-    appendix_terminal_list  = _get_appendices(loop_map, iid_loop)
+    appendix_terminal_list  = _get_appendix_sm_list(loop_map, iid_loop)
 
     # (*) Generate Code ________________________________________________________
     #
@@ -358,8 +356,9 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
     ]
     return loop_map, appendix_sm_db.values()
 
-def _get_loop(LoopMap, ColumnNPerChunk, LexemeEndCheckF, EngineType, 
-              ReloadStateExtern, EventHandler):
+def _get_loop_core(LoopMap, IidLoop, IidLoopExit, 
+                   ColumnNPerChunk, LexemeEndCheckF, EngineType, 
+                   ReloadStateExtern, EventHandler):
     """Construct a state machine that triggers only on one character. Actions
     according the the triggered character are implemented using terminals which
     are entered upon acceptance.
@@ -382,37 +381,54 @@ def _get_loop(LoopMap, ColumnNPerChunk, LexemeEndCheckF, EngineType,
              [2] Incidence id of terminal that goes back to loop rentry.
              [3] Incidence id of terminal that exits loop rentry.
     """
+    analyzer,      \
+    door_id_loop   = _get_loop_analyzer(LoopMap, IidLoop)
+
+    terminal_list, \
+    iid_loop       = _get_loop_terminals(LoopMap, IidLoop, door_id_loop, IidLoopExit, 
+                                         ColumnNPerChunk, LexemeEndCheckF)
+
+    return loop_analyzer, loop_terminal_list, door_id_loop, iid_loop
+
+def _get_loop_analyzer(LoopMap, EngineType, EventHandler, ReloadStateExtern):
     # Loop StateMachine
-    loop_sm = StateMachine.from_IncidenceIdMap(
-        (lei.character_set, lei.incidence_id) for lei in loop_map
+    sm = StateMachine.from_IncidenceIdMap(
+        (lei.character_set, lei.incidence_id) for lei in LoopMap
     )
 
     # Code Transformation
-    loop_sm = Setup.buffer_codec.transform(loop_sm)
+    sm = Setup.buffer_codec.transform(sm)
 
     # Loop Analyzer
-    loop_analyzer, \
-    door_id_loop   = _get_loop_analyzer(loop_sm, EngineType, ReloadStateExtern, 
-                                        EventHandler)
+    analyzer = analyzer_generator.do(sm, EngineType, ReloadStateExtern,
+                                     OnBeforeReload = EventHandler.on_before_reload, 
+                                     OnAfterReload  = EventHandler.on_after_reload)
 
-    # Terminals
-    door_id_loop_exit = DoorID.incidence_id(iid_loop_exit)
+    door_id_loop = _prepare_entry_and_reentry(analyzer, 
+                                              EventHandler.on_loop_entry, 
+                                              EventHandler.on_loop_reentry) 
+
+    return analyzer, door_id_loop
+
+def _get_loop_terminals(LoopMap, IidLoop, DoorIdLoop, IidLoopExit, ColumnNPerChunk, 
+                        LexemeEndCheckF, OnLoopExit):
+    door_id_loop_exit = DoorID.incidence_id(IidLoopExit)
 
     loop_terminal_list = [
-        _get_loop_terminal(lei, door_id_loop, door_id_loop_exit, 
+        _get_loop_terminal(lei, DoorIdLoop, door_id_loop_exit, 
                            ColumnNPerChunk, LexemeEndCheckF)
-        for lei in loop_map
+        for lei in LoopMap
     ]
     loop_terminal_list.append(
-        Terminal([Op.GotoDoorId(door_id_loop)], "<LOOP>", iid_loop)
+        Terminal([Op.GotoDoorId(DoorIdLoop)], "<LOOP>", IidLoop)
     )
     loop_terminal_list.append(
-        Terminal(OnLoopExit, "<LOOP EXIT>", iid_loop_exit)
+        Terminal(OnLoopExit, "<LOOP EXIT>", IidLoopExit)
     )
 
-    return loop_analyzer, loop_terminal_list, iid_loop, iid_loop_exit
+    return loop_terminal_list, IidLoop
 
-def _get_appendices(LoopMap, IidLoop):
+def _get_appendix_sm_list(LoopMap, IidLoop):
     """Parallel state machines are mounted to the loop by cutting the first
     transition and implementing it in the loop. Upon acceptance of the first
     character the according tail (appendix) of the state machine is entered.
@@ -454,15 +470,16 @@ def _get_appendices(LoopMap, IidLoop):
 def _get_loop_terminal(TheLoopElementInfo, DoorIdLoop, DoorIdLoopExit, 
                        ColumnNPerChunk, LexemeEndCheckF):
     IncidenceId = TheLoopElementInfo.incidence_id
-    AppendixSm  = TheLoopElementInfo.appendix_sm
+    AppendixSm  = TheLoopElementInfo.appendix_sm_id
+    CountAction = TheLoopElementInfo.count_action
 
-    code = TheLoopElementInfo.count_action.get_OpList(ColumnNPerChunk) 
+    code = CountAction.get_OpList(ColumnNPerChunk) 
 
-    if AppendixSm is not None:
+    if AppendixSmId is not None:
         assert not LexemeEndCheckF 
         # Couple Terminal: transit to appendix state machine.
         code.append(
-             Op.GotoDoorId(DoorID.state_machine_entry(AppendixSm.get_id())) 
+             Op.GotoDoorId(DoorID.state_machine_entry(AppendixSmId)) 
         )
     elif not LexemeEndCheckF: 
         # Loop Terminal: directly re-enter loop.
@@ -474,7 +491,8 @@ def _get_loop_terminal(TheLoopElementInfo, DoorIdLoop, DoorIdLoopExit,
         code.append(
             Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd)
         )
-        if ColumnNPerChunk is not None and CC_Type == E_CharacterCountType.COLUMN: 
+        if     ColumnNPerChunk is not None \
+           and CountAction.cc_type == E_CharacterCountType.COLUMN: 
             # With reference counting, no column counting while looping.
             # => Do it now, before leaving.
             code.append(
@@ -485,18 +503,6 @@ def _get_loop_terminal(TheLoopElementInfo, DoorIdLoop, DoorIdLoopExit,
         )
 
     return Terminal(code, "<LOOP TERMINAL %i>" % IncidenceId, IncidenceId)
-
-def _get_loop_analyzer(sm, EngineType, ReloadStateExtern, EventHandler):
-
-    analyzer = analyzer_generator.do(sm, EngineType, ReloadStateExtern,
-                                     OnBeforeReload = EventHandler.on_before_reload, 
-                                     OnAfterReload  = EventHandler.on_after_reload)
-
-    door_id_loop_reentry = _prepare_entry_and_reentry(analyzer, 
-                                                      EventHandler.on_loop_entry, 
-                                                      EventHandler.on_loop_reentry) 
-
-    return analyzer, door_id_loop_reentry
 
 def _prepare_entry_and_reentry(analyzer, OnLoopEntry, OnLoopReEntry):
     """Prepare the entry and re-entry doors into the initial state
