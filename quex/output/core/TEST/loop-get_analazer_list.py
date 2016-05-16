@@ -1,20 +1,15 @@
-# TEST: User a 'Loop Map' and generate Loop State Machine.
+# TEST: Generate all Analyzer-s based on a given LoopMap
 #
-# A 'loop map' associates characters with what has to happen when they occurr.
-# The function '_get_loop_sm' uses this information to produce an analyzer that
-# iterates on the characters of the loop.
+# This test calls '_get_analyzer_list()' to generate a list of analyzers
+# related to a loop map. 
+# 
+# Variations: Column Number per CodeUnit = const. or not.
+#             Number of CodeUnits per Character = const. or not.
 #
-# This test investigates the generation of the state machines only under three
-# circumstances expressed as CHOICES:
-#
-#   Plain:       no parallel state machines.
-#   AppendixNoI: a loop with parallel state machines that 
-#                do NOT INTERSECT on the first transition.
-#   AppendixI:   a loop with parallel state machines that 
-#                do INTERSECT.
-#   Split:       a state machine's first transition is split
-#                into multipl, because it is related to different
-#                count actions.
+# Both variations are played through by the 'buffer_codec' being plain Unicode
+# or UTF8, thus the choices: 'Unicode' and 'UTF8'. Additionally, two loop maps
+# are presented: One with same 'ColumnN/CodeUnit' for all characters and one 
+# without it.
 #
 # (C) Frank-Rene Schaefer
 #------------------------------------------------------------------------------
@@ -39,20 +34,54 @@ NS_C = NumberSet.from_range(ord('C'), ord('C') + 1)
 NS_D = NumberSet.from_range(ord('D'), ord('D') + 1)
 
 if "--hwut-info" in sys.argv:
-    print "Loop: Get Loop Map."
-    print "CHOICES: Plain, AppendixNoI, AppendixI, Split;"
+    print "Loop: Get All Analyzers."
+    print "CHOICES: Unicode-Const, Unicode-NonConst, UTF8-Const, UTF8-NonConst;"
+
+if "Unicode" in sys.argv[1]: encoding = "unicode"
+else:                        encoding = "utf8"
+
+if "NonConst" in sys.argv[1]: 
+    # Constant column number per code unit
+    loop_map = [
+        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), None)
+        LoopMapEntry(NS_B, CA_1, CA_1.get_incidence_id(), AppendixSmId_0)
+        LoopMapEntry(NS_C, CA_2, CA_2.get_incidence_id(), AppendixSmId_1)
+        LoopMapEntry(NS_D, CA_3, CA_0.get_incidence_id(), None)
+    ]
+    column_n_per_code_unit = None
+else:
+    loop_map = [
+        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), None)
+        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), AppendixSmId_0)
+        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), AppendixSmId_1)
+    ]
+    column_n_per_code_unit = 1
+
+Setup.buffer_codec_set(bc_factory.do("unicode"), LexatomSizeInBytes=1)
+
 
 def test(ci_list, SM_list=[]):
     Setup.buffer_codec.source_set = NumberSet_All()
-    ci_map   = CountInfoMap(ci_list, NumberSet.from_range(0, 100))
+    ci_map        = CountInfoMap(ci_list, NumberSet.from_range(0, 100))
     iid_loop_exit = dial_db.new_incidence_id()
-    loop_map, appendix_sm_list = loop._get_loop_map(ci_map, SM_list, iid_loop_exit) 
 
-    print
-    print
-    print
-    general_checks(loop_map, appendix_sm_list)
-    print_this(loop_map, appendix_sm_list)
+    loop_map,              \
+    column_n_per_code_unit = _get_loop_map()
+    event_handler          = LoopEventHandlers(TheCountMap, 
+                                               LexemeEndCheckF, MaintainLexemeF, 
+                                               EngineType, ReloadStateExtern, 
+                                               UserOnLoopExit): 
+    appendix_sm_list       = _get_appendix_sm_list()
+
+    appendix_analyzer_list = loop._get_analyzer_list(loop_map,
+                                                     event_handler, 
+                                                     appendix_sm_list) 
+
+def _get_loop_map():
+    return []
+
+def _get_appendix_sm_list():
+    return []
 
 def general_checks(loop_map, appendix_sm_list):
     print "#_[ Checks ]__________________________________________________"

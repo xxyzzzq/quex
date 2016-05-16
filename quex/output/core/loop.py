@@ -120,22 +120,6 @@ from   quex.blackboard import E_StateIndices, \
 from   collections import namedtuple
 from   itertools   import chain
 
-class LoopElementInfo:
-    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId):
-        self.character_set  = CharacterSet
-        self.count_action   = TheCountAction
-        self.incidence_id   = CoupleIncidenceId
-        self.appendix_sm_id = AppendixSmId
-
-    def add_appendix_sm(self, SM):
-        if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
-            return
-        self.appendix_sm_list.append(SM)
-
-    def __repr__(self):
-        return "(%s, %s, %s, %s)" % \
-               (self.character_set, self.count_action, self.incidence_id, self.appendix_sm)
-
 @typed(ReloadF=bool, LexemeEndCheckF=bool, OnLoopExit=list)
 def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None, 
        ReloadStateExtern=None, LexemeMaintainedF=False,
@@ -194,11 +178,9 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
 
     # Loop represented by Analyzer-s and Terminal-s ___________________________
     #
-    analyzer_list, \
-    terminal_list  = _get_analyzers_and_terminals(LoopMap, EventHandler, 
-                                                  appendix_sm_list,
-                                                  parallel_terminal_list,
-                                                  iid_loop_exit) 
+    analyzer_list = _get_analyzer_list(LoopMap, EventHandler, appendix_sm_list)
+    terminal_list = _get_terminal_list(LoopMap, EventHandler, parallel_terminal_list,
+                                       iid_loop_exit)
 
     # Generate Code ___________________________________________________________
     #
@@ -206,32 +188,35 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     
     return txt, DoorID.incidence(iid_loop_exit)
 
-@typed(LoopMap=[LoopElementInfo])
-def _get_analyzers_and_terminals(LoopMap, EventHandler, 
-                                 AppendixSmList, AppendixTerminalList, 
-                                 IidLoopExit): 
-    """RETURNS: The loop state machine represented by
-                [0] list of Analyzer-s.
-                [1] list of Terminal-s.
+@typed(LoopMap=[LoopMapEntry])
+def _get_analyzer_list(LoopMap, EventHandler, AppendixSmList): 
+    """An appendix state machine is a parallel state machine that is pruned by
+    its first transition. The first transition is absorbed into the 'LoopMap'.
+    
+    RETURNS: list of Analyzer-s.
     """
-    iid_loop_after_appendix_drop_out = dial_db.new_incidence_id() # continue loop
+    # IncidenceId for terminal that initiates continuation of loop.
+    iid_loop_after_appendix_drop_out = dial_db.new_incidence_id() 
 
-    # Core Loop: Analyzer & Terminals _________________________________________
-    #
-    loop_analyzer,     \
-    door_id_loop       = _get_loop_analyzer(LoopMap, EventHandler)
+    # Core Loop Analyzer 
+    loop_analyzer,         \
+    door_id_loop           = _get_loop_analyzer(LoopMap, EventHandler)
 
+    # Appendix Analyzers 
+    appendix_analyzer_list = _get_appendix_analyzers(LoopMap, EventHandler, 
+                                                     AppendixSmList,
+                                                     iid_loop_after_appendix_drop_out) 
+
+    return [ loop_analyzer ] + appendix_analyzer_list
+
+def _get_terminal_list(LoopMap, EventHandler, ParallelTerminalList, IidLoopExit):
+    """RETURNS: list of all Terminal-s.
+    """
     loop_terminal_list = _get_loop_terminal_list(LoopMap, EventHandler,
                                                  iid_loop_after_appendix_drop_out, 
                                                  door_id_loop, IidLoopExit) 
 
-    # Appendix StateMachine-s: Analyzers & Terminals __________________________
-    #
-    appendix_analyzer_list = _get_appendix_analyzers(LoopMap, EventHandler, AppendixSmList,
-                                                     iid_loop_after_appendix_drop_out) 
-
-    return [loop_analyzer]    + appendix_analyzer_list, \
-           loop_terminal_list + AppendixTerminalList 
+    return loop_terminal_list + ParallelTerminalList 
 
 def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     """A loop map tells about the behavior of the core loop. It tells what
@@ -240,9 +225,9 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
         -- Return to loop (normal case)
         -- Enter the tail (appendix) of a parallel state machine.
 
-    RETURNS: List of LoopElementInfo-s. 
+    RETURNS: List of LoopMapEntry-s. 
 
-    A LoopElementInfo consists of:
+    A LoopMapEntry consists of:
 
        .character_set: Character set that triggers.
        .count_action:  Count action related to the character set.
@@ -259,8 +244,8 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     # 'couple_list': Transitions to 'couple terminals' 
     #                => connect to appendix state machines
     couple_list,     \
-    appendix_sm_list = _get_LoopElementInfo_list_parallel_state_machines(TheCountMap, 
-                                                                         SmList)
+    appendix_sm_list = _get_LoopMapEntry_list_parallel_state_machines(TheCountMap, 
+                                                                      SmList)
 
     L_couple = NumberSet.from_union_of_iterable(
         lei.character_set for lei in couple_list
@@ -269,7 +254,7 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     # 'plain_list': Transitions to 'normal terminals' 
     #               => perform count action and loop.
     L_plain    = L.difference(L_couple)
-    plain_list = _get_LoopElementInfo_list_plain(TheCountMap, L_plain)
+    plain_list = _get_LoopMapEntry_list_plain(TheCountMap, L_plain)
 
     # 'L_exit': Transition to exit
     #           => remaining characters cause exit.
@@ -278,9 +263,7 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     )
     universal_set = Setup.buffer_codec.source_set
     L_exit        = L_loop.get_complement(universal_set)
-    exit_list     = [
-        LoopElementInfo(L_exit, None, IidLoopExit, None)
-    ]
+    exit_list     = [ LoopMapEntry(L_exit, None, IidLoopExit, None) ]
 
     result = couple_list + plain_list + exit_list
 
@@ -289,11 +272,11 @@ def _get_loop_map(TheCountMap, SmList, IidLoopExit):
     assert not any(lei.incidence_id is None for lei in result)
     return result, appendix_sm_list
 
-def _get_LoopElementInfo_list_plain(TheCountBase, L_pure):
-    """RETURNS: list of LoopElementInfo-s.
+def _get_LoopMapEntry_list_plain(TheCountBase, L_pure):
+    """RETURNS: list of LoopMapEntry-s.
 
     The list defines the loop behavior for characters which are not transits
-    to appendix state machines. The LoopElementInfo-s are setup as below:
+    to appendix state machines. The LoopMapEntry-s are setup as below:
 
          [0] Character set to trigger to a terminal.
          [1] CountAction.
@@ -302,11 +285,11 @@ def _get_LoopElementInfo_list_plain(TheCountBase, L_pure):
     """
     assert L_pure is not None
     return [
-        LoopElementInfo(character_set, ca, ca.get_incidence_id(), None)
+        LoopMapEntry(character_set, ca, ca.get_incidence_id(), None)
         for character_set, ca in TheCountBase.iterable_in_sub_set(L_pure)
     ]
 
-def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
+def _get_LoopMapEntry_list_parallel_state_machines(TheCountBase, SmList):
     """Perform separation:
     
        Parallel state machine  -->  first transition  +  appendix state machine
@@ -314,7 +297,7 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
     The 'first transition' is mounted on the loop state machine triggering an
     acceptance that causes a transit to the appendix state machine. 
 
-    RETURNS: list of LoopElementInfo-s 
+    RETURNS: list of LoopMapEntry-s 
     """
     def iterable(SmList):
         """YIELDS: [0] Character Set
@@ -384,13 +367,13 @@ def _get_LoopElementInfo_list_parallel_state_machines(TheCountBase, SmList):
     # sets into a single combined appendix state machine.
     appendix_sm_db = {}
     loop_map       = [
-        LoopElementInfo(character_set, ca, dial_db.new_incidence_id(), 
+        LoopMapEntry(character_set, ca, dial_db.new_incidence_id(), 
                         combined(appendix_sm_db, appendix_sm_list))
         for character_set, ca, appendix_sm_list in distinct
     ]
     return loop_map, appendix_sm_db.values()
 
-@typed(LoopMap=[LoopElementInfo])
+@typed(LoopMap=[LoopMapEntry])
 def _get_loop_analyzer(LoopMap, EventHandler):
     """Construct a state machine that triggers only on one character. Actions
     according the the triggered character are implemented using terminals which
@@ -433,7 +416,7 @@ def _get_loop_analyzer(LoopMap, EventHandler):
 
     return analyzer, door_id_loop
 
-@typed(LoopMap=[LoopElementInfo])
+@typed(LoopMap=[LoopMapEntry])
 def _get_loop_terminal_list(LoopMap, EventHandler, IidLoopAfterAppendixDropOut, 
                             DoorIdLoop, IidLoopExit):
     """RETURNS: List of terminals of the loop state:
@@ -462,7 +445,7 @@ def _get_loop_terminal_list(LoopMap, EventHandler, IidLoopAfterAppendixDropOut,
 
     return result
 
-@typed(LoopMap=[LoopElementInfo])
+@typed(LoopMap=[LoopMapEntry])
 def _get_appendix_analyzers(LoopMap, EventHandler, AppendixSmList, 
                             IidLoopAfterAppendixDropOut): 
     """Parallel state machines are mounted to the loop by cutting the first
@@ -566,19 +549,22 @@ class LoopEventHandlers:
         .on_after_reload:   after buffer reload is performed.
         .on_loop_reentry:   upon every iteration of loop entry.
     """
-    @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
-    def __init__(self, LexemeEndCheckF, MaintainLexemeF, CcFactory, UserOnLoopExit): 
-        self.__prepare_begin_and_end(CcFactory.on_loop_entry, 
-                                     CcFactory.on_loop_exit + UserOnLoopExit)
-        self.__prepare_before_and_after_reload(MaintainLexemeF, 
-                                               CcFactory.on_before_reload, 
-                                               CcFactory.on_after_reload) 
+    @typed(TheCountMap=CountInfoMap, LexemeEndCheckF=bool, MaintainLexemeF=bool)
+    def __init__(self, TheCountMap, 
+                 LexemeEndCheckF, MaintainLexemeF, 
+                 EngineType, ReloadStateExtern, UserOnLoopExit): 
 
-        self.column_number_per_code_unit = CcFactory.get_column_count_per_chunk()
+        self.__prepare_begin_and_end(TheCountMap.on_loop_entry, 
+                                     TheCountMap.on_loop_exit + UserOnLoopExit)
+        self.__prepare_before_and_after_reload(MaintainLexemeF, 
+                                               TheCountMap.on_before_reload, 
+                                               TheCountMap.on_after_reload) 
+
+        self.column_number_per_code_unit = TheCountMap.get_column_count_per_chunk()
         self.lexeme_end_check_f          = LexemeEndCheckF
 
-        self.reload_state_extern         = ReloadStateExtern
-        self.engine_type                 = EngineType
+        self.reload_state_extern = ReloadStateExtern
+        self.engine_type         = EngineType
 
     def __prepare_begin_and_end(self, OnLoopEntry, OnLoopExit):
         """With codecs of dynamic character sizes (UTF8), the pointer to the 
@@ -631,8 +617,8 @@ class LoopEventHandlers:
         self.on_before_reload = OpList.concatinate(on_before_reload,OnBeforeReload)
         self.on_after_reload  = OpList.concatinate(on_after_reload, OnAfterReload)
 
-    @typed(TheLoopElementInfo=LoopElementInfo)
-    def get_loop_terminal_code(self, TheLoopElementInfo, DoorIdLoop, DoorIdLoopExit): 
+    @typed(TheLoopMapEntry=LoopMapEntry)
+    def get_loop_terminal_code(self, TheLoopMapEntry, DoorIdLoop, DoorIdLoopExit): 
         """RETURNS: A loop terminal. 
 
         A terminal: (i)    Counts,
@@ -640,9 +626,9 @@ class LoopEventHandlers:
                     (iii)a either re-enters the loop, or
                     (iii)b transits to an appendix state machine (couple terminal).
         """
-        IncidenceId = TheLoopElementInfo.incidence_id
-        AppendixSm  = TheLoopElementInfo.appendix_sm_id
-        CountAction = TheLoopElementInfo.count_action
+        IncidenceId = TheLoopMapEntry.incidence_id
+        AppendixSm  = TheLoopMapEntry.appendix_sm_id
+        CountAction = TheLoopMapEntry.count_action
 
         code = CountAction.get_OpList(self.column_number_per_code_unit) 
 
@@ -686,3 +672,20 @@ class LoopEventHandlers:
             Op.GotoDoorId(DoorIdLoop)
         ]
 
+class LoopMapEntry:
+    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId):
+        self.character_set  = CharacterSet
+        self.count_action   = TheCountAction
+        self.incidence_id   = CoupleIncidenceId
+        self.appendix_sm_id = AppendixSmId
+
+    def add_appendix_sm(self, SM):
+        if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
+            return
+        self.appendix_sm_list.append(SM)
+
+    def __repr__(self):
+        return "(%s, %s, %s, %s)" % \
+               (self.character_set, self.count_action, self.incidence_id, self.appendix_sm)
+
+class LoopMap(list):

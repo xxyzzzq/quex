@@ -2,17 +2,17 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                    import setup
-from   quex.input.command_line.GetPot     import GetPot
-import quex.input.command_line.code_generation as code_generation
-import quex.input.command_line.query      as      query     
-from   quex.input.setup                   import SETUP_INFO,               \
-                                                 SetupParTypes,            \
-                                                 NotificationDB
-from   quex.input.code.base               import SourceRef
-import quex.engine.misc.error             as     error
-from   quex.engine.misc.file_operations   import open_file_or_die
-from   quex.engine.misc.file_in           import get_integer_parameter_value
+from   quex.blackboard                         import setup
+from   quex.input.command_line.GetPot          import GetPot
+import quex.input.command_line.code_generation as     code_generation
+import quex.input.command_line.query           as     query     
+from   quex.input.code.base                    import SourceRef
+from   quex.input.setup                        import SETUP_INFO,               \
+                                                      SetupParTypes,            \
+                                                      NotificationDB
+import quex.engine.misc.error                  as     error
+from   quex.engine.misc.file_operations        import open_file_or_die
+from   quex.engine.misc.file_in                import get_integer_parameter_value
                                                  
 
 def do(argv):
