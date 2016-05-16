@@ -148,8 +148,8 @@ def get_test_application(counter_db, ReferenceP, CT):
 
     # (*) Generate Code 
     ccfactory = CountInfoMap.from_LineColumnCount(counter_db, 
-                                                         Setup.buffer_codec.source_set,
-                                                         Lng.INPUT_P())
+                                                  Setup.buffer_codec.source_set,
+                                                  Lng.INPUT_P())
     counter_function_name, \
     counter_str            = counter.get(ccfactory, "TEST_MODE")
     counter_str = counter_str.replace("static void", "void")
