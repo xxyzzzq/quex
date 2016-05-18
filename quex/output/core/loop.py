@@ -363,12 +363,26 @@ def _get_LoopMapEntry_list_parallel_state_machines(TheCountBase, SmList):
                 (remainder, ca, [appendix_sm])
             )
 
+    def _determine_LoopMapEntry(sm_db, CharacterSet, CA, AppendixSmList):
+        appendix_sm_id    = combined(sm_db, appendix_sm_list)
+        has_transitions_f = sm_db[appendix_sm_id].get_init_state().has_transitions()
+        if has_transitions_f:
+            # There is an appendix after the first transition.
+            # => goto the appendix state machine
+            return LoopMapEntry(CharacterSet, CA, dial_db.new_incidence_id(), 
+                                appendix_sm_id, True)
+        else:
+            # There is NO appendix after the first transition.
+            # => directly goto to terminal of the matched state machine.
+            appendix_sm_id = min(sm.get_id() for sm in AppendixSmList)
+            return LoopMapEntry(CharacterSet, CA, dial_db.new_incidence_id(),
+                                appendix_sm_id, False)
+
     # Combine the appendix state machine lists which are related to character
     # sets into a single combined appendix state machine.
     appendix_sm_db = {}
     loop_map       = [
-        LoopMapEntry(character_set, ca, dial_db.new_incidence_id(), 
-                        combined(appendix_sm_db, appendix_sm_list))
+        _determine_LoopMapEntry(appendix_sm_db, character_set, ca, appendix_sm_list)
         for character_set, ca, appendix_sm_list in distinct
     ]
     return loop_map, appendix_sm_db.values()
@@ -458,6 +472,7 @@ def _get_appendix_analyzers(LoopMap, EventHandler, AppendixSmList,
     # Codec Transformation
     appendix_sm_list = [
         Setup.buffer_code.transform(sm) for sm in AppendixSmList
+        if sm.get_init_state().has_transitions()
     ]
 
     # Appendix Sm Drop Out => Restore position of last loop character.
@@ -633,12 +648,18 @@ class LoopEventHandlers:
         code = CountAction.get_OpList(self.column_number_per_code_unit) 
 
         if AppendixSmId is not None:
-            assert not self.lexeme_end_check_f 
-            # Couple Terminal: transit to appendix state machine.
-            code.extend([
-                Op.Assign(E_R.CharacterBeginP, E_R.InputP),
-                Op.GotoDoorId(DoorID.state_machine_entry(AppendixSmId)) 
-            ])
+            if not lei.appendix_sm_has_transitions_f:
+                # If there is no appendix, directly goto to the terminal.
+                code.extend([
+                    Op.GotoDoorId(DoorID.incidence_id(AppendixSmId)) 
+                ])
+            else:
+                assert not self.lexeme_end_check_f 
+                # Couple Terminal: transit to appendix state machine.
+                code.extend([
+                    Op.Assign(E_R.CharacterBeginP, E_R.InputP),
+                    Op.GotoDoorId(DoorID.state_machine_entry(AppendixSmId)) 
+                ])
         elif not self.lexeme_end_check_f: 
             # Loop Terminal: directly re-enter loop.
             code.append(
@@ -673,11 +694,13 @@ class LoopEventHandlers:
         ]
 
 class LoopMapEntry:
-    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId):
+    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId, 
+                 HasTransitionsF=False):
         self.character_set  = CharacterSet
         self.count_action   = TheCountAction
         self.incidence_id   = CoupleIncidenceId
         self.appendix_sm_id = AppendixSmId
+        self.appendix_sm_has_transitions_f = HasTransitionsF
 
     def add_appendix_sm(self, SM):
         if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
@@ -688,4 +711,3 @@ class LoopMapEntry:
         return "(%s, %s, %s, %s)" % \
                (self.character_set, self.count_action, self.incidence_id, self.appendix_sm)
 
-class LoopMap(list):

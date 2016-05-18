@@ -76,6 +76,9 @@ class State:
     def set_target_map(self, TM):
         self.__target_map = TM
 
+    def has_transitions(self):
+        return not self.target_map.is_empty()
+
     def is_acceptance(self):
         cmd = self.single_entry.find(SeAccept) 
         if cmd is None: return False 

@@ -1,7 +1,8 @@
 # TEST: Generate all Analyzer-s based on a given LoopMap
 #
 # This test calls '_get_analyzer_list()' to generate a list of analyzers
-# related to a loop map. 
+# related to a loop map. The structure of the analyzers in the list is 
+# unimportant--none of them is modified.
 # 
 # Variations: Column Number per CodeUnit = const. or not.
 #             Number of CodeUnits per Character = const. or not.
@@ -59,29 +60,48 @@ else:
 
 Setup.buffer_codec_set(bc_factory.do("unicode"), LexatomSizeInBytes=1)
 
-
-def test(ci_list, SM_list=[]):
+def test(LoopMap):
+    """
+    event_handler:    Simply, some event handlers are generated which allow to
+                      identify their placement in the right positions.
+    
+    appendix_sm_list: The shape of the state machines is completely irrelevant 
+                      for this test. So, for all mentioned state machines a 
+                      trivial single transition state machine is generated on 
+                      the fly.
+    """
     Setup.buffer_codec.source_set = NumberSet_All()
-    ci_map        = CountInfoMap(ci_list, NumberSet.from_range(0, 100))
-    iid_loop_exit = dial_db.new_incidence_id()
 
-    loop_map,              \
-    column_n_per_code_unit = _get_loop_map()
-    event_handler          = LoopEventHandlers(TheCountMap, 
-                                               LexemeEndCheckF, MaintainLexemeF, 
-                                               EngineType, ReloadStateExtern, 
-                                               UserOnLoopExit): 
-    appendix_sm_list       = _get_appendix_sm_list()
+    event_handler    = _get_LoopMapEventHandlers() 
+    appendix_sm_list = _get_appendix_sm_list(LoopMap)
 
-    appendix_analyzer_list = loop._get_analyzer_list(loop_map,
-                                                     event_handler, 
-                                                     appendix_sm_list) 
+    analyzer_list = loop._get_analyzer_list(LoopMap,
+                                            event_handler, 
+                                            appendix_sm_list) 
+
+    print_this(analyzer_list)
 
 def _get_loop_map():
     return []
 
-def _get_appendix_sm_list():
-    return []
+def _get_appendix_sm_list(LoopMap):
+    def get_sm(SmId):
+        sm = StateMachine.from_IncidenceIdMap([
+            (NumberSet.from_range(10,11), SmId)
+        ])
+        sm.set_id(SmId)
+        return sm
+
+    return [
+        get_sm(lei.appendix_sm_id) for lei in LoopMap
+        if lei.appendix_sm_has_transitions_f
+    ]
+
+def _get_LoopMapEventHandlers():
+    return LoopEventHandlers(TheCountMap, False, False, 
+                             EngineType, 
+                             ReloadStateExtern, 
+                             user_on_loop_exit)
 
 def general_checks(loop_map, appendix_sm_list):
     print "#_[ Checks ]__________________________________________________"
