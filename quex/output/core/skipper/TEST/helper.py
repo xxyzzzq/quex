@@ -1,21 +1,21 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-import quex.output.core.skipper.character_set      as character_set_skipper
-import quex.output.core.skipper.range              as range_skipper
-import quex.output.core.skipper.nested_range       as nested_range_skipper
-import quex.output.core.skipper.indentation_counter as     indentation_counter
-from   quex.output.core.TEST.generator_test        import *
-from   quex.output.core.variable_db                import variable_db
-from   quex.output.core.TEST.generator_test        import __Setup_init_language_database
-from   quex.input.code.base                        import CodeFragment
-from   quex.output.core.base                       import do_state_router
-from   quex.engine.state_machine.core              import StateMachine
-from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
-from   quex.input.files.counter                    import LineColumnCount_Default
-from   quex.input.regular_expression.construct     import Pattern
-import quex.engine.analyzer.engine_supply_factory  as     engine
-import quex.engine.state_machine.transformation.core             as     bc_factory
+import quex.output.core.skipper.character_set        as character_set_skipper
+import quex.output.core.skipper.range                as range_skipper
+import quex.output.core.skipper.nested_range         as nested_range_skipper
+import quex.output.core.skipper.indentation_counter  as     indentation_counter
+from   quex.output.core.TEST.generator_test          import *
+from   quex.output.core.variable_db                  import variable_db
+from   quex.output.core.TEST.generator_test          import __Setup_init_language_database
+from   quex.input.code.base                          import CodeFragment
+from   quex.output.core.base                         import do_state_router
+from   quex.engine.state_machine.core                import StateMachine
+from   quex.engine.analyzer.door_id_address_label    import get_plain_strings
+from   quex.input.files.counter                      import LineColumnCount_Default
+from   quex.input.regular_expression.construct       import Pattern
+import quex.engine.analyzer.engine_supply_factory    as     engine
+import quex.engine.state_machine.transformation.core as     bc_factory
 
 # Setup.buffer_element_specification_prepare()
 Setup.buffer_codec_set(bc_factory.do("unicode", None), 1)

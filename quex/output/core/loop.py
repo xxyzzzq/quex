@@ -101,6 +101,9 @@ from   quex.engine.operations.operation_list              import Op, \
                                                                  OpList
 import quex.engine.state_machine.index                    as     index
 import quex.engine.state_machine.algorithm.beautifier     as     beautifier
+from   quex.engine.loop_counter                           import CountInfoMap
+from   quex.engine.counter                                import count_operation_db_with_reference, \
+                                                                 count_operation_db_without_reference
 from   quex.engine.analyzer.door_id_address_label         import DoorID
 from   quex.engine.misc.interval_handling                 import NumberSet
 from   quex.engine.misc.tools                             import typed, \
@@ -112,13 +115,204 @@ from   quex.output.core.variable_db                       import variable_db
 import quex.output.core.base                              as     generator
 
 from   quex.blackboard import E_StateIndices, \
-                              E_R, \
                               E_CharacterCountType, \
+                              E_R, \
                               setup as Setup, \
                               Lng
 
 from   collections import namedtuple
 from   itertools   import chain
+
+class LoopMapEntry:
+    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId, 
+                 HasTransitionsF=False):
+        self.character_set  = CharacterSet
+        self.count_action   = TheCountAction
+        self.incidence_id   = CoupleIncidenceId
+        self.appendix_sm_id = AppendixSmId
+        self.appendix_sm_has_transitions_f = HasTransitionsF
+
+    def add_appendix_sm(self, SM):
+        if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
+            return
+        self.appendix_sm_list.append(SM)
+
+    def __repr__(self):
+        return "(%s, %s, %s, %s, %s)" % \
+               (self.character_set, self.count_action, self.incidence_id, self.appendix_sm_id, self.appendix_sm_has_transitions_f)
+
+class LoopEventHandlers:
+    """Event handlers in terms of 'List of Operations' (objects of class 'Op'):
+
+        .on_loop_entry:     upon entry into loop
+        .on_loop_exit:      upon exit from loop
+        .on_before_reload:  before buffer reload is performed.
+        .on_after_reload:   after buffer reload is performed.
+        .on_loop_reentry:   upon every iteration of loop entry.
+    """
+    @typed(LexemeEndCheckF=bool, MaintainLexemeF=bool)
+    def __init__(self, ColumnNPerCodeUnit, LexemeEndCheckF, MaintainLexemeF, 
+                 EngineType, ReloadStateExtern, UserOnLoopExit): 
+        """ColumnNPerCodeUnit is None => no constant relationship between 
+                                         column number and code unit.
+        """
+        self.column_number_per_code_unit = ColumnNPerCodeUnit
+        self.lexeme_end_check_f          = LexemeEndCheckF
+        self.reload_state_extern         = ReloadStateExtern
+        self.engine_type                 = EngineType
+
+        # Counting Actions upon: loop entry/exit; before/after reload
+        #
+        on_loop_entry_count,    \
+        on_loop_exit_count,     \
+        on_before_reload_count, \
+        on_after_reload_count   = self.__prepare_count_actions(self.column_number_per_code_unit)
+
+        # Input pointer positioning: loop entry/exit; before/after reload
+        #
+        on_loop_reentry_pos,  \
+        on_loop_exit_pos      = self.__prepare_positioning_at_loop_begin_and_exit()
+        on_before_reload_pos, \
+        on_after_reload_pos   = self.__prepare_positioning_before_and_after_reload(MaintainLexemeF) 
+
+        # _____________________________________________________________________
+        #
+        self.on_loop_entry    = OpList.concatinate(on_loop_reentry_pos, 
+                                                   on_loop_entry_count)
+        self.on_loop_reentry  = OpList.from_iterable(on_loop_reentry_pos)
+        self.on_loop_exit     = OpList.concatinate(on_loop_exit_pos, 
+                                                   on_loop_exit_count, 
+                                                   UserOnLoopExit)
+        self.on_before_reload = OpList.concatinate(on_before_reload_pos, 
+                                                   on_before_reload_count)
+        self.on_after_reload  = OpList.concatinate(on_after_reload_pos, 
+                                                   on_after_reload_count)
+
+    @staticmethod
+    def __prepare_count_actions(ColumnNPerCodeUnit):
+        if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
+        else:                                               pointer = E_R.InputP
+
+        if ColumnNPerCodeUnit is None: db = count_operation_db_without_reference 
+        else:                          db = count_operation_db_with_reference 
+
+        # Count Actions: on loop entry/exit; before/after reload.
+        #
+        return db[E_CharacterCountType.LOOP_ENTRY](pointer, ColumnNPerCodeUnit), \
+               db[E_CharacterCountType.LOOP_EXIT](pointer, ColumnNPerCodeUnit), \
+               db[E_CharacterCountType.BEFORE_RELOAD](pointer, ColumnNPerCodeUnit), \
+               db[E_CharacterCountType.AFTER_RELOAD](pointer, ColumnNPerCodeUnit)
+
+    @staticmethod
+    def __prepare_positioning_at_loop_begin_and_exit():
+        """With codecs of dynamic character sizes (UTF8), the pointer to the 
+        first letter is stored in 'lexatom_begin_p'. To reset the input 
+        pointer 'input_p = lexatom_begin_p' is applied.  
+        """
+        if not Setup.buffer_codec.variable_character_sizes_f():
+            # 1 character == 1 code unit
+            # => reset to last character: 'input_p = input_p - 1'
+            on_loop_exit    = [ Op.Decrement(E_R.InputP) ]
+            on_loop_reentry = []
+        else:
+            # 1 character == variable number of code units
+            # => store begin of character in 'lexeme_start_p'
+            # => reset to last character: 'input_p = lexeme_start_p'
+            on_loop_exit    = [ Op.Assign(E_R.InputP, E_R.CharacterBeginP) ]
+            on_loop_reentry = [ Op.Assign(E_R.CharacterBeginP, E_R.InputP) ]
+
+        return on_loop_reentry, on_loop_exit
+
+    @staticmethod
+    def __prepare_positioning_before_and_after_reload(MaintainLexemeF):
+        """The 'lexeme_start_p' restricts the amount of data which is loaded 
+        into the buffer upon reload--if the lexeme needs to be maintained. If 
+        the lexeme does not need to be maintained, then the whole buffer can 
+        be refilled.
+        
+        For this, the 'lexeme_start_p' is set to the input pointer. 
+        
+        EXCEPTION: Variable character sizes. There, the 'lexeme_start_p' is used
+        to mark the begin of the current letter. However, letters are short, so 
+        the drawback is tiny.
+
+        RETURNS: [0] on_before_reload
+                 [1] on_after_reload
+        """
+        if Setup.buffer_codec.variable_character_sizes_f():
+            if MaintainLexemeF:
+                on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
+                on_after_reload  = [ Op.Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
+            else:
+                # Here, the character begin p needs to be adapted to what has been reloaded.
+                on_before_reload = [ ] # Begin of lexeme is enough.
+                on_after_reload  = [ ]
+        else:
+            on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.InputP) ] 
+            on_after_reload  = [ ] # Op.Assign(E_R.InputP, E_R.LexemeStartP) ]
+
+        return on_before_reload, on_after_reload
+
+    @typed(TheLoopMapEntry=LoopMapEntry)
+    def get_loop_terminal_code(self, TheLoopMapEntry, DoorIdLoop, DoorIdLoopExit): 
+        """RETURNS: A loop terminal. 
+
+        A terminal: (i)    Counts,
+                    (ii)   checks possibly for the lexeme end, and
+                    (iii)a either re-enters the loop, or
+                    (iii)b transits to an appendix state machine (couple terminal).
+        """
+        IncidenceId = TheLoopMapEntry.incidence_id
+        AppendixSm  = TheLoopMapEntry.appendix_sm_id
+        CountAction = TheLoopMapEntry.count_action
+
+        code = CountAction.get_OpList(self.column_number_per_code_unit) 
+
+        if AppendixSmId is not None:
+            if not lei.appendix_sm_has_transitions_f:
+                # If there is no appendix, directly goto to the terminal.
+                code.extend([
+                    Op.GotoDoorId(DoorID.incidence_id(AppendixSmId)) 
+                ])
+            else:
+                assert not self.lexeme_end_check_f 
+                # Couple Terminal: transit to appendix state machine.
+                code.extend([
+                    Op.Assign(E_R.CharacterBeginP, E_R.InputP),
+                    Op.GotoDoorId(DoorID.state_machine_entry(AppendixSmId)) 
+                ])
+        elif not self.lexeme_end_check_f: 
+            # Loop Terminal: directly re-enter loop.
+            code.append(
+                Op.GotoDoorId(DoorIdLoop) 
+            )
+        else:
+            # Check Terminal: check against lexeme end before re-entering loop.
+            code.append(
+                Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd)
+            )
+            if     self.column_number_per_code_unit is not None \
+               and CountAction.cc_type == E_CharacterCountType.COLUMN: 
+                # With reference counting, no column counting while looping.
+                # => Do it now, before leaving.
+                code.append(
+                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                                                     self.column_number_per_code_unit, 
+                                                     False)
+                )
+            code.append(
+                Op.GotoDoorId(DoorIdLoopExit) 
+            )
+
+        return Terminal(code, "<LOOP TERMINAL %i>" % IncidenceId, IncidenceId)
+
+    def on_loop_after_appendix_drop_out(self, DoorIdLoop):
+        # 'CharacterBeginP' has been assigned in the 'Couple Terminal'.
+        # (see ".get_loop_terminal_code()").
+        return [
+            Op.Assign(E_R.InputP, E_R.CharacterBeginP),
+            Op.GotoDoorId(DoorIdLoop)
+        ]
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, OnLoopExit=list)
 def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None, 
@@ -410,25 +604,33 @@ def _get_loop_analyzer(LoopMap, EventHandler):
              [1] DoorID of loop entry
     """
     # Loop StateMachine
-    sm           = StateMachine.from_IncidenceIdMap(
-                       (lei.character_set, lei.incidence_id) for lei in LoopMap
-                   )
+    sm            = StateMachine.from_IncidenceIdMap(
+                        (lei.character_set, lei.incidence_id) for lei in LoopMap
+                    )
 
     # Code Transformation
-    sm           = Setup.buffer_codec.transform(sm)
+    verdict_f, sm = Setup.buffer_codec.do_state_machine(sm, beautifier)
 
     # Loop Analyzer
-    analyzer     = analyzer_generator.do(sm, 
-                                         EventHandler.engine_type, 
-                                         EventHandler.reload_state_extern, 
-                                         OnBeforeReload = EventHandler.on_before_reload, 
-                                         OnAfterReload  = EventHandler.on_after_reload)
+    analyzer = analyzer_generator.do(sm, 
+                                     EventHandler.engine_type, 
+                                     EventHandler.reload_state_extern, 
+                                     OnBeforeReload = EventHandler.on_before_reload, 
+                                     OnAfterReload  = EventHandler.on_after_reload,
+                                     OnBeforeEntry  = EventHandler.on_loop_entry)
 
-    door_id_loop = _prepare_entry_and_reentry(analyzer, 
-                                              EventHandler.on_loop_entry, 
-                                              EventHandler.on_loop_reentry) 
+    # If reload state is generated 
+    # => All other analyzers MUST use the same generated reload state.
+    if EventHandler.reload_state_extern is None:
+        EventHandler.reload_state_extern = analyzer.reload_state
 
-    return analyzer, door_id_loop
+    # Set the 'Re-Entry' Operations.
+    entry       = analyzer.init_state().entry
+    tid_reentry = entry.enter_OpList(analyzer.init_state_index, index.get(), 
+                                     EventHandler.on_loop_reentry)
+    entry.categorize(analyzer.init_state_index)
+
+    return analyzer, entry.get(tid_reentry).door_id
 
 @typed(LoopMap=[LoopMapEntry])
 def _get_loop_terminal_list(LoopMap, EventHandler, IidLoopAfterAppendixDropOut, 
@@ -470,10 +672,11 @@ def _get_appendix_analyzers(LoopMap, EventHandler, AppendixSmList,
              [1] Appendix terminals.
     """
     # Codec Transformation
-    appendix_sm_list = [
-        Setup.buffer_code.transform(sm) for sm in AppendixSmList
-        if sm.get_init_state().has_transitions()
-    ]
+    appendix_sm_list = []
+    for sm in AppendixSmList:
+        if not sm.get_init_state().has_transitions(): continue
+        verdict_f, sm = Setup.buffer_codec.do_state_machine(sm, beautifier) 
+        appendix_sm_list.append(sm)
 
     # Appendix Sm Drop Out => Restore position of last loop character.
     # (i)  Couple terminal stored input position in 'CharacterBeginP'.
@@ -517,17 +720,10 @@ def _prepare_entry_and_reentry(analyzer, OnLoopEntry, OnLoopReEntry):
     init_state_index = analyzer.init_state_index
         
     # OnEntry
-    ta_on_entry              = entry.get_action(init_state_index, 
-                                                E_StateIndices.BEFORE_ENTRY)
-    ta_on_entry.command_list = OpList.concatinate(ta_on_entry.command_list, 
-                                                  OnLoopEntry)
+    entry.append_OpList(init_state_index, E_StateIndices.BEFORE_ENTRY,
+                        OnLoopEntry)
 
     # OnReEntry
-    tid_reentry = entry.enter_OpList(init_state_index, index.get(), 
-                                     OpList.from_iterable(OnLoopReEntry))
-    entry.categorize(init_state_index)
-
-    return entry.get(tid_reentry).door_id
 
 def _get_source_code(analyzer_list, terminal_list):
     """RETURNS: String containing source code for the 'loop'. 
@@ -554,160 +750,4 @@ def _get_source_code(analyzer_list, terminal_list):
     if Setup.buffer_codec.variable_character_sizes_f(): 
         variable_db.require("lexatom_begin_p")
     return txt
-
-class LoopEventHandlers:
-    """Event handlers in terms of 'List of Operations' (objects of class 'Op'):
-
-        .on_loop_entry:     upon entry into loop
-        .on_loop_exit:      upon exit from loop
-        .on_before_reload:  before buffer reload is performed.
-        .on_after_reload:   after buffer reload is performed.
-        .on_loop_reentry:   upon every iteration of loop entry.
-    """
-    @typed(TheCountMap=CountInfoMap, LexemeEndCheckF=bool, MaintainLexemeF=bool)
-    def __init__(self, TheCountMap, 
-                 LexemeEndCheckF, MaintainLexemeF, 
-                 EngineType, ReloadStateExtern, UserOnLoopExit): 
-
-        self.__prepare_begin_and_end(TheCountMap.on_loop_entry, 
-                                     TheCountMap.on_loop_exit + UserOnLoopExit)
-        self.__prepare_before_and_after_reload(MaintainLexemeF, 
-                                               TheCountMap.on_before_reload, 
-                                               TheCountMap.on_after_reload) 
-
-        self.column_number_per_code_unit = TheCountMap.get_column_count_per_chunk()
-        self.lexeme_end_check_f          = LexemeEndCheckF
-
-        self.reload_state_extern = ReloadStateExtern
-        self.engine_type         = EngineType
-
-    def __prepare_begin_and_end(self, OnLoopEntry, OnLoopExit):
-        """With codecs of dynamic character sizes (UTF8), the pointer to the 
-        first letter is stored in 'lexatom_begin_p'. To reset the input 
-        pointer 'input_p = lexatom_begin_p' is applied.  
-        """
-        if not Setup.buffer_codec.variable_character_sizes_f():
-            # 1 character == 1 code unit
-            # => reset to last character: 'input_p = input_p - 1'
-            putback         = [ Op.Decrement(E_R.InputP) ]
-            on_loop_reentry = []
-        else:
-            # 1 character == variable number of code units
-            # => store begin of character in 'lexeme_start_p'
-            # => reset to last character: 'input_p = lexeme_start_p'
-            putback         = [ Op.Assign(E_R.InputP, E_R.CharacterBeginP) ]
-            on_loop_reentry = [ Op.Assign(E_R.CharacterBeginP, E_R.InputP) ]
-
-        self.on_loop_entry = OpList.concatinate(on_loop_reentry, OnLoopEntry)
-        self.on_loop_exit  = OpList.concatinate(putback, OnLoopExit)
-
-    def __prepare_before_and_after_reload(self, MaintainLexemeF, OnBeforeReload, OnAfterReload):
-        """The 'lexeme_start_p' restricts the amount of data which is loaded 
-        into the buffer upon reload--if the lexeme needs to be maintained. If 
-        the lexeme does not need to be maintained, then the whole buffer can 
-        be refilled.
-        
-        For this, the 'lexeme_start_p' is set to the input pointer. 
-        
-        EXCEPTION: Variable character sizes. There, the 'lexeme_start_p' is used
-        to mark the begin of the current letter. However, letters are short, so 
-        the drawback is tiny.
-
-        RETURNS: [0] on_before_reload
-                 [1] on_after_reload
-        """
-        if Setup.buffer_codec.variable_character_sizes_f():
-            if MaintainLexemeF:
-                on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
-                on_after_reload  = [ Op.Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
-            else:
-                assert False
-                # Here, the character begin p needs to be adapted to what has been reloaded.
-                on_before_reload = [ ] # Begin of lexeme is enough.
-                on_after_reload  = [ ]
-        else:
-            on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.InputP) ] 
-            on_after_reload  = [ ] # Op.Assign(E_R.InputP, E_R.LexemeStartP) ]
-
-        self.on_before_reload = OpList.concatinate(on_before_reload,OnBeforeReload)
-        self.on_after_reload  = OpList.concatinate(on_after_reload, OnAfterReload)
-
-    @typed(TheLoopMapEntry=LoopMapEntry)
-    def get_loop_terminal_code(self, TheLoopMapEntry, DoorIdLoop, DoorIdLoopExit): 
-        """RETURNS: A loop terminal. 
-
-        A terminal: (i)    Counts,
-                    (ii)   checks possibly for the lexeme end, and
-                    (iii)a either re-enters the loop, or
-                    (iii)b transits to an appendix state machine (couple terminal).
-        """
-        IncidenceId = TheLoopMapEntry.incidence_id
-        AppendixSm  = TheLoopMapEntry.appendix_sm_id
-        CountAction = TheLoopMapEntry.count_action
-
-        code = CountAction.get_OpList(self.column_number_per_code_unit) 
-
-        if AppendixSmId is not None:
-            if not lei.appendix_sm_has_transitions_f:
-                # If there is no appendix, directly goto to the terminal.
-                code.extend([
-                    Op.GotoDoorId(DoorID.incidence_id(AppendixSmId)) 
-                ])
-            else:
-                assert not self.lexeme_end_check_f 
-                # Couple Terminal: transit to appendix state machine.
-                code.extend([
-                    Op.Assign(E_R.CharacterBeginP, E_R.InputP),
-                    Op.GotoDoorId(DoorID.state_machine_entry(AppendixSmId)) 
-                ])
-        elif not self.lexeme_end_check_f: 
-            # Loop Terminal: directly re-enter loop.
-            code.append(
-                Op.GotoDoorId(DoorIdLoop) 
-            )
-        else:
-            # Check Terminal: check against lexeme end before re-entering loop.
-            code.append(
-                Op.GotoDoorIdIfInputPNotEqualPointer(DoorIdLoop, E_R.LexemeEnd)
-            )
-            if     self.column_number_per_code_unit is not None \
-               and CountAction.cc_type == E_CharacterCountType.COLUMN: 
-                # With reference counting, no column counting while looping.
-                # => Do it now, before leaving.
-                code.append(
-                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                     self.column_number_per_code_unit, 
-                                                     False)
-                )
-            code.append(
-                Op.GotoDoorId(DoorIdLoopExit) 
-            )
-
-        return Terminal(code, "<LOOP TERMINAL %i>" % IncidenceId, IncidenceId)
-
-    def on_loop_after_appendix_drop_out(self, DoorIdLoop):
-        # 'CharacterBeginP' has been assigned in the 'Couple Terminal'.
-        # (see ".get_loop_terminal_code()").
-        return [
-            Op.Assign(E_R.InputP, E_R.CharacterBeginP),
-            Op.GotoDoorId(DoorIdLoop)
-        ]
-
-class LoopMapEntry:
-    def __init__(self, CharacterSet, TheCountAction, CoupleIncidenceId, AppendixSmId, 
-                 HasTransitionsF=False):
-        self.character_set  = CharacterSet
-        self.count_action   = TheCountAction
-        self.incidence_id   = CoupleIncidenceId
-        self.appendix_sm_id = AppendixSmId
-        self.appendix_sm_has_transitions_f = HasTransitionsF
-
-    def add_appendix_sm(self, SM):
-        if any(sm.get_id() == SM.get_id() for sm in self.appendix_sm_list):
-            return
-        self.appendix_sm_list.append(SM)
-
-    def __repr__(self):
-        return "(%s, %s, %s, %s)" % \
-               (self.character_set, self.count_action, self.incidence_id, self.appendix_sm)
 
