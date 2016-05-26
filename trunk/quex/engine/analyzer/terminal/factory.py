@@ -267,9 +267,9 @@ class TerminalFactory:
         ]
         return self.__terminal(text, Code, Name)
 
-    def __terminal(self, Text, SR, Code, Name,
+    def __terminal(self, Text, Code, Name,
                    LexemeRelevanceF=bool, LexemeTerminatingZeroF=bool, LexemeBeginF=bool):
-        code = CodeTerminal(text, SourceReference = Code.sr, 
+        code = CodeTerminal(Text, SourceReference = Code.sr, 
                             PureCode = Code.get_pure_code())
         return Terminal(code, Name)
 
