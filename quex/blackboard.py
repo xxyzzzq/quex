@@ -106,6 +106,12 @@ E_CharacterCountType = Enum("COLUMN",
                             "END_NEWLINE",
                             "BAD", 
                             "WHITESPACE", 
+                            #
+                            "LOOP_ENTRY",
+                            "LOOP_EXIT",
+                            "BEFORE_RELOAD",
+                            "AFTER_RELOAD",
+                            #
                             "_DEBUG_CharacterCountType")
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")

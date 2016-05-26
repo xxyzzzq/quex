@@ -19,10 +19,11 @@
 #______________________________________________________________________________                      
 
 from   quex.input.setup                           import NotificationDB
-from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.input.code.base                       import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
+from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.operations.operation_list      import Op
 from   quex.engine.misc.tools                     import typed
 from   quex.engine.misc.interval_handling         import NumberSet
 import quex.engine.misc.error                     as     error
@@ -47,26 +48,34 @@ cc_type_db = {
 cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
 
 count_operation_db_without_reference = {
-    E_CharacterCountType.BAD:    lambda Parameter: [ 
-            Op.GotoDoorId(self.door_id_on_bad_indentation) 
-        ],
-    E_CharacterCountType.COLUMN: lambda Parameter: [
-            Op.ColumnCountAdd(Parameter),
-        ],
-    E_CharacterCountType.GRID:   lambda Parameter: [
-            Op.ColumnCountGridAdd(Parameter),
-        ],
-    E_CharacterCountType.LINE:   lambda Parameter: [
-            Op.LineCountAdd(Parameter),
-            Op.AssignConstant(E_R.Column, 1),
-        ],
+    E_CharacterCountType.BAD:    lambda Parameter, Dummy=None: [ 
+        Op.GotoDoorId(Parameter)
+    ],
+    E_CharacterCountType.COLUMN: lambda Parameter, Dummy=None: [
+        Op.ColumnCountAdd(Parameter)
+    ],
+    E_CharacterCountType.GRID:   lambda Parameter, Dummy=None: [
+        Op.ColumnCountGridAdd(Parameter)
+    ],
+    E_CharacterCountType.LINE:   lambda Parameter, Dummy=None: [
+        Op.LineCountAdd(Parameter),
+        Op.AssignConstant(E_R.Column, 1),
+    ],
+    E_CharacterCountType.LOOP_ENTRY: lambda Parameter, Dummy=None: [ 
+    ],
+    E_CharacterCountType.LOOP_EXIT: lambda Parameter, Dummy=None: [ 
+    ],
+    E_CharacterCountType.BEFORE_RELOAD: lambda Parameter, Dummy=None: [ 
+    ],
+    E_CharacterCountType.AFTER_RELOAD: lambda Parameter, Dummy=None: [ 
+    ],
 }
 
 count_operation_db_with_reference = {
     E_CharacterCountType.BAD:    lambda Parameter, ColumnNPerCodeUnit: [
         Op.ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerCodeUnit, False),
         Op.ColumnCountReferencePSet(E_R.InputP),
-        Op.GotoDoorId(self.door_id_on_bad_indentation) 
+        Op.GotoDoorId(Parameter) 
     ],
     E_CharacterCountType.COLUMN: lambda Parameter, ColumnNPerCodeUnit: [
     ],
@@ -79,7 +88,33 @@ count_operation_db_with_reference = {
         Op.LineCountAdd(Parameter),
         Op.AssignConstant(E_R.Column, 1),
         Op.ColumnCountReferencePSet(E_R.InputP)
-    ]
+    ],
+    E_CharacterCountType.LOOP_ENTRY: lambda Parameter, ColumnNPerCodeUnit: [ 
+        Op.ColumnCountReferencePSet(Parameter) 
+    ],
+    E_CharacterCountType.LOOP_EXIT: lambda Parameter, ColumnNPerCodeUnit: [ 
+        Op.ColumnCountReferencePDeltaAdd(Parameter, ColumnNPerCodeUnit, False) 
+    ],
+    # BEFORE RELOAD:                                            input_p
+    #                                                           |
+    #                [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+    #                                            |
+    #                                            reference_p
+    #    
+    #     column_n += (input_p - reference_p) * ColumnNPerCodeUnit
+    #
+    #  AFTER RELOAD:  input_p
+    #                 |
+    #                [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+    #                 |
+    #                 reference_p                                   
+    #       
+    E_CharacterCountType.BEFORE_RELOAD: lambda Parameter, ColumnNPerCodeUnit: [ 
+        Op.ColumnCountReferencePDeltaAdd(Parameter, ColumnNPerCodeUnit, False) 
+    ],
+    E_CharacterCountType.AFTER_RELOAD: lambda Parameter, ColumnNPerCodeUnit: [ 
+        Op.ColumnCountReferencePSet(Parameter) 
+    ],
 }
 
 class CountAction(namedtuple("CountAction", ("cc_type", "value", "sr"))):

@@ -37,20 +37,20 @@ ABSOLUTELY NO WARRANTY
 _______________________________________________________________________________
 """
 
-import quex.engine.analyzer.track_analysis        as     track_analysis
-from   quex.engine.analyzer.paths_to_state        import PathsToState
-import quex.engine.analyzer.optimizer             as     optimizer
-from   quex.engine.analyzer.state.entry           import Entry
-from   quex.engine.analyzer.state.core            import Processor, \
-                                                         AnalyzerState, \
-                                                         ReloadState
-import quex.engine.analyzer.state.drop_out        as     drop_out
-from   quex.engine.analyzer.state.entry_action    import TransitionAction
-from   quex.engine.operations.operation_list                  import Op, \
-                                                         OpList
-import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
-import quex.engine.analyzer.position_register_map as     position_register_map
-import quex.engine.analyzer.engine_supply_factory as     engine
+import quex.engine.analyzer.track_analysis          as     track_analysis
+from   quex.engine.analyzer.paths_to_state          import PathsToState
+import quex.engine.analyzer.optimizer               as     optimizer
+from   quex.engine.analyzer.state.entry             import Entry
+from   quex.engine.analyzer.state.core              import Processor, \
+                                                           AnalyzerState, \
+                                                           ReloadState
+import quex.engine.analyzer.state.drop_out          as     drop_out
+from   quex.engine.analyzer.state.entry_action      import TransitionAction
+from   quex.engine.operations.operation_list        import Op, \
+                                                           OpList
+import quex.engine.analyzer.mega_state.analyzer     as     mega_state_analyzer
+import quex.engine.analyzer.position_register_map   as     position_register_map
+import quex.engine.analyzer.engine_supply_factory   as     engine
 
 from   quex.engine.state_machine.core               import StateMachine
 from   quex.engine.state_machine.state.single_entry import SeAccept      
@@ -69,10 +69,12 @@ from   itertools        import imap
 from   operator         import attrgetter
 
 def do(SM, EngineType=engine.FORWARD, 
-       ReloadStateExtern=None, OnBeforeReload=None, OnAfterReload=None):
+       ReloadStateExtern=None, OnBeforeReload=None, OnAfterReload=None, 
+       OnBeforeEntry=None):
 
     # Generate Analyzer from StateMachine
-    analyzer = Analyzer.from_StateMachine(SM, EngineType, ReloadStateExtern)
+    analyzer = Analyzer.from_StateMachine(SM, EngineType, ReloadStateExtern, 
+                                          OnBeforeEntry)
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
@@ -116,19 +118,21 @@ class Analyzer:
         self.__state_machine_id = None
 
     @classmethod
-    @typed(SM=StateMachine, EngineType=engine.Base)
-    def from_StateMachine(cls, SM, EngineType, ReloadStateExtern=None):
+    @typed(SM=StateMachine, EngineType=engine.Base, OnBeforeEntry=(OpList, None))
+    def from_StateMachine(cls, SM, EngineType, ReloadStateExtern=None, OnBeforeEntry=None):
         """ReloadStateExtern is only to be specified if the analyzer needs
         to be embedded in another one.
         """
+        if OnBeforeEntry is None: OnBeforeEntry = OpList()
+
         result = cls(EngineType, SM.init_state_index)
-        result._prepare_state_information(SM)
+        result._prepare_state_information(SM, OnBeforeEntry)
         result._prepare_reload_state(ReloadStateExtern, EngineType)
         result._prepare_entries_and_drop_out(EngineType, SM)
         return result
 
-    @typed(SM=StateMachine)
-    def _prepare_state_information(self, SM):
+    @typed(SM=StateMachine, OnBeforeEntry=OpList)
+    def _prepare_state_information(self, SM, OnBeforeEntry):
         self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
         self.__state_machine_id            = SM.get_id()
 
@@ -142,7 +146,7 @@ class Analyzer:
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db.update(
-            (state_index, self.prepare_state(state, state_index))
+            (state_index, self.prepare_state(state, state_index, OnBeforeEntry))
             for state_index, state in SM.states.iteritems()
         )
 
@@ -243,7 +247,8 @@ class Analyzer:
             yield i
         yield None
 
-    def prepare_state(self, OldState, StateIndex):
+    @typed(OnBeforeEntry=OpList)
+    def prepare_state(self, OldState, StateIndex, OnBeforeEntry):
         """REQUIRES: 'self.init_state_forward_f', 'self.engine_type', 'self.__from_db'.
         """
         state = AnalyzerState.from_State(OldState, StateIndex, self.engine_type)
@@ -291,7 +296,9 @@ class Analyzer:
 
         if StateIndex == self.init_state_index:
             if self.engine_type.is_FORWARD():
-                ta = TransitionAction(OpList(Op.InputPDereference()))
+                on_entry_op_list = OnBeforeEntry.clone()
+                on_entry_op_list.append(Op.InputPDereference())
+            ta = TransitionAction(on_entry_op_list)
             state.entry.enter_state_machine_entry(self.__state_machine_id, 
                                                   StateIndex, ta)
 
@@ -455,7 +462,7 @@ class Analyzer:
                                          acceptance_storage_db,
                                          position_storage_db)
             self.drop_out.entry.enter_OpList(E_StateIndices.DROP_OUT, 
-                                                  state_index, cl)
+                                             state_index, cl)
         return acceptance_storage_db, position_storage_db
 
     def configure_all_entries(self, acceptance_storage_db, position_storage_db, PathElementDb):
