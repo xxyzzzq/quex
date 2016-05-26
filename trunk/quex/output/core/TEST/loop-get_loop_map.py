@@ -42,8 +42,8 @@ if "--hwut-info" in sys.argv:
 
 def test(ci_list, SM_list=[]):
     Setup.buffer_codec.source_set = NumberSet_All()
-    ci_map   = CountInfoMap(ci_list, NumberSet.from_range(0, 100))
-    iid_loop_exit = dial_db.new_incidence_id()
+    ci_map                     = CountInfoMap(ci_list, NumberSet.from_range(0, 100))
+    iid_loop_exit              = dial_db.new_incidence_id()
     loop_map, appendix_sm_list = loop._get_loop_map(ci_map, SM_list, iid_loop_exit) 
 
     print

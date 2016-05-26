@@ -1,8 +1,21 @@
 # TEST: Generate all Analyzer-s based on a given LoopMap
 #
 # This test calls '_get_analyzer_list()' to generate a list of analyzers
-# related to a loop map. The structure of the analyzers in the list is 
-# unimportant--none of them is modified.
+# related to a loop map. 
+#
+# UNIMPORTANT:
+#
+#      -- The structure of the analyzers in the list is unimportant;
+#         none of them is modified.
+#      -- The loop maps constitutition is (almost) unimportant. 
+#
+# IMPORTANT:
+#
+#      -- The loop analyzer implements the loop map correctly. 
+#      -- All appendix state machines are translated into analyzers.
+#      -- For counting, the counting behavior differs if the number 
+#         of code units per character is constant or not.
+#      => use same loop map for all analyzers.
 # 
 # Variations: Column Number per CodeUnit = const. or not.
 #             Number of CodeUnits per Character = const. or not.
@@ -26,41 +39,25 @@ from   quex.engine.misc.interval_handling         import NumberSet, \
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.loop_counter                   import CountInfoMap, \
                                                          CountInfo
+import quex.engine.state_machine.transformation.core as  bc_factory
+import quex.engine.analyzer.engine_supply_factory as     engine
 import quex.output.core.loop                      as     loop
+from   quex.output.core.loop                      import LoopMapEntry, \
+                                                         LoopEventHandlers
 from   quex.blackboard                            import E_CharacterCountType, \
                                                          setup as Setup
-NS_A = NumberSet.from_range(ord('A'), ord('A') + 1)
-NS_B = NumberSet.from_range(ord('B'), ord('B') + 1)
-NS_C = NumberSet.from_range(ord('C'), ord('C') + 1)
-NS_D = NumberSet.from_range(ord('D'), ord('D') + 1)
-
 if "--hwut-info" in sys.argv:
     print "Loop: Get All Analyzers."
     print "CHOICES: Unicode-Const, Unicode-NonConst, UTF8-Const, UTF8-NonConst;"
 
-if "Unicode" in sys.argv[1]: encoding = "unicode"
-else:                        encoding = "utf8"
+if "Unicode" in sys.argv[1]:  encoding = "unicode"
+else:                         encoding = "utf8"
 
-if "NonConst" in sys.argv[1]: 
-    # Constant column number per code unit
-    loop_map = [
-        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), None)
-        LoopMapEntry(NS_B, CA_1, CA_1.get_incidence_id(), AppendixSmId_0)
-        LoopMapEntry(NS_C, CA_2, CA_2.get_incidence_id(), AppendixSmId_1)
-        LoopMapEntry(NS_D, CA_3, CA_0.get_incidence_id(), None)
-    ]
-    column_n_per_code_unit = None
-else:
-    loop_map = [
-        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), None)
-        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), AppendixSmId_0)
-        LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), AppendixSmId_1)
-    ]
-    column_n_per_code_unit = 1
+# Constant column number per code unit
+if "NonConst" in sys.argv[1]: column_n_per_code_unit = None
+else:                         column_n_per_code_unit = 6     # See CA_0, below.
 
-Setup.buffer_codec_set(bc_factory.do("unicode"), LexatomSizeInBytes=1)
-
-def test(LoopMap):
+def test(LoopMap, EventHandler):
     """
     event_handler:    Simply, some event handlers are generated which allow to
                       identify their placement in the right positions.
@@ -70,183 +67,82 @@ def test(LoopMap):
                       trivial single transition state machine is generated on 
                       the fly.
     """
+    global loop_map
+
     Setup.buffer_codec.source_set = NumberSet_All()
 
-    event_handler    = _get_LoopMapEventHandlers() 
-    appendix_sm_list = _get_appendix_sm_list(LoopMap)
+    appendix_sm_list = _get_appendix_sm_list(loop_map)
 
-    analyzer_list = loop._get_analyzer_list(LoopMap,
-                                            event_handler, 
-                                            appendix_sm_list) 
+    analyzer_list    = loop._get_analyzer_list(loop_map,
+                                               EventHandler, 
+                                               appendix_sm_list) 
 
     print_this(analyzer_list)
 
-def _get_loop_map():
-    return []
-
 def _get_appendix_sm_list(LoopMap):
-    def get_sm(SmId):
+    def get_sm(SmId, Trigger):
         sm = StateMachine.from_IncidenceIdMap([
-            (NumberSet.from_range(10,11), SmId)
+            (NumberSet.from_range(Trigger, Trigger + 1), SmId)
         ])
         sm.set_id(SmId)
         return sm
 
     return [
-        get_sm(lei.appendix_sm_id) for lei in LoopMap
+        get_sm(lei.appendix_sm_id, trigger) for trigger, lei in enumerate(LoopMap)
         if lei.appendix_sm_has_transitions_f
     ]
 
-def _get_LoopMapEventHandlers():
-    return LoopEventHandlers(TheCountMap, False, False, 
-                             EngineType, 
-                             ReloadStateExtern, 
-                             user_on_loop_exit)
-
-def general_checks(loop_map, appendix_sm_list):
-    print "#_[ Checks ]__________________________________________________"
+def print_this(AnalyzerList):
+    print "#_[ Print %i analyzer(s) ]______________________________" % len(AnalyzerList)
     print
-    print "character sets do not intersect",
-    all_set = NumberSet()
-    for lei in loop_map:
-        assert lei.character_set is not None
-        assert not lei.character_set.has_intersection(all_set)
-        all_set.unite_with(lei.character_set)
-    print "[ok]"
+    for i, analyzer in enumerate(AnalyzerList):
+        print "--( %i: init si = %i )-------------------------\n" % (i, analyzer.init_state_index)
+        print analyzer
 
-    print "count actions do not appear more than once",
-    count_action_couple_set = set()
-    count_action_plain_set  = set()
-    exit_exists_f           = False
-    appendix_sm_id_set      = set()
-    for lei in loop_map:
-        if lei.count_action is None: 
-            assert lei.appendix_sm_id is None
-            exit_exists_f = True
-        elif lei.appendix_sm_id is None:
-            assert lei.incidence_id not in count_action_plain_set
-            count_action_plain_set.add(lei.incidence_id)
-        else:
-            assert lei.incidence_id not in count_action_couple_set
-            count_action_couple_set.add(lei.incidence_id)
-            appendix_sm_id_set.add(lei.appendix_sm_id)
-    print "[ok]"
-    list_id_set = set(sm.get_id() for sm in appendix_sm_list)
-    assert appendix_sm_id_set == list_id_set
-    print "appendix sm-ids are the same in loop map and sm list: [ok]"
-    print "exit character set exits: [%s]" % exit_exists_f
+if encoding == "unicode":
+    NS_A = NumberSet.from_range(ord('A'), ord('A') + 1)
+    NS_B = NumberSet.from_range(ord('B'), ord('B') + 1)
+    NS_C = NumberSet.from_range(ord('C'), ord('C') + 1)
+    NS_D = NumberSet.from_range(ord('D'), ord('D') + 1)
+    NS_E = NumberSet.from_range(ord('E'), ord('E') + 1)
+else:
+    NS_A = NumberSet.from_range(0x600, 0x601)
+    NS_B = NumberSet.from_range(0x601, 0x602)
+    NS_C = NumberSet.from_range(0x602, 0x603)
+    NS_D = NumberSet.from_range(0x603, 0x604)
+    NS_E = NumberSet.from_range(0x604, 0x605)
 
-    print
+CA_0 = CountAction(E_CharacterCountType.COLUMN,     5)
+CA_1 = CountAction(E_CharacterCountType.LINE,       1)
+CA_2 = CountAction(E_CharacterCountType.GRID,       2)
+CA_3 = CountAction(E_CharacterCountType.WHITESPACE, 3)
+CA_4 = CountAction(E_CharacterCountType.WHITESPACE, 4)
 
-def print_this(loop_map, appendix_sm_list):
-    print "#_[ Print ]___________________________________________________"
-    print
-    for lei in sorted(loop_map, key=lambda x: x.character_set.minimum()):
-        print lei.character_set.get_string(Option="hex"), lei.incidence_id, lei.count_action,
-        if lei.appendix_sm_id is None: print; continue
-        print "<appendix: %s>" % lei.appendix_sm_id
+# Mini Appendix Sm-s are generated during the test.
+appendix_sm_id_0 = 815L
+appendix_sm_id_1 = 4711L
+appendix_sm_id_2 = 33L
 
-    if not appendix_sm_list: return
+#______________________________________________________________________________
+#
+# CHOICE: --> encoding
+#         --> column_n_per_code_unit
+#
+Setup.buffer_codec_set(bc_factory.do(encoding), LexatomSizeInBytes=1)
 
-    print
-    print "#_[ Appendix State Machines ]________________________________"
-    print
-    for sm in sorted(appendix_sm_list, key=lambda sm: sm.get_id()):
-        print "IncidenceId: %s" % sm.get_id()
-        print sm
-        print
+event_handler = LoopEventHandlers(column_n_per_code_unit, 
+                                  MaintainLexemeF   = False, 
+                                  LexemeEndCheckF   = False, 
+                                  EngineType        = engine.FORWARD, 
+                                  ReloadStateExtern = None, 
+                                  UserOnLoopExit    = [])
 
-def get_setup(L0, L1, FSM0, FSM1, FSM2):
-    # SPECIALITIES: -- sm0 and sm1 have an intersection between their second 
-    #                  transition.
-    #               -- sm1 transits further upon acceptance.
-    #               -- sm2 has only one transition.
-    ci_list = [
-        CountInfo(dial_db.new_incidence_id(), NumberSet.from_range(L0, L1), 
-                  CountAction(E_CharacterCountType.COLUMN, 0)),
-    ]
+loop_map = [
+    LoopMapEntry(NS_A, CA_0, CA_0.get_incidence_id(), None),
+    LoopMapEntry(NS_B, CA_1, CA_1.get_incidence_id(), appendix_sm_id_0, HasTransitionsF=True),
+    LoopMapEntry(NS_C, CA_2, CA_2.get_incidence_id(), appendix_sm_id_0, HasTransitionsF=True),
+    LoopMapEntry(NS_D, CA_3, CA_0.get_incidence_id(), appendix_sm_id_1),
+    LoopMapEntry(NS_E, CA_4, CA_4.get_incidence_id(), appendix_sm_id_2, HasTransitionsF=False)
+]
 
-    # Generate State Machine that does not have any intersection with 
-    # the loop transitions.
-    sm0 = StateMachine()
-    si = sm0.add_transition(sm0.init_state_index, FSM0)
-    si = sm0.add_transition(si, NS_A, AcceptanceF=True)
-    sm0.states[si].mark_acceptance_id(dial_db.new_incidence_id())
-
-    sm1 = StateMachine()
-    si0 = sm1.add_transition(sm1.init_state_index, FSM1)
-    si  = sm1.add_transition(si0, NS_A, AcceptanceF=True)
-    iid1 = dial_db.new_incidence_id()
-    sm1.states[si].mark_acceptance_id(iid1)
-    si  = sm1.add_transition(si, NS_B, si0)
-    sm1.states[si].mark_acceptance_id(iid1)
-
-    sm2 = StateMachine()
-    si = sm2.add_transition(sm2.init_state_index, FSM2, AcceptanceF=True)
-    sm2.states[si].mark_acceptance_id(dial_db.new_incidence_id())
-
-    return ci_list, [sm0, sm1, sm2]
-
-if "Plain" in sys.argv:
-    # No parallel state machines
-    test([
-        CountInfo(0, NumberSet.from_range(0,    0x10), CountAction(E_CharacterCountType.COLUMN,     0)),
-        CountInfo(1, NumberSet.from_range(0x20, 0x30), CountAction(E_CharacterCountType.LINE,       1)),
-        CountInfo(2, NumberSet.from_range(0x40, 0x50), CountAction(E_CharacterCountType.GRID,       2)),
-        CountInfo(3, NumberSet.from_range(0x60, 0x70), CountAction(E_CharacterCountType.WHITESPACE, 3)),
-    ])
-
-elif "AppendixNoI" in sys.argv:
-    # Three state machines (no one intersects):
-    # 
-    # First Trans. sm0:         0x10-0x1F
-    # First Trans. sm1:                   0x20-0x2F
-    # First Trans. sm2:                             0x30-0x3F
-    #
-    ci_list, sm_list = get_setup(0x10, 0x40, 
-                                 NumberSet.from_range(0x10, 0x20), 
-                                 NumberSet.from_range(0x20, 0x30), 
-                                 NumberSet.from_range(0x30, 0x40))
-
-    for sm in sm_list:
-        test(ci_list, [sm])
-    test(ci_list, sm_list)
-
-elif "AppendixI" in sys.argv:
-    # Three state machines (no one intersects):
-    # 
-    # First Trans. sm0:         0x10 -               0x3F
-    # First Trans. sm1:                0x20 -              0x4F
-    # First Trans. sm2:                       0x30 -            0x5F
-    #                           |  1  | 1&2  |   1&2&3   | 2&3 | 3  |  
-    #
-    ci_list, sm_list = get_setup(0x10, 0x60, 
-                                 NumberSet.from_range(0x10, 0x40), 
-                                 NumberSet.from_range(0x20, 0x50), 
-                                 NumberSet.from_range(0x30, 0x60))
-
-    # Test for each 'sm' in 'sm_list' is superfluous. 
-    # It is done in 'AppendixNoI'.
-    test(ci_list, sm_list)
-
-elif "Split" in sys.argv:
-    # A first transition of a state machine is separated into two, because
-    # it is covered by more than one different count action.
-    NS1 = NumberSet.from_range(0x10, 0x20)
-    NS2 = NumberSet.from_range(0x20, 0x30)
-    NS3 = NumberSet.from_range(0x30, 0x40)
-    NS4 = NumberSet.from_range(0x40, 0x50)
-    ci_list = [
-        CountInfo(dial_db.new_incidence_id(), NS1, CountAction(E_CharacterCountType.COLUMN, 1)),
-        CountInfo(dial_db.new_incidence_id(), NS2, CountAction(E_CharacterCountType.COLUMN, 2)),
-        CountInfo(dial_db.new_incidence_id(), NS3, CountAction(E_CharacterCountType.COLUMN, 3)),
-        CountInfo(dial_db.new_incidence_id(), NS4, CountAction(E_CharacterCountType.COLUMN, 4))
-    ]
-
-    sm  = StateMachine()
-    si  = sm.init_state_index
-    iid = dial_db.new_incidence_id()
-    ti0 = sm.add_transition(si, NumberSet.from_range(0x1A, 0x4B))
-    ac0 = sm.add_transition(ti0, NS_A, AcceptanceF=True)
-
-    test(ci_list, [sm])
+test(loop_map, event_handler)
