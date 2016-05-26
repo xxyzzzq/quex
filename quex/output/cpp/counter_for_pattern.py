@@ -61,6 +61,7 @@ def get(ThePattern, ShiftF=True):
     if ThePattern is None:
         default_counter_f = True
         text              = Lng.DEFAULT_COUNTER_CALL()
+        return default_counter_f, text
     
     assert type(ShiftF) == bool
 
