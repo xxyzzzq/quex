@@ -174,7 +174,14 @@ class AnalyzerState(Processor):
         txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]
         # if InputF:         txt.append("  .input: move position %s\n" % repr(self.input))
         if EntryF:         txt.append("  .entry:\n"); txt.append(repr(self.entry))
-        if TransitionMapF: txt.append("  .transition_map:\n")
+        if TransitionMapF: 
+            txt.append(" -- .transition_map:\n")
+            txt.extend(
+                "    %s: %s\n" % (number_set, target_door_id)
+                for number_set, target_door_id in self.transition_map
+            )
+        else:
+            txt.append("  .transition_map:\n")
         txt.append("\n")
         return txt
 

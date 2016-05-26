@@ -127,11 +127,11 @@ class Entry(object):
         assert isinstance(TheAction, TransitionAction)
         #!! It is ABSOLUTELY essential, that the OpList-s related to actions are
         #!! independent! Each transition must have its OWN OpList!
-        for transition_id, action in self.__db.iteritems():
-            assert id(TheAction.command_list) != id(action.command_list) 
+        assert all(id(TheAction.command_list) != id(action.command_list) 
+                   for transition_id, action in self.__db.iteritems())
 
-        transition_id = TransitionID(ToStateIndex, FromStateIndex, 
-                                     TriggerId=self.__get_trigger_id(ToStateIndex, FromStateIndex))
+        trigger_id    = self.__get_trigger_id(ToStateIndex, FromStateIndex)
+        transition_id = TransitionID(ToStateIndex, FromStateIndex, trigger_id)
         self.__db[transition_id] = TheAction
         return transition_id
 
@@ -140,12 +140,12 @@ class Entry(object):
         ta.door_id = DoorID.state_machine_entry(SM_id)
         return self.enter(ToStateIndex, E_StateIndices.BEFORE_ENTRY, ta)
 
-    def enter_before(self, ToStateIndex, FromStateIndex, TheOpList):
+    def append_OpList(self, ToStateIndex, FromStateIndex, TheOpList):
         transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
         ta = self.__db.get(transition_id)
         # A transition_action cannot be changed, once it has a DoorID assigned to it.
         assert ta.door_id is None
-        ta.command_list = TheOpList.concatinate(ta.command_list)
+        ta.command_list = ta.command_list.concatinate(TheOpList)
 
     def __get_trigger_id(self, ToStateIndex, FromStateIndex):
         ft = (ToStateIndex, FromStateIndex)
@@ -154,6 +154,7 @@ class Entry(object):
         # state machine. There cannot be more than one entry into the state 
         # machine. Thus, it cannot appear twice.
         assert FromStateIndex != E_StateIndices.BEFORE_ENTRY or tmp is None
+
         if tmp is None: self.__trigger_id_db[ft]  = 0; tmp = 0;
         else:           self.__trigger_id_db[ft] += 1
         return tmp
@@ -278,7 +279,9 @@ class Entry(object):
         """
         #!! It is ABSOLUTELY essential, that the OpList-s related to actions are
         #!! independent! Each transition must have its OWN OpList!
-        cmd_list_ids = [ id(action.command_list) for action in self.__db.itervalues() ]
+        cmd_list_ids = [ 
+            id(action.command_list) for action in self.__db.itervalues() 
+        ]
         assert len(cmd_list_ids) == len(set(cmd_list_ids)) # size(list) == size(unique set)
 
         work_list = [
@@ -327,6 +330,9 @@ class Entry(object):
             if cmp_command_list is None: 
                 check_db[action.door_id] = action.command_list
             elif cmp_command_list != action.command_list:
+                print "#door_id:", action.door_id
+                print "#cmp0:", cmp_command_list
+                print "#cmp1:", action.command_list
                 return False
 
         # Some commands shall never occur more than once in a command list:

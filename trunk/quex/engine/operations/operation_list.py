@@ -80,6 +80,7 @@ from   quex.engine.misc.tools import delete_if
 
 from   collections import namedtuple
 from   copy        import deepcopy
+from   itertools   import chain
 import types
 import numbers
 
@@ -519,7 +520,7 @@ class OpList(list):
     def __enter_list(self, Other):
         for op in Other:
             assert isinstance(op, Op), "%s: %s" % (op.__class__, op)
-        super(OpList, self).__init__(Other)
+        super(OpList, self).extend(Other)
 
     @classmethod
     def from_iterable(cls, Iterable):
@@ -527,13 +528,15 @@ class OpList(list):
         result.__enter_list(list(Iterable))
         return result
 
-    def concatinate(self, Other):
+    @staticmethod
+    def concatinate(*ListOfOpLists):
         """Generate a mew OpList with .cloned() elements out of self and
         the Other OpList.
         """ 
-        result = OpList()
-        result.__enter_list([ x.clone() for x in self ] + [ x.clone() for x in Other ])
-        return result
+        return OpList.from_iterable(x.clone() 
+                                    for sub_list in ListOfOpLists
+                                    for x in sub_list)
+
 
     def cut(self, NoneOfThis):
         """Delete all commands of NoneOfThis from this command list.

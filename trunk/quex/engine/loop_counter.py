@@ -48,25 +48,13 @@ class CountInfo(object):
 
 class CountInfoMap:
     """________________________________________________________________________
-    Produces Count Commands
-
-    The factory is setup with basic parameters which are used later to produce
-    count commands. 
+    Associates character sets with CountInfo objects and stores information to
+    produce count commands.
     ___________________________________________________________________________
     """
     def __init__(self, CMap, CharacterSet):
-        ## self.counter_db   = CounterDb # is LineColumnCount/IndentationCount
         self.__map           = CMap
-        ## self.input_p_name = InputPName
         self.__character_set = CharacterSet
-
-        self.__on_begin         = None
-        self.__on_end           = None
-        self.__on_before_reload = None
-        self.__on_after_reload  = None
-
-        # (Only indentation handler will set the following)
-        self.door_id_on_bad_indentation = None
 
     @staticmethod
     @typed(CounterDb=LineColumnCount, CharacterSet=NumberSet)
@@ -92,9 +80,8 @@ class CountInfoMap:
         if bad_character_set is not None:
             result.__map.append(
                 CountInfo(dial_db.new_incidence_id(), bad_character_set,
-                          CountAction(E_CharacterCountType.BAD, None))
+                          CountAction(E_CharacterCountType.BAD, DoorIdBad))
             )
-        result.door_id_on_bad_indentation = DoorIdBad
         return result
 
     def loop_character_set(self):
@@ -143,26 +130,6 @@ class CountInfoMap:
         return self.counter_db.count_command_map.get_column_number_per_chunk(self.character_set)
 
     @property
-    def on_begin(self):
-        if not self.__on_begin: self.__prepare()
-        return self.__on_begin
-
-    @property
-    def on_end(self):
-        if not self.__on_end: self.__prepare()
-        return self.__on_end
-
-    @property
-    def on_before_reload(self):
-        if not self.__on_before_reload: self.__prepare()
-        return self.__on_before_reload
-
-    @property
-    def on_after_reload(self):
-        if not self.__on_after_reload: self.__prepare()
-        return self.__on_after_reload
-
-    @property
     def character_set(self):
         return self.__character_set.intersection(Setup.buffer_codec.source_set)
 
@@ -188,54 +155,6 @@ class CountInfoMap:
 
     def requires_reference_p(self):
         return self.get_column_count_per_chunk() is not None
-
-    def __prepare(self):
-        """BEFORE RELOAD:
-                                                           input_p
-                                                           |
-                [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-                                            |
-                                            reference_p
-             
-                     column_n += (input_p - reference_p) * C
-
-              where C = ColumnNPerChunk
-
-           AFTER RELOAD:
-
-                 input_p
-                 |
-                [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-                 |
-                 reference_p
-        """
-        column_n_per_code_unit = self.get_column_count_per_chunk()
-
-        if column_n_per_code_unit is None: 
-            self.__on_begin         = [ ]
-            self.__on_end           = [ ]
-            self.__on_before_reload = [ ]
-            self.__on_after_reload  = [ ]
-        else:
-            # When there is more than one chunk possibly involved, then it is
-            # possible that reload happens in between one character. I such cases
-            # the 'input_p' cannot be used as reference for delta-add. Here,
-            # we must rely on the 'character begin_p'.
-            if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
-            else:                                               pointer = E_R.InputP
-
-            self.__on_begin = [ 
-                Op.ColumnCountReferencePSet(pointer) 
-            ]
-            self.__on_end = [ 
-                Op.ColumnCountReferencePDeltaAdd(pointer, column_n_per_code_unit, False) 
-            ]
-            self.__on_before_reload = [ 
-                Op.ColumnCountReferencePDeltaAdd(pointer, column_n_per_code_unit, False) 
-            ]
-            self.__on_after_reload = [ 
-                Op.ColumnCountReferencePSet(pointer) 
-            ]
 
 def _get_all_character_set(*DbList):
     result = NumberSet()
