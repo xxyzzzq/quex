@@ -64,9 +64,9 @@ def get_skipper(TheAnalyzer, OpenerSequence, CloserSequence, OnSkipRangeOpen, Do
     psml             = _get_state_machine_vs_terminal_list(CloserSequence, 
                                                            OpenerSequence,
                                                            CounterDb, DoorIdAfter)
-    count_op_factory = CountInfoMap.from_ParserDataLineColumn(CounterDb, 
-                                                                    NumberSet_All(), 
-                                                                    Lng.INPUT_P()) 
+    count_op_factory = CountInfoMap.from_LineColumnCount(CounterDb, 
+                                                         NumberSet_All(), 
+                                                         Lng.INPUT_P()) 
     result,          \
     door_id_beyond   = loop.do(count_op_factory,
                                OnLoopExit        = [ Op.GotoDoorId(DoorIdAfter) ],

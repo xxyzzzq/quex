@@ -117,9 +117,9 @@ def do_default_counter(Mode):
         return []
 
     dial_db.clear()
-    ccfactory = CountInfoMap.from_ParserDataLineColumn(Mode.counter_db, 
-                                                             Setup.buffer_codec.source_set, 
-                                                             Lng.INPUT_P())
+    ccfactory = CountInfoMap.from_LineColumnCount(Mode.counter_db, 
+                                                  Setup.buffer_codec.source_set, 
+                                                  Lng.INPUT_P())
 
     variable_db.init()
 
