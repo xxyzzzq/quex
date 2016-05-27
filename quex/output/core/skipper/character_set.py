@@ -69,7 +69,7 @@ def do(Data, TheAnalyzer):
 
     reload_state = TheAnalyzer.reload_state
 
-    ccfactory    = CountInfoMap.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()) 
+    ccfactory    = CountInfoMap.from_LineColumnCount(counter_db, character_set, Lng.INPUT_P()) 
         
     result,        \
     door_id_beyond = loop.do(ccfactory,

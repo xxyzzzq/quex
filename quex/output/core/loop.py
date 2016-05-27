@@ -314,8 +314,8 @@ class LoopEventHandlers:
             Op.GotoDoorId(DoorIdLoop)
         ]
 
-@typed(ReloadF=bool, LexemeEndCheckF=bool, OnLoopExit=list)
-def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None, 
+@typed(TheCountMap=CountInfoMap, ReloadF=bool, LexemeEndCheckF=bool, OnLoopExit=list)
+def do(TheCountMap, OnLoopExit, LexemeEndCheckF=False, EngineType=None, 
        ReloadStateExtern=None, LexemeMaintainedF=False,
        ParallelSmTerminalPairList=None):
     """Generates a structure that 'loops' quickly over incoming characters.
@@ -353,6 +353,8 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
             
     During the 'loop' possible line/column count commands may be applied. 
     """
+    if ParallelSmTerminalPairList is None:
+        ParallelSmTerminalPairList = []
     parallel_terminal_list = []
     parallel_sm_list       = []
     for sm, terminal in ParallelSmTerminalPairList:
@@ -362,7 +364,10 @@ def do(CcFactory, OnLoopExit, LexemeEndCheckF=False, EngineType=None,
     iid_loop_exit = dial_db.new_incidence_id()
 
     assert EngineType is not None
-    event_handler  = LoopEventHandlers(LexemeMaintainedF, CcFactory, OnLoopExit)
+    event_handler = LoopEventHandlers(TheCountMap.column_n_per_code_unit(), 
+                                      LexemeEndCheckF, LexemeMaintainedF, 
+                                      EngineType, ReloadStateExtern, 
+                                      UserOnLoopExit) 
 
     # LoopMap: Associate characters with the reactions on their occurrence ____
     #

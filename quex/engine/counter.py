@@ -175,7 +175,7 @@ class CountActionMap(list):
         considered_set = (E_CharacterCountType.COLUMN, 
                           E_CharacterCountType.GRID, 
                           E_CharacterCountType.LINE)
-        for character_set, info in self.__map:
+        for character_set, info in self:
             if character_set.has_intersection(CharacterSet):
                 if info.cc_type not in considered_set: continue
                 yield character_set.intersection(CharacterSet), info
