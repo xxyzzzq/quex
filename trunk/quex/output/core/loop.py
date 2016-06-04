@@ -783,9 +783,10 @@ def _get_source_code(analyzer_list, terminal_list, ColumnNPerChunk,
     txt.extend(
         generator.do_terminals(terminal_list, TheAnalyzer=None)
     )
-    if analyzer_list[0].engine_type.subject_to_reload():
+    loop_analyzer = analyzer_list[0]
+    if loop_analyzer.engine_type.subject_to_reload():
         txt.extend(
-            generator.do_reload_procedure(analyzer)
+            generator.do_reload_procedure(loop_analyzer)
         )
 
     if AppendixSmExistF or ColumnNPerChunk is not None:
