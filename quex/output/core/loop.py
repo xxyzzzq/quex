@@ -214,7 +214,7 @@ class LoopEventHandlers:
         if not Setup.buffer_codec.variable_character_sizes_f():
             # 1 character == 1 code unit
             # => reset to last character: 'input_p = input_p - 1'
-            on_loop_exit    = [ Op.Decrement(E_R.InputP) ]
+            on_loop_exit    = [ ] # Op.Decrement(E_R.InputP) ]
             on_loop_reentry = []
         else:
             # 1 character == variable number of code units

@@ -99,8 +99,8 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
     )
     txt.append(
          "%s:\n" % dial_db.get_label_by_door_id(DoorIdReturn) \
-       + "     __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
-         % IteratorName \
+       + "     /* Assert: lexeme in codec's character boundaries. */\n" \
+       + "     __quex_assert(%s == LexemeEnd);\n" % IteratorName \
        + "    return;\n" \
        + "".join(generator.do_state_router()) \
        + "#   undef self\n" \

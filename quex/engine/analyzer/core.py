@@ -298,7 +298,7 @@ class Analyzer:
             if self.engine_type.is_FORWARD():
                 on_entry_op_list = OnBeforeEntry.clone()
                 on_entry_op_list.append(Op.InputPDereference())
-            ta = TransitionAction(on_entry_op_list)
+                ta = TransitionAction(on_entry_op_list)
             state.entry.enter_state_machine_entry(self.__state_machine_id, 
                                                   StateIndex, ta)
 
