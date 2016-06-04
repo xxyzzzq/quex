@@ -117,9 +117,9 @@ def do_default_counter(Mode):
         return []
 
     dial_db.clear()
-    ccfactory = CountInfoMap.from_LineColumnCount(Mode.counter_db, 
-                                                  Setup.buffer_codec.source_set, 
-                                                  Lng.INPUT_P())
+    ci_map = CountInfoMap.from_LineColumnCount(Mode.counter_db, 
+                                               Setup.buffer_codec.source_set, 
+                                               Lng.INPUT_P())
 
     variable_db.init()
 
@@ -127,7 +127,7 @@ def do_default_counter(Mode):
     # case call the default counter of the other mode with the same one and
     # only macro.
     default_character_counter_function_name,   \
-    default_character_counter_function_code  = counter.get(ccfactory, Mode.name)
+    default_character_counter_function_code  = counter.get(ci_map, Mode.name)
 
     txt = [ Lng.DEFAULT_COUNTER_PROLOG(default_character_counter_function_name) ]
 

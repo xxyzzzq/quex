@@ -1,9 +1,7 @@
 from   quex.input.code.core                       import CodeTerminal
 from   quex.engine.counter                        import LineColumnCount, \
                                                          IndentationCount, \
-                                                         CountAction, \
-                                                         count_operation_db_without_reference, \
-                                                         count_operation_db_with_reference
+                                                         CountAction
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools                     import typed
@@ -35,13 +33,6 @@ class CountInfo(object):
     def parameter(self):
         return self.count_action.value
 
-    def get_OpList(self, ColumnCountPerChunk):
-        if ColumnCountPerChunk is None:
-            return count_operation_db_without_reference[self.cc_type](self.parameter)
-        else:
-            return count_operation_db_with_reference[self.cc_type](self.parameter, 
-                                                                   ColumnCountPerChunk)
-
     def __str__(self):
         return "(incidence_id: %s; character_set: %s; count_action: %s)" \
                % (self.incidence_id, self.character_set, self.count_action)
@@ -52,9 +43,11 @@ class CountInfoMap:
     produce count commands.
     ___________________________________________________________________________
     """
-    def __init__(self, CMap, CharacterSet):
-        self.__map           = CMap
-        self.__character_set = CharacterSet
+    @typed(CMap=[CountInfo], CharacterSet=NumberSet)
+    def __init__(self, CMap, CharacterSet, ColumnNPerCodeUnit):
+        self.__map                    = CMap
+        self.__character_set          = CharacterSet
+        self.__column_n_per_code_unit = ColumnNPerCodeUnit
 
     @staticmethod
     @typed(CounterDb=LineColumnCount, CharacterSet=NumberSet)
@@ -66,14 +59,17 @@ class CountInfoMap:
             for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
 
-        return CountInfoMap(cmap, CharacterSet) 
+        column_n_per_code_unit = CounterDb.get_column_number_per_code_unit(CharacterSet)
+        return CountInfoMap(cmap, CharacterSet, column_n_per_code_unit) 
 
     @staticmethod
     @typed(ISetup=IndentationCount, CounterDb=LineColumnCount)
     def from_IndentationCount(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        result = CountInfoMap.from_LineColumnCount(ISetup.whitespace_character_set.get())
+        column_n_per_code_unit = CounterDb.get_column_number_per_code_unit()
+        result = CountInfoMap.from_LineColumnCount(ISetup.whitespace_character_set.get(),
+                                                   column_n_per_code_unit)
         # Up to now, the '__map' contains only character sets which intersect with the 
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()
@@ -82,6 +78,7 @@ class CountInfoMap:
                 CountInfo(dial_db.new_incidence_id(), bad_character_set,
                           CountAction(E_CharacterCountType.BAD, DoorIdBad))
             )
+        
         return result
 
     def loop_character_set(self):
@@ -126,8 +123,8 @@ class CountInfoMap:
         """
         return [ (x.character_set, x.incidence_id) for x in self.__map ]
 
-    def get_column_count_per_chunk(self):
-        return self.counter_db.count_command_map.get_column_number_per_chunk(self.character_set)
+    def column_number_per_code_unit(self):
+        return self.__column_n_per_code_unit
 
     @property
     def character_set(self):
