@@ -29,7 +29,8 @@ from   quex.engine.misc.interval_handling         import NumberSet
 import quex.engine.misc.error                     as     error
 
 from   quex.blackboard import setup as Setup, \
-                              E_CharacterCountType
+                              E_CharacterCountType, \
+                              E_R
 from   collections     import namedtuple, defaultdict
 from   operator        import itemgetter
 
@@ -122,13 +123,27 @@ class CountAction(namedtuple("CountAction", ("cc_type", "value", "sr"))):
         return super(CountAction, self).__new__(self, CCType, Value, sr)
 
     incidence_id_db = {}
-    def get_incidence_id(self):
-        key = (self.cc_type, self.value)
-        incidence_id = self.incidence_id_db.get(key)
+    @classmethod
+    def incidence_id_db_get(cls, CA):
+        """RETURNS: Unique incidence id for a given count action.
+
+        Same count actions will have the same incidence id. Initialize the 
+        'incidence_id_db' with 'CountAction.incidence_id_db.clear()' before 
+        generating a new set of count action incidence ids.
+        """
+        key = (CA.cc_type, CA.value)
+        incidence_id = CA.incidence_id_db.get(key)
         if incidence_id is None:
             incidence_id = dial_db.new_incidence_id()
-            self.incidence_id_db[key] = incidence_id
+            CA.incidence_id_db[key] = incidence_id
         return incidence_id
+
+    def get_OpList(self, ColumnCountPerChunk):
+        if ColumnCountPerChunk is None:
+            return count_operation_db_without_reference[self.cc_type](self.value)
+        else:
+            return count_operation_db_with_reference[self.cc_type](self.value, 
+                                                                   ColumnCountPerChunk)
 
 class CountActionMap(list):
     """Map: NumberSet --> CountAction
@@ -181,7 +196,7 @@ class CountActionMap(list):
                 yield character_set.intersection(CharacterSet), info
 
     @typed(CharacterSet=NumberSet)
-    def get_column_number_per_chunk(self, CharacterSet):
+    def get_column_number_per_code_unit(self, CharacterSet):
         """Considers the counter database which tells what character causes
         what increment in line and column numbers. However, only those characters
         are considered which appear in the CharacterSet. 
@@ -232,7 +247,8 @@ class CountActionMap(list):
             yield character_set, count_action
 
 class CountBase:
-    def get_state_machines(self): assert False
+    def get_state_machines(self): 
+        assert False
          
 class LineColumnCount(CountBase):
     def __init__(self, SourceReference, CountActionMap=None):
@@ -247,6 +263,9 @@ class LineColumnCount(CountBase):
 
     def get_state_machines(self):
         return []
+
+    def get_column_number_per_code_unit(self, CharacterSet):
+        return self.count_command_map.get_column_number_per_code_unit(CharacterSet)
 
     def consistency_check(self):
         self.count_command_map.check_grid_values_integer_multiples()

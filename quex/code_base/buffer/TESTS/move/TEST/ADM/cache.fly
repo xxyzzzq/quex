@@ -1,96 +1,96 @@
 {
 title: (BPC=1, FB=0);
 title_group: move_away_passed_content;
-build_time: 0.8548159599304199;
+build_time: 0.25182390213012695;
 file_name: move_away_passed_content-fb0.exe;
 hwut_info_time: 1458631477L;
 make_dependent_f: True;
 result_list: [
-  [ EoS; OK; 0.004280; 0; ]
-  [ NoEoS; OK; 0.003995; 0; ]
+  [ EoS; MAKE FAILED; 0.004280; 0; ]
+  [ NoEoS; MAKE FAILED; 0.003995; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=1);
 title_group: move_away_passed_content;
-build_time: 1.0617399215698242;
+build_time: 0.2538928985595703;
 file_name: move_away_passed_content-fb1.exe;
 hwut_info_time: 1458631479L;
 make_dependent_f: True;
 result_list: [
-  [ EoS; OK; 0.004345; 0; ]
-  [ NoEoS; OK; 0.006084; 0; ]
+  [ EoS; MAKE FAILED; 0.004345; 0; ]
+  [ NoEoS; MAKE FAILED; 0.006084; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=2);
 title_group: move_away_passed_content;
-build_time: 1.0451340675354004;
+build_time: 0.25368309020996094;
 file_name: move_away_passed_content-fb2.exe;
 hwut_info_time: 1458631475L;
 make_dependent_f: True;
 result_list: [
-  [ EoS; OK; 0.005262; 0; ]
-  [ NoEoS; OK; 0.003957; 0; ]
+  [ EoS; MAKE FAILED; 0.005262; 0; ]
+  [ NoEoS; MAKE FAILED; 0.003957; 0; ]
 ]
 }
 {
 title: (BPC=4, FB=2);
 title_group: move_away_passed_content;
-build_time: 1.0642640590667725;
+build_time: 0.25264477729797363;
 file_name: move_away_passed_content-fb2-32.exe;
 hwut_info_time: 1458631480L;
 make_dependent_f: True;
 result_list: [
-  [ EoS; OK; 0.005359; 0; ]
-  [ NoEoS; OK; 0.004874; 0; ]
+  [ EoS; MAKE FAILED; 0.005359; 0; ]
+  [ NoEoS; MAKE FAILED; 0.004874; 0; ]
 ]
 }
 {
 title: (BPC=1);
 title_group: move_away_upfront_content;
-build_time: 1.124337911605835;
+build_time: 0.2529110908508301;
 file_name: move_away_upfront_content-8.exe;
 hwut_info_time: 1458631474L;
 make_dependent_f: True;
 result_list: [
-  [ cib=0; OK; 0.005166; 0; ]
-  [ cib=1; OK; 0.005904; 0; ]
-  [ cib=2; OK; 0.004910; 0; ]
-  [ cib=0:EOS; OK; 0.004492; 0; ]
-  [ cib=1:EOS; OK; 0.005211; 0; ]
-  [ cib=2:EOS; OK; 0.005768; 0; ]
+  [ cib=0; MAKE FAILED; 0.005166; 0; ]
+  [ cib=1; MAKE FAILED; 0.005904; 0; ]
+  [ cib=2; MAKE FAILED; 0.004910; 0; ]
+  [ cib=0:EOS; MAKE FAILED; 0.004492; 0; ]
+  [ cib=1:EOS; MAKE FAILED; 0.005211; 0; ]
+  [ cib=2:EOS; MAKE FAILED; 0.005768; 0; ]
 ]
 }
 {
 title: (BPC=2);
 title_group: move_away_upfront_content;
-build_time: 1.108238935470581;
+build_time: 0.2538750171661377;
 file_name: move_away_upfront_content-16.exe;
 hwut_info_time: 1458631478L;
 make_dependent_f: True;
 result_list: [
-  [ cib=0; OK; 0.005329; 0; ]
-  [ cib=1; OK; 0.004914; 0; ]
-  [ cib=2; OK; 0.004820; 0; ]
-  [ cib=0:EOS; OK; 0.003819; 0; ]
-  [ cib=1:EOS; OK; 0.004084; 0; ]
-  [ cib=2:EOS; OK; 0.003791; 0; ]
+  [ cib=0; MAKE FAILED; 0.005329; 0; ]
+  [ cib=1; MAKE FAILED; 0.004914; 0; ]
+  [ cib=2; MAKE FAILED; 0.004820; 0; ]
+  [ cib=0:EOS; MAKE FAILED; 0.003819; 0; ]
+  [ cib=1:EOS; MAKE FAILED; 0.004084; 0; ]
+  [ cib=2:EOS; MAKE FAILED; 0.003791; 0; ]
 ]
 }
 {
 title: (BPC=4);
 title_group: move_away_upfront_content;
-build_time: 1.1221611499786377;
+build_time: 0.2551438808441162;
 file_name: move_away_upfront_content-32.exe;
 hwut_info_time: 1458631476L;
 make_dependent_f: True;
 result_list: [
-  [ cib=0; OK; 0.004915; 0; ]
-  [ cib=1; OK; 0.003968; 0; ]
-  [ cib=2; OK; 0.004686; 0; ]
-  [ cib=0:EOS; OK; 0.004037; 0; ]
-  [ cib=1:EOS; OK; 0.004146; 0; ]
-  [ cib=2:EOS; OK; 0.005053; 0; ]
+  [ cib=0; MAKE FAILED; 0.004915; 0; ]
+  [ cib=1; MAKE FAILED; 0.003968; 0; ]
+  [ cib=2; MAKE FAILED; 0.004686; 0; ]
+  [ cib=0:EOS; MAKE FAILED; 0.004037; 0; ]
+  [ cib=1:EOS; MAKE FAILED; 0.004146; 0; ]
+  [ cib=2:EOS; MAKE FAILED; 0.005053; 0; ]
 ]
 }

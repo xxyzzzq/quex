@@ -4,7 +4,7 @@ file_name: bad.sh;
 hwut_info_time: 1454022470L;
 interpreter_list: [ bash; ]
 result_list: [
-  [ ; OK; 2.249324; 0; ]
+  [ ; OK; 3.951755; 0; ]
 ]
 }
 {
@@ -13,6 +13,6 @@ file_name: good.sh;
 hwut_info_time: 1454022470L;
 interpreter_list: [ bash; ]
 result_list: [
-  [ ; OK; 2.242762; 0; ]
+  [ ; OK; 3.766087; 0; ]
 ]
 }
