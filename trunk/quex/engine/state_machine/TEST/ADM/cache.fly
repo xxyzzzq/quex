@@ -66,8 +66,8 @@ title_group: Predetermined Character Count;
 file_name: test-count_character_n.py;
 hwut_info_time: 1461220443L;
 result_list: [
-  [ Normal; NO OUTPUT; 0.125246; 0; ]
-  [ BeginOfLine; NO OUTPUT; 0.126354; 0; ]
+  [ Normal; NO OUTPUT; 0.074617; 0; ]
+  [ BeginOfLine; NO OUTPUT; 0.074579; 0; ]
 ]
 }
 {
@@ -76,11 +76,11 @@ title_group: Predetermined Character Count;
 file_name: test-count_character_n-2.py;
 hwut_info_time: 1461220443L;
 result_list: [
-  [ Same; NO OUTPUT; 0.125915; 0; ]
-  [ Different; NO OUTPUT; 0.127080; 0; ]
-  [ TwoSet; NO OUTPUT; 0.126015; 0; ]
-  [ Grid; NO OUTPUT; 0.126996; 0; ]
-  [ Grid-BOL; NO OUTPUT; 0.125850; 0; ]
+  [ Same; NO OUTPUT; 0.072457; 0; ]
+  [ Different; NO OUTPUT; 0.075092; 0; ]
+  [ TwoSet; NO OUTPUT; 0.073857; 0; ]
+  [ Grid; NO OUTPUT; 0.074906; 0; ]
+  [ Grid-BOL; NO OUTPUT; 0.073595; 0; ]
 ]
 }
 {
@@ -89,8 +89,8 @@ title_group: Predetermined Character Count;
 file_name: test-count_character_n-codec.py;
 hwut_info_time: 1461220443L;
 result_list: [
-  [ UTF8; NO OUTPUT; 0.126072; 0; ]
-  [ UTF16; NO OUTPUT; 0.125791; 0; ]
+  [ UTF8; NO OUTPUT; 0.075534; 0; ]
+  [ UTF16; NO OUTPUT; 0.075968; 0; ]
 ]
 }
 {
@@ -99,7 +99,7 @@ title_group: Predetermined Character Count;
 file_name: test-count_newline_n.py;
 hwut_info_time: 1461220443L;
 result_list: [
-  [ ; NO OUTPUT; 0.126519; 0; ]
+  [ ; NO OUTPUT; 0.076367; 0; ]
 ]
 }
 {
